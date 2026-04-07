@@ -1,4 +1,56 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.18.0
+Data: 18 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Inicialização do aplicativo e abertura de documentos (PDF/DOCX/TXT) mais rápidas.
+
+O que muda para você
+- Menor espera ao abrir documentos grandes e menos probabilidade de travamento durante a importação.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.17.0
+Data: 17 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Nova tela de carregamento que mostra progresso e torna a inicialização mais informativa.
+
+O que muda para você
+- Você verá feedback visual durante o início do aplicativo; inicialização mais confiável em diferentes ambientes.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.16.0
+Data: 16 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Melhor integração entre tarefas, calendário e temporizador; importação/exportação de tarefas mais segura.
+
+O que muda para você
+- Movimentar tarefas, sincronizar com o temporizador e importar/exportar listas ficou mais confiável.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.14.0
+Data: 14 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Melhorias no Método Feynman, no Kanban e no Leitor Acessível; aparência mais consistente entre temas.
+
+O que muda para você
+- Ferramentas de estudo e leitura estão mais usáveis e com menos falhas visuais.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.12.0
 Data: 12 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

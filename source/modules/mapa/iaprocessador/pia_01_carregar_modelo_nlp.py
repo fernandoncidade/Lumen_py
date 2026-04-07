@@ -1,13 +1,12 @@
 import sys
 import importlib
 from pathlib import Path
-
-import spacy
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def _carregar_modelo_nlp(self):
+    import spacy
+
     def _criar_nlp_fallback_basico(idioma: str):
         class _DocSimples:
             def __init__(self, text: str):

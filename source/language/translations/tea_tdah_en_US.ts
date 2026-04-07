@@ -237,28 +237,28 @@
     </message>
 
     <message>
-      <source>Conceito:</source>
-      <translation>Concept:</translation>
+      <source>1️⃣ &lt;b&gt;Conceito:&lt;/b&gt;</source>
+      <translation>1️⃣ &lt;b&gt;Concept:&lt;/b&gt;</translation>
+    </message>
+
+    <message>
+      <source>2️⃣ &lt;b&gt;Explique com Simplicidade&lt;/b&gt; (como para uma criança):</source>
+      <translation>2️⃣ &lt;b&gt;Explain Simply&lt;/b&gt; (as if to a child):</translation>
+    </message>
+
+    <message>
+      <source>3️⃣ &lt;b&gt;Lacunas Identificadas&lt;/b&gt; (o que você não conseguiu explicar bem?):</source>
+      <translation>3️⃣ &lt;b&gt;Identified Gaps&lt;/b&gt; (what you couldn't explain well?):</translation>
+    </message>
+
+    <message>
+      <source>4️⃣ &lt;b&gt;Revisão e Simplificação Final&lt;/b&gt; (depois de estudar as lacunas):</source>
+      <translation>4️⃣ &lt;b&gt;Final Review &amp; Simplification&lt;/b&gt; (after studying the gaps):</translation>
     </message>
 
     <message>
       <source>Ex: Tensão de Cisalhamento</source>
       <translation>Ex: Shear Stress</translation>
-    </message>
-
-    <message>
-      <source>1️⃣ &lt;b&gt;Explique com Simplicidade&lt;/b&gt; (como para uma criança):</source>
-      <translation>1️⃣ &lt;b&gt;Explain Simply&lt;/b&gt; (as if to a child):</translation>
-    </message>
-
-    <message>
-      <source>2️⃣ &lt;b&gt;Lacunas Identificadas&lt;/b&gt; (o que você não conseguiu explicar bem?):</source>
-      <translation>2️⃣ &lt;b&gt;Identified Gaps&lt;/b&gt; (what you couldn't explain well?):</translation>
-    </message>
-
-    <message>
-      <source>3️⃣ &lt;b&gt;Revisão e Simplificação Final&lt;/b&gt; (depois de estudar as lacunas):</source>
-      <translation>3️⃣ &lt;b&gt;Final Review &amp; Simplification&lt;/b&gt; (after studying the gaps):</translation>
     </message>
 
     <message>
@@ -1205,8 +1205,8 @@ This may take a few minutes.</translation>
     </message>
 
     <message>
-        <source>Editar data/horário</source>
-        <translation>Edit date/time</translation>
+        <source>Editar data/horário...</source>
+        <translation>Edit date/time...</translation>
     </message>
 
     <message>
@@ -2068,6 +2068,101 @@ Set 0 to repeat immediately after the audio finishes.</translation>
     <message>
       <source>Selecione o tipo de marcador a aplicar no texto</source>
       <translation>Select the type of marker to apply to the text</translation>
+    </message>
+
+    <message>
+        <source>Arquivo não encontrado.</source>
+        <translation>File not found.</translation>
+    </message>
+
+    <message>
+        <source>Descrição da Tarefa</source>
+        <translation>Task Description</translation>
+    </message>
+
+    <message>
+        <source>Adicione uma descrição para a tarefa:</source>
+        <translation>Add a description for the task:</translation>
+    </message>
+
+    <message>
+        <source>Data</source>
+        <translation>Date</translation>
+    </message>
+
+    <message>
+        <source>Horário</source>
+        <translation>Time</translation>
+    </message>
+
+    <message>
+        <source>Descrição</source>
+        <translation>Description</translation>
+    </message>
+
+    <message>
+        <source>Adicionar/Editar Descrição...</source>
+        <translation>Add/Edit Description...</translation>
+    </message>
+
+    <message>
+        <source>Vincular Arquivo</source>
+        <translation>Link File</translation>
+    </message>
+
+    <message>
+        <source>Deseja vincular o arquivo a esta tarefa?</source>
+        <translation>Do you want to link the file to this task?</translation>
+    </message>
+
+    <message>
+      <source>Iniciando carregamento...</source>
+      <translation>Starting load...</translation>
+    </message>
+
+    <message>
+      <source>Importado:</source>
+      <translation>Imported:</translation>
+    </message>
+
+    <message>
+      <source>Importado: {m}</source>
+      <translation>Imported: {m}</translation>
+    </message>
+
+    <message>
+      <source>Configurando AppUserModelID...</source>
+      <translation>Configuring AppUserModelID...</translation>
+    </message>
+
+    <message>
+      <source>AppUserModelID configurado</source>
+      <translation>AppUserModelID configured</translation>
+    </message>
+
+    <message>
+      <source>Falha AppUserModelID:</source>
+      <translation>Failed to configure AppUserModelID:</translation>
+    </message>
+
+    <message>
+      <source>Falha AppUserModelID: {e}</source>
+      <translation>Failed to configure AppUserModelID: {e}</translation>
+    </message>
+
+    <message>
+      <source>Finalizando inicialização...</source>
+      <translation>Finalizing initialization...</translation>
+    </message>
+
+    <message>
+      <source>Erro ao carregar aplicação:</source>
+      <translation>Error loading application:</translation>
+    </message>
+
+    <message>
+      <source>Erro ao carregar aplicação: {e}</source>
+      <translation>Error loading application: {e}</translation>
     </message>
 
   </context>

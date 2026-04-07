@@ -1,4 +1,6 @@
-from PySide6.QtGui import QIcon, QPalette
+import os
+import subprocess
+from PySide6.QtGui import QIcon, QPalette, QColor
 from PySide6.QtCore import Qt, QCoreApplication, QDate, QLocale, QTime, QObject, QEvent
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPushButton, QListWidget, QComboBox, QDateEdit, QCheckBox, QTimeEdit, QFrame
 from source.utils.IconUtils import get_icon_path
@@ -7,6 +9,30 @@ logger = LogManager.get_logger()
 
 def get_text(text):
     return QCoreApplication.translate("App", text)
+
+def _compute_widget_height(app, widget, name: str | None = None) -> int:
+    try:
+        if hasattr(app, "widget_heights") and isinstance(app.widget_heights, dict) and name in app.widget_heights:
+            v = int(app.widget_heights.get(name) or 0)
+            if v > 0:
+                return v
+
+        if hasattr(app, "widget_height_override") and isinstance(app.widget_height_override, int) and app.widget_height_override > 0:
+            return int(app.widget_height_override)
+
+        fm = widget.fontMetrics()
+        return max(26, int(fm.height() * 1.2))
+
+    except Exception:
+        return 28
+
+def _apply_widget_min_height(app, widget, name: str | None = None):
+    try:
+        h = _compute_widget_height(app, widget, name)
+        widget.setMinimumHeight(h)
+
+    except Exception:
+        pass
 
 
 class CustomTimeEdit(QTimeEdit):
@@ -159,6 +185,61 @@ class DragDropTaskList(QListWidget):
             except Exception:
                 pass
 
+
+class FileDropLineEdit(QLineEdit):
+    def __init__(self, app, parent=None):
+        super().__init__(parent)
+        self._app = app
+        self.setAcceptDrops(True)
+
+    def dragEnterEvent(self, event):
+        try:
+            md = event.mimeData()
+            if md.hasUrls():
+                event.acceptProposedAction()
+
+            else:
+                super().dragEnterEvent(event)
+
+        except Exception:
+            super().dragEnterEvent(event)
+
+    def dragMoveEvent(self, event):
+        try:
+            md = event.mimeData()
+            if md.hasUrls():
+                event.acceptProposedAction()
+
+            else:
+                super().dragMoveEvent(event)
+
+        except Exception:
+            super().dragMoveEvent(event)
+
+    def dropEvent(self, event):
+        try:
+            md = event.mimeData()
+            if md.hasUrls():
+                urls = md.urls()
+                if urls:
+                    path = urls[0].toLocalFile()
+                    if path:
+                        try:
+                            self.setText(os.path.basename(path))
+                            setattr(self._app, "_dragged_file_path", path)
+                            self.setToolTip(path)
+
+                        except Exception:
+                            pass
+
+                event.acceptProposedAction()
+                return
+
+        except Exception:
+            logger.error("Erro ao processar drop no campo de tarefa", exc_info=True)
+
+        super().dropEvent(event)
+
 def init_ui(app):
     app.main_layout = QVBoxLayout()
     input_layout_row1 = QHBoxLayout()
@@ -166,16 +247,14 @@ def init_ui(app):
 
     input_layout_row2.setAlignment(Qt.AlignLeft)
 
-    app.task_input = QLineEdit(app)
+    app.task_input = FileDropLineEdit(app, app)
     app.task_input.setPlaceholderText(get_text("Adicione uma tarefa..."))
 
     try:
-        fm = app.task_input.fontMetrics()
-        target_h = int(fm.height() * 1) + 10
-        app.task_input.setMinimumHeight(max(24, target_h))
+        _apply_widget_min_height(app, app.task_input, "task_input")
 
     except Exception:
-        app.task_input.setMinimumHeight(24)
+        app.task_input.setMinimumHeight(28)
 
     input_layout_row1.addWidget(app.task_input)
 
@@ -186,6 +265,7 @@ def init_ui(app):
     app.date_input = QDateEdit(app)
     app.date_input.setCalendarPopup(True)
     app.date_input.setDate(QDate.currentDate())
+    _apply_widget_min_height(app, app.date_input, "date_input")
 
     def _apply_locale_to_date_input():
         locale = QLocale.system()
@@ -238,6 +318,7 @@ def init_ui(app):
     app.time_input = CustomTimeEdit(app)
     app.time_input.setDisplayFormat("HH:mm")
     app.time_input.setEnabled(True)
+    _apply_widget_min_height(app, app.time_input, "time_input")
     input_layout_row2.addWidget(app.time_input)
 
     def _apply_locale_to_time_input():
@@ -405,6 +486,38 @@ def init_ui(app):
     else:
         app._root_widget = container
 
+    def _open_linked_file(app, item):
+        try:
+            if item is None:
+                return
+
+            data = item.data(Qt.UserRole) or {}
+            path = data.get("file_path")
+            if not path:
+                return
+
+            if os.path.exists(path):
+                try:
+                    if os.name == 'nt':
+                        os.startfile(path)
+
+                    else:
+                        subprocess.Popen(["xdg-open", path])
+
+                except Exception:
+                    try:
+                        subprocess.Popen([path], shell=True)
+
+                    except Exception:
+                        pass
+
+            else:
+                from PySide6.QtWidgets import QMessageBox
+                QMessageBox.warning(app, get_text("Erro"), get_text("Arquivo não encontrado."))
+
+        except Exception as e:
+            logger.error(f"Erro ao abrir arquivo vinculado: {e}", exc_info=True)
+
     app.quadrant1_list.itemChanged.connect(lambda item: app.handle_item_checked(item, app.quadrant1_list, app.quadrant1_completed_list))
     app.quadrant2_list.itemChanged.connect(lambda item: app.handle_item_checked(item, app.quadrant2_list, app.quadrant2_completed_list))
     app.quadrant3_list.itemChanged.connect(lambda item: app.handle_item_checked(item, app.quadrant3_list, app.quadrant3_completed_list))
@@ -422,6 +535,12 @@ def init_ui(app):
         lst.setContextMenuPolicy(Qt.CustomContextMenu)
         lst.customContextMenuRequested.connect(lambda point, l=lst: app.show_context_menu(point, l))
 
+        try:
+            lst.itemDoubleClicked.connect(lambda item, l=lst: _open_linked_file(app, item))
+
+        except Exception:
+            pass
+
     try:
         from PySide6.QtWidgets import QApplication
 
@@ -435,9 +554,63 @@ def init_ui(app):
 
             window_color = qt_app.palette().color(QPalette.Window)
 
+            def _is_light_color(col: QColor) -> bool:
+                try:
+                    r, g, b = col.red(), col.green(), col.blue()
+                    lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255.0
+                    return lum >= 0.85
+
+                except Exception:
+                    return True
+
+            is_light_theme = _is_light_color(window_color)
+
+            try:
+                target_widgets = (
+                    app.task_input,
+                    app.quadrant1_list,
+                    app.quadrant2_list,
+                    app.quadrant3_list,
+                    app.quadrant4_list,
+                    app.quadrant1_completed_list,
+                    app.quadrant2_completed_list,
+                    app.quadrant3_completed_list,
+                    app.quadrant4_completed_list,
+                )
+            except Exception:
+                target_widgets = ()
+
+            calendar_base = QColor(window_color)
+
+            try:
+                from PySide6.QtWidgets import QDateEdit, QTimeEdit
+
+                if is_light_theme:
+                    if isinstance(widget, (QDateEdit, QTimeEdit)):
+                        fill_color = QColor(calendar_base)
+
+                    elif widget in target_widgets:
+                        fill_color = QColor(245, 245, 245)
+
+                    else:
+                        fill_color = QColor(window_color).darker(125)
+
+                else:
+                    if widget in target_widgets:
+                        fill_color = QColor(calendar_base)
+
+                    elif isinstance(widget, (QDateEdit, QTimeEdit)):
+                        fill_color = QColor(calendar_base)
+
+                    else:
+                        fill_color = QColor(window_color).darker(125)
+
+            except Exception:
+                fill_color = window_color
+
             pal = widget.palette()
-            pal.setColor(QPalette.Base, window_color)
-            pal.setColor(QPalette.AlternateBase, window_color)
+            pal.setColor(QPalette.Base, fill_color)
+            pal.setColor(QPalette.AlternateBase, fill_color)
 
             try:
                 if isinstance(widget, QComboBox):
@@ -481,9 +654,25 @@ def init_ui(app):
                     pass
 
         def _sync_eisenhower_backgrounds():
+            if getattr(app, "_eisenhower_palette_sync_in_progress", False):
+                return
+
+            app._eisenhower_palette_sync_in_progress = True
             try:
                 _apply_window_as_base(app.task_input)
                 _apply_window_as_base(app.quadrant_selector)
+
+                try:
+                    _apply_window_as_base(app.date_input)
+
+                except Exception:
+                    pass
+
+                try:
+                    _apply_window_as_base(app.time_input)
+
+                except Exception:
+                    pass
 
                 for w in (
                     app.quadrant1_list,
@@ -500,6 +689,12 @@ def init_ui(app):
             except Exception as e:
                 logger.debug(f"Falha ao sincronizar fundos da Matriz Eisenhower via QPalette: {e}", exc_info=True)
 
+            finally:
+                try:
+                    app._eisenhower_palette_sync_in_progress = False
+
+                except Exception:
+                    pass
 
         class _PaletteThemeSyncFilter(QObject):
             def eventFilter(self, obj, event):
@@ -518,7 +713,8 @@ def init_ui(app):
                     pass
 
                 if et in tipos:
-                    _sync_eisenhower_backgrounds()
+                    if not getattr(app, "_eisenhower_palette_sync_in_progress", False):
+                        _sync_eisenhower_backgrounds()
 
                 return super().eventFilter(obj, event)
 

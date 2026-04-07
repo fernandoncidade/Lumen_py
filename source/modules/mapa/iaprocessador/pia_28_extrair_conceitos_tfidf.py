@@ -1,10 +1,10 @@
 from typing import List, Dict
-from sklearn.feature_extraction.text import TfidfVectorizer
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def _extrair_conceitos_tfidf(self, doc, texto: str, max_conceitos: int = 15) -> List[Dict]:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+
     try:
         sentencas = [s.text.strip() for s in doc.sents if s.text.strip()]
         if not sentencas:

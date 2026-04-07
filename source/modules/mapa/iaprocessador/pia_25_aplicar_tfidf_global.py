@@ -1,10 +1,10 @@
 from typing import Dict
-from sklearn.feature_extraction.text import TfidfVectorizer
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def _aplicar_tfidf_global(self, texto: str, arvore: Dict):
+    from sklearn.feature_extraction.text import TfidfVectorizer
+
     try:
         def coletar_textos(no, textos_lista):
             if no.get('texto_puro'):

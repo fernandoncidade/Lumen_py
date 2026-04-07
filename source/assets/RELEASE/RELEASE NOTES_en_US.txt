@@ -1,4 +1,56 @@
 RELEASE NOTES — Lúmen
+Version: 2026.1.18.0
+Date: January 18, 2026
+Author: Fernando Nillsson Cidade
+
+User summary
+- Faster app startup and faster opening of documents (PDF/DOCX/TXT).
+
+What this means for you
+- Less waiting when opening large documents and fewer freezes during import.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
+Version: 2026.1.17.0
+Date: January 17, 2026
+Author: Fernando Nillsson Cidade
+
+User summary
+- New loading screen that shows progress and makes startup more informative.
+
+What this means for you
+- You get visual feedback during startup; more reliable initialization across environments.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
+Version: 2026.1.16.0
+Date: January 16, 2026
+Author: Fernando Nillsson Cidade
+
+User summary
+- Better integration between tasks, calendar, and timer; safer import/export of tasks.
+
+What this means for you
+- Moving tasks, syncing with the timer, and importing/exporting lists are more dependable.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
+Version: 2026.1.14.0
+Date: January 14, 2026
+Author: Fernando Nillsson Cidade
+
+User summary
+- Improvements to the Feynman method, Kanban, and Accessible Reader; more consistent appearance across themes.
+
+What this means for you
+- Study and reading tools are easier to use and have fewer visual issues.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.1.12.0
 Date: January 12, 2026
 Author: Fernando Nillsson Cidade

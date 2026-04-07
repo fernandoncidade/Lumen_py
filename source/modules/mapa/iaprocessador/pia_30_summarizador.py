@@ -1,16 +1,12 @@
 from typing import List, Dict, Any
 import re
 from source.utils.LogManager import LogManager
-from sklearn.feature_extraction.text import TfidfVectorizer
 import numpy as np
-
 logger = LogManager.get_logger()
-
 
 def _split_clauses_by_commas(sentence: str) -> List[str]:
     parts = [p.strip() for p in sentence.split(',') if p.strip()]
     return parts
-
 
 def _detect_coordination_spacy(doc_sent, idioma: str) -> Dict[str, Any]:
     is_sindetic = False
@@ -72,8 +68,9 @@ def _detect_coordination_spacy(doc_sent, idioma: str) -> Dict[str, Any]:
         'clauses': clauses,
     }
 
-
 def gerar_resumo_avancado(self, caminho_arquivo: str, top_n: int = 5) -> Dict[str, Any]:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+
     try:
         texto = None
         try:

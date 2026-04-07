@@ -237,28 +237,28 @@
     </message>
 
     <message>
-      <source>Conceito:</source>
-      <translation>Conceito:</translation>
+      <source>1️⃣ &lt;b&gt;Conceito:&lt;/b&gt;</source>
+      <translation>1️⃣ &lt;b&gt;Conceito:&lt;/b&gt;</translation>
+    </message>
+
+    <message>
+      <source>2️⃣ &lt;b&gt;Explique com Simplicidade&lt;/b&gt; (como para uma criança):</source>
+      <translation>2️⃣ &lt;b&gt;Explique com Simplicidade&lt;/b&gt; (como para uma criança):</translation>
+    </message>
+
+    <message>
+      <source>3️⃣ &lt;b&gt;Lacunas Identificadas&lt;/b&gt; (o que você não conseguiu explicar bem?):</source>
+      <translation>3️⃣ &lt;b&gt;Lacunas Identificadas&lt;/b&gt; (o que você não conseguiu explicar bem?):</translation>
+    </message>
+
+    <message>
+      <source>4️⃣ &lt;b&gt;Revisão e Simplificação Final&lt;/b&gt; (depois de estudar as lacunas):</source>
+      <translation>4️⃣ &lt;b&gt;Revisão e Simplificação Final&lt;/b&gt; (depois de estudar as lacunas):</translation>
     </message>
 
     <message>
       <source>Ex: Tensão de Cisalhamento</source>
       <translation>Ex: Tensão de Cisalhamento</translation>
-    </message>
-
-    <message>
-      <source>1️⃣ &lt;b&gt;Explique com Simplicidade&lt;/b&gt; (como para uma criança):</source>
-      <translation>1️⃣ &lt;b&gt;Explique com Simplicidade&lt;/b&gt; (como para uma criança):</translation>
-    </message>
-
-    <message>
-      <source>2️⃣ &lt;b&gt;Lacunas Identificadas&lt;/b&gt; (o que você não conseguiu explicar bem?):</source>
-      <translation>2️⃣ &lt;b&gt;Lacunas Identificadas&lt;/b&gt; (o que você não conseguiu explicar bem?):</translation>
-    </message>
-
-    <message>
-      <source>3️⃣ &lt;b&gt;Revisão e Simplificação Final&lt;/b&gt; (depois de estudar as lacunas):</source>
-      <translation>3️⃣ &lt;b&gt;Revisão e Simplificação Final&lt;/b&gt; (depois de estudar as lacunas):</translation>
     </message>
 
     <message>
@@ -1205,8 +1205,8 @@ Isso pode levar alguns minutos.</translation>
     </message>
 
     <message>
-        <source>Editar data/horário</source>
-        <translation>Editar data/horário</translation>
+        <source>Editar data/horário...</source>
+        <translation>Editar data/horário...</translation>
     </message>
 
     <message>
@@ -2068,6 +2068,101 @@ Defina 0 para repetir imediatamente após o áudio terminar.</translation>
     <message>
       <source>Selecione o tipo de marcador a aplicar no texto</source>
       <translation>Selecione o tipo de marcador a aplicar no texto</translation>
+    </message>
+
+    <message>
+        <source>Arquivo não encontrado.</source>
+        <translation>Arquivo não encontrado.</translation>
+    </message>
+
+    <message>
+        <source>Descrição da Tarefa</source>
+        <translation>Descrição da Tarefa</translation>
+    </message>
+
+    <message>
+        <source>Adicione uma descrição para a tarefa:</source>
+        <translation>Adicione uma descrição para a tarefa:</translation>
+    </message>
+
+    <message>
+        <source>Data</source>
+        <translation>Data</translation>
+    </message>
+
+    <message>
+        <source>Horário</source>
+        <translation>Horário</translation>
+    </message>
+
+    <message>
+        <source>Descrição</source>
+        <translation>Descrição</translation>
+    </message>
+
+    <message>
+        <source>Adicionar/Editar Descrição...</source>
+        <translation>Adicionar/Editar Descrição...</translation>
+    </message>
+
+    <message>
+        <source>Vincular Arquivo</source>
+        <translation>Vincular Arquivo</translation>
+    </message>
+
+    <message>
+        <source>Deseja vincular o arquivo a esta tarefa?</source>
+        <translation>Deseja vincular o arquivo a esta tarefa?</translation>
+    </message>
+
+    <message>
+      <source>Iniciando carregamento...</source>
+      <translation>Iniciando carregamento...</translation>
+    </message>
+
+    <message>
+      <source>Importado:</source>
+      <translation>Importado:</translation>
+    </message>
+
+    <message>
+      <source>Importado: {m}</source>
+      <translation>Importado: {m}</translation>
+    </message>
+
+    <message>
+      <source>Configurando AppUserModelID...</source>
+      <translation>Configurando AppUserModelID...</translation>
+    </message>
+
+    <message>
+      <source>AppUserModelID configurado</source>
+      <translation>AppUserModelID configurado</translation>
+    </message>
+
+    <message>
+      <source>Falha AppUserModelID:</source>
+      <translation>Falha ao configurar AppUserModelID:</translation>
+    </message>
+
+    <message>
+      <source>Falha AppUserModelID: {e}</source>
+      <translation>Falha ao configurar AppUserModelID: {e}</translation>
+    </message>
+
+    <message>
+      <source>Finalizando inicialização...</source>
+      <translation>Finalizando inicialização...</translation>
+    </message>
+
+    <message>
+      <source>Erro ao carregar aplicação:</source>
+      <translation>Erro ao carregar aplicação:</translation>
+    </message>
+
+    <message>
+      <source>Erro ao carregar aplicação: {e}</source>
+      <translation>Erro ao carregar aplicação: {e}</translation>
     </message>
 
   </context>

@@ -1,4 +1,451 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.18.0
+Data: 18 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo
+- Correções e endurecimentos focados em reduzir impacto de I/O e bloqueios no processo de startup que estavam degradando significativamente a velocidade de processamento ao carregar documentos (PDF / DOCX / TXT). Ajustes aplicados em main.py e no utilitário de logging (source/utils/LogManager.py) para minimizar operações síncronas durante importação e parsing de arquivos grandes.
+
+Alterações técnicas — visão geral
+- main.py:
+  - Removida execução automática de rotinas de diagnóstico pesadas na inicialização (startup diagnostics / redirecionamento de stdout/stderr / instalação imediata de excepthook).
+  - Inicialização simplificada: SplashAppStarter instanciado e start() chamado diretamente, evitando operações de I/O prévias que impactavam throughput durante import/processamento de documentos.
+
+- source/utils/LogManager.py:
+  - Substituição da implementação anterior (instrumentada com faulthandler, escrita imediata de logs de startup e redirecionamento de streams) por uma versão light-weight com inicialização preguiçosa (lazy init).
+  - Comportamento padrão:
+    - logging configurado com nível de erro (ERROR) por padrão para reduzir volume de escrita em disco durante operações normais.
+    - Criação de arquivo de log adiada até a primeira chamada real a get_logger()/get_log_file(), evitando custos de I/O desnecessários durante importações massivas.
+    - Evitado redirecionamento de sys.stdout/sys.stderr salvo quando variável de ambiente LUMEN_QT_DEBUG explicitamente habilitada.
+  - Removidas/adiadas operações custosas:
+    - Faulthandler.enable() e abertura imediata de arquivo de startup não são executados em caminho quente de inicialização.
+    - Varreduras/limpezas de diretório (os.listdir + os.remove) simplificadas e protegidas por gatilhos condicional (executadas somente quando logs excedem limite e quando get_logger() foi invocado).
+  - Rotina de cleanup de logs mantida, mas com execução segura e menos frequente (evita listas grandes de arquivos em cada startup).
+
+Racional e impacto nas importações de documentos
+- Problema identificado:
+  - A versão anterior escrevia e sincronizava vários artefatos de diagnóstico durante a construção do processo (faulthandler + redirecionamento de streams + escrita imediata de startup log), o que introduzia latência e contenção de I/O quando o processo carregava múltiplos módulos de parsing (PyPDF2/pdfplumber, python-docx, etc.).
+- Solução aplicada:
+  - Remover/adiar operações de I/O não essenciais do caminho crítico de inicialização reduz tempo de espera bloqueante do processo, permitindo que parsers de documentos iniciem e executem sem competir por I/O síncrono.
+  - Registrar logs apenas quando necessário (lazy) e manter nível de log mais conservador durante import/export massivo diminuiu chamadas a FileHandler e flushs frequentes.
+- Resultado esperado:
+  - Redução mensurável do tempo de carregamento de PDFs/DOCX/TXT em cenários de uso normal e durante import em lote.
+  - Menor risco de stalls ocasionais por escrita síncrona de logs ou travamentos causados por handlers de diagnóstico.
+
+Mudanças operacionais / recomendações
+- Para sessões de diagnóstico profundo (depuração local), a funcionalidade completa de startup_diagnostics e excepthook ainda pode ser ativada manualmente:
+  - Chamar LogManager.enable_startup_diagnostics() e LogManager.install_exception_hook() em ambiente de desenvolvimento quando necessário.
+  - Definir variável LUMEN_QT_DEBUG=1 para habilitar redirecionamento de stdout/stderr intencionalmente.
+- Testes recomendados:
+  - Medir tempo médio de import de um conjunto representativo de PDFs/DOCX/TXT antes/depois das mudanças (scripts de benchmark simples).
+  - Verificar criação tardia de logs: iniciar app, executar import pesado, depois chamar LogManager.get_log_file() para confirmar criação correta do arquivo de log.
+  - Validar que mensagens críticas/exceções ainda são registradas corretamente quando get_logger() é usado.
+
+Notas para desenvolvedores
+- Mudanças intencionais:
+  - Preservar funcionalidades de diagnóstico (faulthandler/excepthook) sem impactar o caminho crítico: foram mantidas nas fontes históricas, porém separadas do fluxo padrão de import e ativadas apenas sob demanda.
+  - Se for necessário reativar comportamento antigo para builds de diagnóstico automatizado, prefira ativar via script de teste ou variável de ambiente (não no path de produção/normal de startup).
+- Pontos de atenção futuros:
+  - Se for preciso registrar muitos eventos durante processamento de documentos (ex.: debug de parsing em lote), use logger com nível DEBUG somente em sessões de diagnóstico e prefira handlers rotativos assíncronos para evitar bloqueios.
+
+Resumo final
+- As modificações em main.py e LogManager.py começam por reduzir operações síncronas de I/O no caminho de inicialização, adotam inicialização preguiçosa do subsistema de logs e removem redirecionamentos automáticos de streams. Essas mudanças aliviam contenção I/O durante importação/parsing de documentos grandes e devem resultar em melhorias perceptíveis de desempenho ao carregar PDFs, DOCX e TXT.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.17.0
+Data: 17 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo
+- Refatoração e endurecimento do processo de inicialização da aplicação.
+- Nova tela de splash com progresso e log interno durante o carregamento.
+- Separação clara entre criação do QApplication, montagem da janela e execução.
+- Melhor tratamento e diagnóstico do ícone da aplicação e AppUserModelID no Windows.
+- Melhoria no logging de início (startup diagnostics) e instalação de hook de exceções.
+
+Principais melhorias
+- Splash screen interativa:
+  - Criada com widget customizado (imagem redimensionável, QProgressBar e QTextEdit para logs).
+  - Redimensionamento responsivo do pixmap com fallback para imagem em branco se o ícone não for válido.
+  - Progresso alimentado dinamicamente durante importações de módulos para dar feedback visual ao usuário.
+  - Uso de QTimer.singleShot para rodar o loader sem bloquear o loop de eventos.
+
+- Loader com instrumentação de importações:
+  - Hook temporário em builtins.__import__ para detectar novos módulos carregados e atualizar o progresso.
+  - Garantia de restauração do import original em finally, evitando efeitos colaterais.
+
+- Inicialização modular e mais robusta (source/src_02_InicializadorMain.py):
+  - Funções separadas: configurar_windows_app_id, configurar_aplicacao, configurar_icone_aplicacao, criar_janela_principal, configurar_icone_janela, iniciar_aplicacao, montar_e_mostrar_janela.
+  - Carregamento do ícone com verificações: existência do caminho, validação de QIcon (isNull) e verificação de tamanhos disponíveis antes de aplicar.
+  - Logging detalhado em cada etapa (debug/info/warning/error/critical).
+  - Tratamento de exceções com exc_info quando aplicável e retorno de código de erro consistente.
+
+- Logging e diagnósticos:
+  - main.py ativa diagnósticos de startup e instala hook de exceção via LogManager antes de iniciar SplashAppStarter.
+  - Mensagens de log trazem contexto (caminho do ícone, tamanhos, progresso de import, falhas específicas).
+
+- Compatibilidade e suporte ao Windows:
+  - Função configurar_windows_app_id encapsula chamada a ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID com tratamento de falhas e logging.
+  - multiprocessing.freeze_support() chamado em SplashAppStarter.start para compatibilidade com builds/pacotes Windows.
+
+Correções de bugs
+- Evita crashes quando:
+  - Ícone não existe ou é inválido (pixmap/isNull): fallback para imagem branca e log de erro.
+  - app_icon nulo: não tenta aplicar ícone na janela sem verificação.
+- Evita leaks no hook de import: restauração garantida.
+- Trata encerramento do splash em exceções, garantindo que a UI principal seja ativada/raised quando possível.
+- Prevê falhas na configuração do AppUserModelID sem interromper a aplicação.
+
+Impacto para usuários
+- Inicialização mais informativa e resiliente.
+- Menos falhas ao abrir a aplicação em ambientes sem o ícone esperado.
+- Logs de inicialização mais detalhados para diagnóstico de problemas.
+
+Notas para desenvolvedores
+- Arquivos principais alterados / a revisar:
+  - source/src_01_SplashAppStarter.py — implementação do splash, loader, hook de import e rotina start().
+  - source/src_02_InicializadorMain.py — modularização da inicialização, carregamento de ícone, AppUserModelID e montagem/execução da janela.
+  - main.py — ativa diagnósticos e inicia o SplashAppStarter.
+- Pontos de atenção:
+  - Confirme que source.utils.LogManager exporta enable_startup_diagnostics() e install_exception_hook().
+  - Confirme que source.utils.IconUtils.get_icon_path retorna caminho correto para "autismo.ico".
+  - Testar em Windows para validar SetCurrentProcessExplicitAppUserModelID (permissões/contexto).
+  - Se adicionar funcionalidades que importem muitos módulos no loader, ajustar limites de progresso e mensagens conforme necessário.
+
+Testes recomendados
+- Iniciar aplicação em ambiente de desenvolvimento e produção (Windows).
+- Testar comportamento com o ícone presente e com o ícone ausente/corrompido.
+- Verificar logs gerados pelo LogManager durante toda a inicialização.
+- Simular exceções em criar_janela_principal para validar fechamento do splash e logging critical.
+- Validar que builtins.__import__ é restaurado após inicialização.
+
+Compatibilidade e requisitos
+- Requer PySide6.
+- Mantém compatibilidade com Windows (melhorias específicas de AppUserModelID).
+- Nenhuma alteração na API pública da janela principal (criar_janela_principal/EstudoAcessivel) prevista — revisão recomendada se houver mudanças em módulos importados.
+
+Observações finais
+- Arquitetura preparada para futura instrumentação (tracing/evaluation) e para adição de etapas de inicialização sem bloquear a UI.
+- Recomenda-se manter logs de startup habilitados em builds de diagnóstico para facilitar investigações de suporte.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.16.0
+Data: 16 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo executivo
+- Entrega focada em robustez, usabilidade e integração do módulo Matriz de Eisenhower (UI e serviços) com melhorias transversais em persistência assíncrona, import/export, parsing resiliente de datas/horários, integração com Gestão de Tempo via EventBus e sincronia visual com a paleta do aplicativo. Correções defensivas e logging ampliado para evitar crashes em ambientes com dependências ausentes.
+
+Mudanças e melhorias detalhadas
+
+1) UI e interação — Eisenhower (source/modules/eisenhower/services/ui + source/modules/mod_06_eisenhower.py)
+- Novo layout/controles:
+  - Campo de tarefa com FileDropLineEdit que aceita drag&drop de arquivos e mantém _dragged_file_path para vinculação opcional.
+  - Combo de quadrantes com labels emoji e botão de adicionar com ícone.
+  - Date/Time inputs melhor integrados (QDateEdit com calendar popup, CustomTimeEdit com comportamento de stepBy que faz wrap entre 00:00↔23:59).
+- Inserção ordenada por horário:
+  - insert_task_into_quadrant_list cria cabeçalhos por faixa horária (HH:00–HH:59), insere headers na posição correta e ordena tarefas dentro do grupo por horário e texto.
+  - cleanup_time_groups remove cabeçalhos vazios mantendo listas consistentes.
+- Drag & Drop e seleção:
+  - DragDropTaskList com MoveAction controlado: quando origem != destino, items selecionados são movidos via app.move_item_between_lists com bloqueio de sinais; quando origem == destino, fallback para super().dropEvent e persistência.
+  - Seleção single-selection reforçada para evitar estados inconsistentes.
+- Atalhos e abertura de arquivo vinculado:
+  - Duplo clique abre arquivo vinculado (os.startfile no Windows / xdg-open em Unix).
+- Placeholders dinâmicos:
+  - add_placeholder e lógica de limpeza/insere placeholders (ex.: "1º Quadrante", "Nenhuma Tarefa Concluída") quando listas ficam vazias.
+
+2) Persistência assíncrona e I/O (source/modules/mod_06_eisenhower.py, ui/ui_05_save_tasks.py, ui/ui_06_load_tasks.py)
+- Worker em QThread para salvar tasks sem bloquear a UI:
+  - _EisenhowerWorker expondo request_save signal que grava JSON em background; fallback para salvar síncrono caso worker indisponível.
+  - Proteções para criar diretório destino quando necessário e emitir save_finished/error.
+- Serialização robusta:
+  - save_tasks / list_to_entries preservam file_path, description, priority, date/time; escrita com ensure_ascii=False e indent.
+- Carregamento resiliente:
+  - load_tasks trata entradas simples (string) e dicts; preserva metadados em Qt.UserRole; aplica formatação de exibição e tooltips com Data/Horário/Arquivo/Descrição.
+  - Parsing defensivo para formatos ISO/locale.
+
+3) Importação / Exportação (source/modules/eisenhower/services/svc_07_arquivo.py)
+- Import de Excel/PDF:
+  - Suporte a .xlsx via openpyxl (read_only) com mapeamento de folhas para quadrantes; parsing de linhas e extração de data/hora.
+  - Suporte a .pdf via PyPDF2: extração de texto, heurística de segmentos por títulos normalizados e fallback por chaves (quadrant1:, etc.). Parsing robusto e limpeza de bullets/prefixos.
+- Export Save As:
+  - .xlsx via openpyxl com cabeçalhos e colunas (text, date, time, file_path, description, priority).
+  - .pdf via reportlab com layout por seções, quebra de página automática e inclusão de metadados (prioridade, descrição, arquivo).
+  - .json com dump completo incluindo meta (date_display_format, language) e raw_data por item.
+- Mensagens de erro amigáveis quando bibliotecas externas ausentes (openpyxl, PyPDF2, reportlab).
+
+4) Menu de contexto e edição avançada (source/modules/eisenhower/services/svc_06_show_context_menu.py)
+- Menu contextual completo:
+  - Ações: Adicionar/Editar Descrição (diálogo rich QTextEdit), Editar data/horário (QDialog com QDateEdit/QTimeEdit e checkboxes para vincular), Mover para outro quadrante (submenu), Remover Tarefa.
+- Edição de data/horário:
+  - Dialog com locale aplicado ao QDateEdit e customização visual do calendarWidget (cores coerentes com paleta).
+  - Sincronização de textos do diálogo quando idioma muda (idioma_alterado).
+  - Ao confirmar, item é substituído preservando estado de check e metadados; app.save_tasks chamado.
+- Descrição:
+  - Diálogo que grava até preview (3 primeiras linhas) no tooltip; armazenamento em Qt.UserRole["description"].
+
+5) Integração com Gestão de Tempo / EventBus (source/modules/mod_06_eisenhower.py + utils/EventBus)
+- Envio de tarefas ao adicionar quando integrate_time_button está ativo:
+  - Payload inclui integration_id (uuid4), origin, titulo, prioridade normalizada (via Tarefa.normalizar_prioridade), date/time.
+- Recebimento de tarefas do tempo:
+  - _on_event_bus_tarefa filtra origin == "tempo" e previne duplicatas por integration_id; adiciona tarefa no quadrante correspondente.
+- Drain de mensagens pendentes: uso de drain_pending_tarefas no setup para evitar perda em inicialização tardia.
+
+6) UX, locale e sincronia de paleta
+- locale dinâmico:
+  - _apply_locale_to_date_input ajusta displayFormat para yyyy quando necessário e conecta idioma_alterado.
+  - _effective_locale usado em updates de exibição.
+- Sincronização visual com tema:
+  - _apply_window_as_base aplica Base/AlternateBase nos widgets relevantes (listas, combos, date/time editors) e ajusta view() de QComboBox / viewport para manter contraste.
+  - Filtro de evento _PaletteThemeSyncFilter instalado na QApplication reage a ApplicationPaletteChange/PaletteChange/StyleChange/ThemeChange (e ColorSchemeChange quando disponível).
+  - Flags de proteção para evitar reentrância (_eisenhower_palette_sync_in_progress).
+
+7) Robustez, logging e proteções
+- Uso extensivo de try/except com LogManager para capturar exc_info nos pontos críticos (drag&drop, I/O, parsing, workers).
+- Proteções defensivas:
+  - Validações de Qt.Item flags para considerar apenas items selecionáveis.
+  - Fallbacks quando atributos (calendar_pane, gerenciador_traducao, date_input) ausentes.
+  - Remoção segura de atributos temporários (_dragged_file_path).
+
+Como testar (passos rápidos)
+1. UI básica:
+   - Adicionar tarefas com/sem data e horário; verificar exibição formatada e tooltips.
+   - Arrastar tarefas entre quadrantes e para listas "Concluídas"; confirmar persistência e atualização do calendário (se presente).
+2. Drag & Drop de arquivo:
+   - Arrastar um arquivo para campo de tarefa, confirmar vinculação quando solicitado e verificar tooltip/estilo do item.
+3. Import/Export:
+   - Importar .xlsx e .pdf em formatos compatíveis; salvar em .xlsx/.pdf/.json e validar conteúdo.
+4. Edição via menu:
+   - Usar menu contextual para editar descrição e data/horário; confirmar que mudanças persistem e são refletidas nos tooltips.
+5. Integração Tempo:
+   - Ativar integrate_time_button e adicionar tarefa; checar envio via EventBus (ou logs). Enviar tarefa originada de "tempo" e verificar prevenção de duplicatas por integration_id.
+6. Tema/Idioma:
+   - Alternar tema do app e idioma; confirmar que paleta, formatos de data e textos dos diálogos atualizam corretamente.
+7. Robustez:
+   - Executar sem openpyxl/PyPDF2/reportlab instalados e confirmar mensagens amigáveis e fallback sem crash.
+
+Arquivos alterados / adicionados (principais nesta entrega)
+- source/modules/eisenhower/services/svc_01_initUI.py
+- source/modules/eisenhower/ui/ui_01_add_task.py
+- source/modules/eisenhower/ui/ui_03_move_item_between_lists.py
+- source/modules/eisenhower/ui/ui_05_save_tasks.py
+- source/modules/eisenhower/ui/ui_06_load_tasks.py
+- source/modules/eisenhower/services/svc_06_show_context_menu.py
+- source/modules/eisenhower/services/svc_07_arquivo.py
+- source/modules/eisenhower/services/svc_08_atualizar_itens_tarefas.py
+- source/modules/mod_06_eisenhower.py
+- utils/EventBus.py (integração e drain de mensagens)
+- Ajustes de logging via source/utils/LogManager.py (uso intensificado em pontos críticos)
+
+Observações finais
+- Entrega prioriza estabilidade e experiência do usuário: I/O não bloqueante, proteção contra backends ausentes, parsing de data/hora robusto e melhor sincronia visual com temas. Recomenda-se testes funcionais integrados (Eisenhower ↔ Gestão de Tempo ↔ Calendário) e revisão dos logs após operações de import/export e drag&drop para capturar edge-cases de parsing e formatos de PDF/Excel variados.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.14.0
+Data: 14 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo executivo
+- Melhorias de robustez, usabilidade e integração nos módulos Método Feynman, Gerenciador de Tarefas / Gerenciador de Tempo e Leitor Acessível (Texto/PDF). Foco em consistência de paleta/tema, sincronização de eventos (pomodoro ↔ tarefas), mecanismo de busca (Texto/PDF) com opções avançadas e proteção extensiva por logging/try-except.
+
+Mudanças e melhorias detalhadas
+
+1) Método Feynman (source/modules/feynman/fey_02_setup_ui.py, fey_03_atualizar_traducoes.py)
+- UI consolidada com layout em splitter (lista de conceitos ↔ editor) e controles CRUD padronizados (btn_novo, btn_deletar, btn_salvar).
+- Substituição/uso consistente de QTextEdit para campos de entrada (título, explicação, lacunas, revisão) para permitir edição rica.
+- Integração com Gerenciador de Botões (gerenciador_botoes) para criação e tradução dinâmica do botão salvar.
+- Sincronização de paleta/tema:
+  - Implementado _apply_window_as_base e filtro de evento _PaletteThemeSyncFilter para reaplicar cores Base/AlternateBase em widgets e viewports quando a paleta do aplicativo muda.
+  - Proteções envolvendo verificação de QApplication e blocos try/except para evitar falhas em ambientes limitados.
+- Traduções dinâmicas:
+  - atualizar_traducoes centraliza todos os rótulos, placeholders e conteúdo instrucional com QCoreApplication.translate.
+  - Preservação do índice selecionado em combo_dominio ao recarregar itens traduzidos.
+- Robustez:
+  - Try/except em pontos críticos com LogManager para registrar falhas sem quebrar a UI.
+  - Chamadas iniciais a atualizar_traducoes() e atualizar_lista() no setup para estado consistente na inicialização.
+
+2) Gerenciador de Tarefas (Kanban) (source/modules/tempo/tmp_03_GerenciadorTarefas.py)
+- Drag & Drop e sincronização:
+  - Nova subclasse _KanbanListWidget que emite tarefas_soltadas após drop para processamento controlado.
+  - Conexão ao sinal rowsMoved do model para detectar rearranjos internos e chamar _on_rows_moved.
+  - Implementado _sincronizar_status_pos_movimento que reconstrói mapeamento entre QListWidgets e status ("Todo", "Doing", "Done") e atualiza objetos Tarefa consultando Qt.UserRole (id) ou texto-base.
+  - Evita inconsistências quando o Qt tenta aplicar MoveAction automaticamente — a remoção/atualização agora é controlada pela aplicação.
+- UX e operações em lote:
+  - Itens configurados com Qt.ItemIsUserCheckable para marcação e seleção em operações em lote (mover/remover).
+  - Ações para mover/remover tarefas marcadas, mover por item via diálogo e reset de contadores com escopos (tarefa/coluna/global).
+  - Ajuste dinâmico de largura do combo de prioridade para evitar truncamentos.
+- Persistência e compatibilidade:
+  - Salvar/carregar em tarefas.json no diretório obtido por obter_caminho_persistente().
+  - Serialização robusta via to_dict/from_dict de Tarefa (tratamento de exceções durante I/O).
+- Polimento visual:
+  - Aplicação de máscaras arredondadas (rounded mask) para colunas e viewports e sincronização de paleta para listas/combos.
+- Observabilidade:
+  - Logging amplo via LogManager em pontos críticos (drop, rowsMoved, salvar, carregar, mover).
+
+3) Gerenciador de Tempo / Pomodoro (source/modules/tempo/tmp_04_GerenciadorTempo.py)
+- Arquitetura de worker para eventos de tempo:
+  - _TimeWorker executando em QThread; recebe sinal do PomodoroTimer e reemite pomodoro_completed para GUI.
+  - Conexões seguras e parada/limpeza do thread/worker no cleanup e __del__.
+- Integração com GerenciadorTarefas:
+  - Ao completar ciclo do tipo "foco", registrar_pomodoro incrementa pomodoros_completados nas tarefas com status "Doing", persiste e atualiza listas/visões.
+- Integração com Matriz Eisenhower via EventBus:
+  - Envio de tarefas adicionadas localmente (quando integração ativada) com integration_id e normalização de prioridade.
+  - Recepção de tarefas originadas em Eisenhower, prevenção de duplicatas por integration_id e adição via adicionar_tarefa_externa.
+- UI e tema:
+  - Coluna "Em Progresso" (col_doing_timer_list) atualizada via signal listas_atualizadas do GerenciadorTarefas.
+  - Botão de toggle de integração com rótulos dinâmicos e ToolTip traduzido.
+  - Aplicação de tema dinâmico na lista e sincronização via eventFilter.
+
+4) Leitor Acessível — Texto / PDF (source/modules/leitor/leitor_acessivel/lta_01_setup_ui.py, lta_22_pdf_toolbar.py, lta_27_pdf_findbar.py, lta_29_text_findbar.py)
+- FindBars (Texto e PDF):
+  - Implementados TextFindBar e PDFFindBar com opções: diferenciar maiúsculas/minúsculas (Aa), somente palavra inteira, destacar tudo.
+  - Shortcuts: F3/Shift+F3 para navegar ocorrências, Esc para fechar, Ctrl+F como ApplicationShortcut para alternância por aba (Texto ↔ PDF).
+  - Sincronização de paleta via filtros de evento para manter contraste e integração visual em temas claros/escuros.
+  - Hooks para owner._text_find_apply / _pdf_find_apply, owner._text_find_next/_prev e highlight toggles — design desacoplado para reutilização pela lógica de busca do owner.
+- Toolbar PDF:
+  - Navegação de páginas (primeira/anterior/próxima/última), spinbox de página, label de total de páginas; combo de zoom (editable) com valores percentuais e parsing robusto.
+  - Fit width / Fit page, zoom in/out com limites (0.25–5.0) e preservação de estado _pdf_zoom_special.
+  - Sincronização de paleta para spinbox/combo e suas views; instalação de filtro para reagir a mudanças de tema.
+  - Integração preguiçosa com PDFMouseHandler (criado quando habilitado) para seleção/copiar e modos mão/selecao.
+  - Habilitação/atualização da toolbar somente após documento carregado.
+- Setup do Leitor:
+  - Estrutura de abas Texto / PDF com TextFindBar e PDFFindBar integradas.
+  - Controles de playback (carregar, play, pause, stop) e sliders de velocidade/volume com labels reativos.
+  - Configuração de fonte via FontManager com fallback seguro e aplicação ao QTextEdit.
+  - Leitura assistida: botão toggle com estilos, combo de modo (Palavras/Frases/Parágrafos) e placeholders/dicas traduzidas.
+  - Aplicação consistente de palette para QTextEdit, combos e spinboxes; instalação de eventFilter para updates dinâmicos de tema.
+  - Shortcuts adicionais: Ctrl+C para copiar seleção de PDF (delegado ao PDFMouseHandler) e Find toggle (Ctrl+F) com contexto de aba.
+- Robustez:
+  - Múltiplos blocos try/except com logging para evitar crashes quando backends (PDF, mouse handler) não estiverem disponíveis.
+  - Uso de setFrame/autoFillBackground e ajustes de altura mínima para inputs.
+
+5) Detalhamento complementar — módulos entregues/analisados
+
+  5.1) Leitor Acessível — setup UI (source/modules/leitor/leitor_acessivel/lta_01_setup_ui.py)
+  - Controles e fluxo:
+    - Barra de playback com btn_carregar, btn_play, btn_pause (checkable), btn_stop; conexões protegidas com try/except.
+    - Sliders de velocidade (50–250 wpm) e volume (0–100) com labels reativos e handlers vinculados (_on_speed_changed, _on_volume_changed).
+    - Font selection via FontManager: leitura segura do config (size) com fallback e aplicação ao QTextDocument; combo de fontes editável porém com lineEdit em readOnly para evitar edição livre inesperada.
+  - Edição de texto e ferramentas:
+    - Aba Texto com toolbar de ações: Novo, Salvar Como, Buscar (TextFindBar integrado), Marcadores (toggle_bullets), estilo de marcador, espaçamento, recuo e margem.
+    - Export hooks (criar_texto/salvar_como) preparados para integração com utilitários de exportação do projeto.
+  - PDF / visualização:
+    - Aba PDF com PDFView e setup_pdf_toolbar; PDFFindBar integrado; conexão current_page_changed com handler protegido.
+    - Integração preguiçosa com PDFMouseHandler via handlers delegados (Ctrl+C copia seleção quando handler presente).
+  - Sincronização de paleta / temas:
+    - Implementadas rotinas _sync_texto_area_background e _sync_widgets_darker_palette para aplicar Base/AlternateBase em QTextEdit, QSpinBox e QComboBox.
+    - Filtro de evento _PaletteThemeSyncFilter instalado na QApplication para reagir a ApplicationPaletteChange/PaletteChange/ThemeChange.
+    - Aplicação defensiva (flags _palette_sync_in_progress) para evitar reentrância.
+  - Acessibilidade / Leitura assistida:
+    - Botão toggle leitura assistida (gerenciador_botoes), combo_modo_leitura (Palavras/Frases/Parágrafos) com estilo inicial e dicas; estilo inline aplicado quando ativo.
+  - Atalhos e usabilidade:
+    - Ctrl+F implementado como ApplicationShortcut que alterna findbar entre Texto ↔ PDF.
+    - Ctrl+C com contexto WidgetWithChildrenShortcut para delegar cópia do PDF ao handler.
+  - Robustez e observabilidade:
+    - Múltiplos blocos try/except com LogManager para capturar falhas em ambiente com backends ausentes (font manager, PDF backends, conexões).
+    - Ajustes visuais defensivos (setFrame, viewport autoFillBackground) e proteção ao definir lineEdits de combos (criação se ausente).
+    - Função utilitária _apply_frame_palette_from_spinbox que replica paleta de spinboxes para combos e suas views para melhor consistência visual.
+
+  5.2) Worker de Reorganização do Mapa Mental (source/modules/mapa/mp_05_ThreadMapaMental.py)
+  - Pool de processos:
+    - Implementação de ProcessPoolExecutor global com _MAX_WORKERS = max(1, cpu_count-1) e inicialização lazy via _get_process_pool().
+    - Proteção de concorrência com _PROCESS_POOL_LOCK e encerramento registrado via atexit (shutdown sem wait).
+  - Tarefa em processo filho:
+    - Função _process_reorganize_task importa ProcessadorIA dentro do processo filho para evitar dependências no processo principal.
+    - Concatenação segura dos textos recebidos e execução de pipeline leve: proc.nlp(texto_completo) → _extrair_conceitos_tfidf → _identificar_relacoes_avancadas → retorno de relacoes.
+    - Tratamento de exceções no processo filho: captura geral e retorno de lista vazia para evitar falha do pool.
+  - QObject worker para Qt:
+    - Classe MapasWorker (QObject) expõe signal reorganize_finished(relacoes, conexoes_existentes, visiveis_idx).
+    - Slot process_reorganize envia job ao pool, aguarda future.result() com timeout configurável (30s), cancela future em timeout e loga o incidente.
+    - Emissão de reorganize_finished mesmo em erro (payloads de fallback), garantindo que a GUI receba resposta e não fique pendente.
+  - Observabilidade e segurança:
+    - Logs detalhados via LogManager para timeout, exceções e tracebacks; design pensado para minimizar bloqueio da UI e controlar erros de I/O ou modelos pesados.
+
+  5.3) Inicialização principal (c:\Users\ferna\DEV\Python\Lumen\main.py)
+  - Compatibilidade Windows:
+    - Chamada multiprocessing.freeze_support() no entrypoint para suportar empacotamento/execução no Windows.
+    - Encaminhamento para iniciar_aplicacao() do inicializador central (src_01_InicializadorMain), mantendo fechamento com sys.exit().
+
+6) Melhorias e correções detectadas nos utilitários e serviços (não detalhadas anteriormente)
+- LogManager (source/utils/LogManager.py):
+  - Startup diagnostics: geração de arquivo Lumen_startup_YYYYMMDD_HHMMSS.log, ativação de faulthandler para todos os threads, escrita de argv/executable/cwd/sys.path para facilitar diagnóstico em ambientes empacotados.
+  - Unidade de fallback robusta: tentativa de criar logs em LOCALAPPDATA, fallback para diretório alternativo em caso de falha na criação do diretório padrão.
+  - Redirecionamento condicional de stdout/stderr para arquivo quando variável LUMEN_QT_DEBUG ativa (QT_DEBUG_PLUGINS), e tentativa de flushs seguros.
+  - Instalação de excepthook customizado que grava traceback no startup log e exibe MessageBoxW em Windows via ctypes (proteção adicional em falhas críticas de inicialização).
+  - Métodos utilitários: ensure_unicode, get_log_file, wrappers convenientes debug/info/warning/error/critical com suporte exc_info; supressão de logs ruidosos de comtypes ajustados a CRITICAL.
+- Gerenciador de Tradução (source/language/tr_01_gerenciadorTraducao.py):
+  - Suporte a carregamento de arquivos .qm da aplicação e das traduções do Qt (QLibraryInfo.TranslationsPath), com heurística por locale curto/longo.
+  - Uso de sys._MEIPASS para compatibilidade com pacotes empacotados (PyInstaller) ao localizar diretório de traduções.
+  - Remoção segura de tradutores previamente instalados (app.setProperty / app.removeTranslator) para evitar múltiplos tradutores ativos.
+  - Persistência de idioma em arquivo language.json no caminho de persistência; traduções de botões padrão de diálogo implementadas (traduzir_botoes_padrao).
+  - Logging detalhado em falhas e listagem do conteúdo do diretório de traduções quando arquivo faltante.
+- Eisenhower / UI helpers (source/modules/eisenhower/services/svc_01_initUI.py, svc_06_show_context_menu.py):
+  - Cálculo de alturas de widget configurável via app.widget_heights ou app.widget_height_override para consistência visual entre plataformas.
+  - CustomTimeEdit: comportamento de stepBy customizado para seção de minutos que faz wrap ao ultrapassar 00:00 / 23:59, melhorando usabilidade na edição de horários.
+  - DragDropTaskList: modo de arraste/drope robusto (MoveAction padrão), seleção única, tratamento especial quando a origem é a mesma lista (aplica super().dropEvent e persiste), e controle manual de blocos de sinais durante operações para evitar atualizações redundantes.
+  - Edição de data/horário via diálogo com:
+    - Checkboxes para vincular data/horário, calendário popup localizável e aplicação de locale efetiva (_effective_locale busca configurações via gerenciador_traducao).
+    - Aplicação de paleta no QDateEdit/QCalendarWidget para manter contraste com tema do aplicativo e evitar entradas visualmente incoerentes.
+    - Atualização dinâmica de textos do diálogo ao alterar idioma em runtime (conexão a idioma_alterado).
+  - Context menu para tarefas com ações: mover para quadrante, editar data/horário (chama diálogo acima), remover tarefa; defensivas e com logging.
+- Exibir Sobre / Manual (source/modules/mod_07_exibir_public.py):
+  - Diálogos Sobre e Manual instanciados com proteção para evitar múltiplas janelas; atualização dinâmica de conteúdo quando idioma muda (changeEvent captura LanguageChange).
+  - Manual: construção de índice/posições internas no QTextBrowser para navegação por âncoras; mapeamento id->posição para "go to section" e uso de QFontMetrics para ajustar largura de botão Fechar.
+- UI / Paleta / Consistência visual:
+  - Utilitários que copiam paletas entre widgets (spin -> combo/view) garantindo que view() de QComboBox também receba a paleta.
+  - Múltiplos filtros de evento (Palette/Style/Theme changes) instalados em QApplication para re-sincronizar backgrounds e viewports sem necessidade de reinício.
+  - Aplicação defensiva de setAutoFillBackground e setFrame em widgets que nem sempre expõem lineEdit/view, evitando exceções em backends limitados.
+
+Como testar (passos rápidos)
+1. Método Feynman:
+   - Abrir aba Método Feynman → criar/editar conceito → verificar placeholders, salvar e mudanças de idioma (texts traduzidos) e mudança de tema (backgrounds atualizados).
+2. Gerenciador de Tarefas + Pomodoro:
+   - Criar várias tarefas; arrastar entre colunas; confirmar que apenas tarefa movida é atualizada.
+   - Marcar tarefas e usar mover/remover em lote; usar resetar contagem nos três escopos.
+   - Iniciar Pomodoro (ciclo "foco") com tarefa em "Doing" → confirmar incremento de pomodoros_completados e persistência.
+3. Integração com Eisenhower:
+   - Ativar btn_eisenhower_integrado → adicionar tarefa no GerenciadorTempo → verificar envio via EventBus (integration_id gerado).
+   - Enviar tarefa originada em Eisenhower → confirmar chegada e prevenção de duplicatas.
+4. Leitor Texto/PDF:
+   - Texto: abrir/colar texto → Ctrl+F → testar busca com Aa/Palavra/Destacar → navegar (F3/Shift+F3).
+   - PDF: carregar PDF compatível → toolbar habilitada → navegar páginas/zoom/fit → usar Ctrl+C para copiar seleção (quando handler disponível).
+   - Alternar tema do app → confirmar paleta aplicada nos campos e barras de busca.
+5. Utilitários / inicialização:
+   - Iniciar aplicação em ambiente Windows empacotado: verificar criação de arquivo Lumen_startup_*.log, ver mensagens de startup, e que excepthook exibe diálogo em falha crítica.
+   - Trocar idioma via GerenciadorTraducao e confirmar carregamento de .qm do app e (quando disponível) traduções Qt; confirmar que botões padrão são traduzidos.
+   - Abrir diálogo de edição de data/horário e confirmar locale do calendário e paleta coerente com tema.
+   - Testar comportamento de CustomTimeEdit ao incrementar/decrementar minutos passando de 23:59 para 00:00.
+
+Arquivos alterados / adicionados (principais)
+- source/modules/feynman/fey_02_setup_ui.py
+- source/modules/feynman/fey_03_atualizar_traducoes.py
+- source/modules/tempo/tmp_03_GerenciadorTarefas.py
+- source/modules/tempo/tmp_04_GerenciadorTempo.py
+- source/modules/leitor/leitor_acessivel/lta_01_setup_ui.py
+- source/modules/leitor/leitor_acessivel/lta_22_pdf_toolbar.py
+- source/modules/leitor/leitor_acessivel/lta_27_pdf_findbar.py
+- source/modules/leitor/leitor_acessivel/lta_29_text_findbar.py
+- source/utils/LogManager.py
+- source/language/tr_01_gerenciadorTraducao.py
+- source/modules/eisenhower/services/svc_01_initUI.py
+- source/modules/eisenhower/services/svc_06_show_context_menu.py
+- source/modules/mapa/mp_05_ThreadMapaMental.py
+- source/modules/mod_07_exibir_public.py
+
+Observações finais
+- As alterações entregues reforçam a estabilidade em runtime (paleta/tema, threads/processos, timeouts) e melhoram a experiência do usuário com controles reativos (findbars, playback, fontes) e integração segura entre processos (worker → GUI).
+- Melhorias transversais adicionais: diagnóstico de startup avançado (faulthandler, redirecionamento condicional, excepthook com aviso ao usuário), melhor gerenciamento de tradutores e compatibilidade com pacotes empacotados, utilitários de paleta que cobrem views de combos e widgets com fallbacks, e pequenas melhorias de UX (CustomTimeEdit, alturas configuráveis de widgets).
+- Estratégia geral: delegar processamento pesado para processos isolados, aplicar fallbacks e evitar exceções não tratadas na cadeia UI → worker, garantindo logs ricos via LogManager para diagnóstico.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.12.0
 Data: 12 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

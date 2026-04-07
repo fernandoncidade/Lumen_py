@@ -1,9 +1,9 @@
-from sklearn.feature_extraction.text import TfidfVectorizer
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def _gerar_resumo_contextual(self, doc, texto: str, nivel: int, titulo: str, idioma: str) -> str:
+    from sklearn.feature_extraction.text import TfidfVectorizer
+
     try:
         config_resumo = {
             0: {'num_sentencas': 8, 'max_chars': 1200},  # Documento

@@ -1,5 +1,4 @@
-import sys
-from source.src_01_InicializadorMain import iniciar_aplicacao
+from source.src_01_SplashAppStarter import SplashAppStarter
 
 if __name__ == '__main__':
-    sys.exit(iniciar_aplicacao())
+    SplashAppStarter().start()
