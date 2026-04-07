@@ -1,4 +1,17 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.11.0
+Data: 11 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Leitura Assistida com realce sincronizado — modos por palavra, frase e parágrafo.
+
+O que muda para você
+- Ative a Leitura Assistida para acompanhar a fala com destaque no texto; o comportamento é mais estável.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.10.0
 Data: 10 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

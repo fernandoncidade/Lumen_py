@@ -1,4 +1,17 @@
 RELEASE NOTES — Lúmen
+Version: 2026.1.11.0
+Date: January 11, 2026
+Author: Fernando Nillsson Cidade
+
+User summary
+- Assisted Reading with synchronized highlighting — word, sentence, and paragraph modes.
+
+What this means for you
+- Turn on Assisted Reading to follow speech with text highlighting; behavior is more stable.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.1.10.0
 Date: January 10, 2026
 Author: Fernando Nillsson Cidade
