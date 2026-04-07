@@ -1,4 +1,17 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.12.0
+Data: 12 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Integração entre Pomodoro e tarefas; persistência mais rápida e confiável.
+
+O que muda para você
+- Ciclos de foco (Pomodoro) afetam tarefas corretamente e salvamentos acontecem sem travar a interface.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.11.0
 Data: 11 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

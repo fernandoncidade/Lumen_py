@@ -1,4 +1,17 @@
 RELEASE NOTES — Lúmen
+Version: 2026.1.12.0
+Date: January 12, 2026
+Author: Fernando Nillsson Cidade
+
+User summary
+- Integration between Pomodoro and tasks; faster and more reliable saving.
+
+What this means for you
+- Focus cycles (Pomodoro) correctly affect tasks and saves happen without freezing the interface.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.1.11.0
 Date: January 11, 2026
 Author: Fernando Nillsson Cidade
