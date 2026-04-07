@@ -1,4 +1,17 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2025.12.28.0
+Data: 28 de dezembro de 2025
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Mapa Mental: layout e reorganização assistida por IA mais estáveis; melhor visualização de hierarquias.
+
+O que muda para você
+- Reorganizar mapas com IA mantém a estrutura e melhora a leitura visual do mapa.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2025.12.23.0
 Data: 23 de dezembro de 2025
 Autor: Fernando Nillsson Cidade

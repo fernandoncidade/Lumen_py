@@ -35,6 +35,11 @@
     </message>
 
     <message>
+      <source>🗂️ Matriz Eisenhower</source>
+      <translation>🗂️ Matriz Eisenhower</translation>
+    </message>
+
+    <message>
       <source>Erro ao Carregar Módulos</source>
       <translation>Erro ao Carregar Módulos</translation>
     </message>
@@ -159,6 +164,41 @@
 • Clique nas bordas/cantos para redimensionar
 • Use setas ↑↓←→ para ajuste fino
 • Pressione ESC para fechar</translation>
+    </message>
+
+    <message>
+      <source>📚 Ajuda - Atalhos</source>
+      <translation>📚 Ajuda - Atalhos</translation>
+    </message>
+
+    <message>
+      <source>Lúmen - Atalhos</source>
+      <translation>Lúmen - Atalhos</translation>
+    </message>
+
+    <message>
+      <source>Régua de Foco:</source>
+      <translation>Régua de Foco:</translation>
+    </message>
+
+    <message>
+      <source>Arraste no centro para mover</source>
+      <translation>Arraste no centro para mover</translation>
+    </message>
+
+    <message>
+      <source>Arraste nas bordas para redimensionar</source>
+      <translation>Arraste nas bordas para redimensionar</translation>
+    </message>
+
+    <message>
+      <source>Setas ↑↓←→ para ajuste fino</source>
+      <translation>Setas ↑↓←→ para ajuste fino</translation>
+    </message>
+
+    <message>
+      <source>ESC para fechar</source>
+      <translation>ESC para fechar</translation>
     </message>
 
     <message>
@@ -711,6 +751,81 @@ Isso pode levar alguns minutos.</translation>
     <message>
       <source>Carregando modelo de IA...</source>
       <translation>Carregando modelo de IA...</translation>
+    </message>
+
+    <message>
+      <source>Preparando importação...</source>
+      <translation>Preparando importação...</translation>
+    </message>
+
+    <message>
+      <source>Usando modelo já carregado</source>
+      <translation>Usando modelo já carregado</translation>
+    </message>
+
+    <message>
+      <source>Cancelado</source>
+      <translation>Cancelado</translation>
+    </message>
+
+    <message>
+      <source>Documento vazio</source>
+      <translation>Documento vazio</translation>
+    </message>
+
+    <message>
+      <source>Detectando idioma...</source>
+      <translation>Detectando idioma...</translation>
+    </message>
+
+    <message>
+      <source>Detectando seções...</source>
+      <translation>Detectando seções...</translation>
+    </message>
+
+    <message>
+      <source>Processando nós (NLP)...</source>
+      <translation>Processando nós (NLP)...</translation>
+    </message>
+
+    <message>
+      <source>Refinando com TF-IDF...</source>
+      <translation>Refinando com TF-IDF...</translation>
+    </message>
+
+    <message>
+      <source>Identificando relações semânticas...</source>
+      <translation>Identificando relações semânticas...</translation>
+    </message>
+
+    <message>
+      <source>Finalizando...</source>
+      <translation>Finalizando...</translation>
+    </message>
+
+    <message>
+      <source>Concluído</source>
+      <translation>Concluído</translation>
+    </message>
+
+    <message>
+      <source>Cancelando...</source>
+      <translation>Cancelando...</translation>
+    </message>
+
+    <message>
+      <source>Processamento de nós concluído</source>
+      <translation>Processamento de nós concluído</translation>
+    </message>
+
+    <message>
+      <source>Processando nó {atual}/{total}: {titulo}</source>
+      <translation>Processando nó {atual}/{total}: {titulo}</translation>
+    </message>
+
+    <message>
+      <source>Construindo árvore hierárquica...</source>
+      <translation>Construindo árvore hierárquica...</translation>
     </message>
 
     <message>

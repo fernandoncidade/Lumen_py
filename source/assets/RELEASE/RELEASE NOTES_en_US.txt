@@ -1,4 +1,17 @@
 RELEASE NOTES — Lúmen
+Version: 2025.12.28.0
+Date: December 28, 2025
+Author: Fernando Nillsson Cidade
+
+User summary
+- Mind Map: more stable layout and AI-assisted reorganization; better hierarchy visualization.
+
+What this means for you
+- Reorganizing maps with AI keeps structure and improves visual readability.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2025.12.23.0
 Date: December 23, 2025
 Author: Fernando Nillsson Cidade

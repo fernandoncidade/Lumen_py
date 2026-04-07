@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (QVBoxLayout, QHBoxLayout, QLabel, QGraphicsEllipseItem, QGraphicsTextItem, QDialog, 
                                QTextEdit, QDialogButtonBox, QGraphicsDropShadowEffect, QPushButton, QMessageBox)
-from PySide6.QtCore import Qt, QCoreApplication
+from PySide6.QtCore import Qt, QCoreApplication, QTimer
 from PySide6.QtGui import QColor, QPen, QBrush, QFont
 from source.utils.LogManager import LogManager
 from source.utils.EventBus import get_event_bus
@@ -57,6 +57,25 @@ class NoConceito(QGraphicsEllipseItem):
                 if scene and hasattr(scene, "snap"):
                     snapped = scene.snap(self.pos())
                     super().setPos(snapped)
+
+                scene = self.scene()
+                if scene is not None:
+                    try:
+                        item_br_scene = self.mapToScene(self.boundingRect()).boundingRect()
+
+                        padding = 1200
+                        necessario = item_br_scene.adjusted(-padding, -padding, padding, padding)
+
+                        atual = scene.sceneRect()
+                        if atual.isNull() or atual.isEmpty():
+                            scene.setSceneRect(necessario)
+
+                        else:
+                            if not atual.contains(necessario):
+                                scene.setSceneRect(atual.united(necessario))
+
+                    except Exception:
+                        pass
 
             return super().itemChange(change, value)
 
@@ -120,6 +139,18 @@ class NoConceito(QGraphicsEllipseItem):
 
             def integrar_ao_feynman():
                 try:
+                    try:
+                        if input_notas.hasFocus():
+                            input_notas.clearFocus()
+
+                        if input_texto.hasFocus():
+                            input_texto.clearFocus()
+
+                        QCoreApplication.processEvents()
+
+                    except Exception:
+                        pass
+
                     titulo = input_texto.toPlainText().strip()
                     notas_texto = input_notas.toPlainText().strip()
 
@@ -140,14 +171,20 @@ class NoConceito(QGraphicsEllipseItem):
                         return
 
                     dados = {'titulo': titulo, 'notas': notas_texto}
-                    self.event_bus.conceito_atualizado.emit(dados)
+                    try:
+                        self.event_bus.send_conceito(dados)
+
+                    except Exception:
+                        self.event_bus.conceito_atualizado.emit(dados)
+
                     self.logger.info(f"Conceito '{titulo}' integrado ao Método Feynman via botão específico")
 
-                    QMessageBox.information(
+                    QCoreApplication.processEvents()
+                    QTimer.singleShot(50, lambda: QMessageBox.information(
                         dialogo,
                         QCoreApplication.translate("App", "✅ Integrado"),
                         QCoreApplication.translate("App", "Conceito '{titulo}' integrado ao Método Feynman com sucesso!").format(titulo=titulo)
-                    )
+                    ))
 
                 except Exception as e:
                     self.logger.error(f"Erro ao integrar conceito ao Método Feynman: {str(e)}", exc_info=True)

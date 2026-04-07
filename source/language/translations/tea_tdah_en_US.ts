@@ -35,6 +35,11 @@
     </message>
 
     <message>
+      <source>🗂️ Matriz Eisenhower</source>
+      <translation>🗂️ Eisenhower Matrix</translation>
+    </message>
+
+    <message>
       <source>Erro ao Carregar Módulos</source>
       <translation>Error Loading Modules</translation>
     </message>
@@ -159,6 +164,41 @@
 • Click edges/corners to resize
 • Use arrows ↑↓←→ for fine adjustments
 • Press ESC to close</translation>
+    </message>
+
+    <message>
+      <source>📚 Ajuda - Atalhos</source>
+      <translation>📚 Help - Shortcuts</translation>
+    </message>
+
+    <message>
+      <source>Lúmen - Atalhos</source>
+      <translation>Lúmen - Shortcuts</translation>
+    </message>
+
+    <message>
+      <source>Régua de Foco:</source>
+      <translation>Focus Ruler:</translation>
+    </message>
+
+    <message>
+      <source>Arraste no centro para mover</source>
+      <translation>Drag the center to move</translation>
+    </message>
+
+    <message>
+      <source>Arraste nas bordas para redimensionar</source>
+      <translation>Drag the edges to resize</translation>
+    </message>
+
+    <message>
+      <source>Setas ↑↓←→ para ajuste fino</source>
+      <translation>Arrows ↑↓←→ for fine adjustment</translation>
+    </message>
+
+    <message>
+      <source>ESC para fechar</source>
+      <translation>ESC to close</translation>
     </message>
 
     <message>
@@ -711,6 +751,81 @@ This may take a few minutes.</translation>
     <message>
       <source>Carregando modelo de IA...</source>
       <translation>Loading AI model...</translation>
+    </message>
+
+    <message>
+      <source>Preparando importação...</source>
+      <translation>Preparing import...</translation>
+    </message>
+
+    <message>
+      <source>Usando modelo já carregado</source>
+      <translation>Using already loaded model</translation>
+    </message>
+
+    <message>
+      <source>Cancelado</source>
+      <translation>Cancelled</translation>
+    </message>
+
+    <message>
+      <source>Documento vazio</source>
+      <translation>Empty document</translation>
+    </message>
+
+    <message>
+      <source>Detectando idioma...</source>
+      <translation>Detecting language...</translation>
+    </message>
+
+    <message>
+      <source>Detectando seções...</source>
+      <translation>Detecting sections...</translation>
+    </message>
+
+    <message>
+      <source>Processando nós (NLP)...</source>
+      <translation>Processing nodes (NLP)...</translation>
+    </message>
+
+    <message>
+      <source>Refinando com TF-IDF...</source>
+      <translation>Refining with TF-IDF...</translation>
+    </message>
+
+    <message>
+      <source>Identificando relações semânticas...</source>
+      <translation>Identifying semantic relationships...</translation>
+    </message>
+
+    <message>
+      <source>Finalizando...</source>
+      <translation>Finalizing...</translation>
+    </message>
+
+    <message>
+      <source>Concluído</source>
+      <translation>Completed</translation>
+    </message>
+
+    <message>
+      <source>Cancelando...</source>
+      <translation>Cancelling...</translation>
+    </message>
+
+    <message>
+      <source>Processamento de nós concluído</source>
+      <translation>Node processing completed</translation>
+    </message>
+
+    <message>
+      <source>Processando nó {atual}/{total}: {titulo}</source>
+      <translation>Processing node {atual}/{total}: {titulo}</translation>
+    </message>
+
+    <message>
+      <source>Construindo árvore hierárquica...</source>
+      <translation>Building hierarchical tree...</translation>
     </message>
 
     <message>
