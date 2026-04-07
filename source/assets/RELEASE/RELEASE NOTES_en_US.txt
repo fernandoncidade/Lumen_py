@@ -1,68 +1,65 @@
 RELEASE NOTES — Lúmen
+Version: 2025.12.23.0
+Date: December 23, 2025
+Author: Fernando Nillsson Cidade
+
+Overview
+Update focused on making the Eisenhower Matrix calendar and panel more informative, visual and resilient, and on strengthening the application's sound management (selection, preview and alarm repetition). Appearance adjustments were made to avoid artifacts when switching themes and robustness improvements reduce failures in adverse scenarios.
+
+Key changes
+- More useful calendar
+  - Days with tasks show visual counters (badges) per day/week/month.
+  - Dates with tasks are visually highlighted; filters allow viewing items by Day, Week or Month.
+  - The calendar task list is filtered and ordered according to the selected period; shows a placeholder when empty.
+  - Navigation and panel resizing tools were improved for more predictable behavior.
+
+- Appearance synchronization
+  - Internal components (lists, fields and viewports) adapt better to the app palette, reducing visual artifacts when switching light/dark themes.
+  - Text and date/time formats are reapplied when changing language without requiring restart.
+
+- Controls and visual details
+  - The side toggle (rotated tab) and field outlines were adjusted for more stable painting and sizing, preventing clipping and artifacts.
+  - Small style improvements ensure a consistent look across modules.
+
+- Enhanced sound management
+  - A list of available sounds can be chosen with quick preview.
+  - Sound preference and repeat interval are saved between sessions.
+  - Repetitive alarms behave predictably: audio plays, waits (sound duration + configured interval) and repeats until stopped.
+  - The stop action interrupts playback and repetition immediately; previewing does not change the persisted selection.
+  - Fallbacks and invalid-file handling ensure safe behavior even when a sound is missing or corrupted.
+
+Robustness and logs
+- Multiple protections were added to prevent painting, locale, palette or audio errors from freezing the UI.
+- Logs were expanded to ease diagnosis of issues without impacting the user experience.
+
+Quick checks
+1. Open the Eisenhower Matrix and create tasks with dates/times.
+2. Open the calendar panel/dialog:
+   - Verify badges on dates and highlights for dates with tasks.
+   - Switch between Day/Week/Month and confirm the list is filtered/ordered.
+3. Change language and confirm texts and date/time formats update.
+4. Switch theme (light/dark) and check lists and dropdowns do not show artifacts.
+5. Test sound:
+   - Open sound settings, preview a sound, save the selection and start a repeating alarm; confirm it repeats at the expected interval and stopping halts the cycle.
+   - Test behavior with a missing or invalid sound to confirm safe fallback.
+
+What changes for you
+- A more informative calendar that visually matches the app theme.
+- Better experience when switching language and theme.
+- More predictable sound alarms, with preview, saved preference and controlled repetition until confirmation.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2025.12.22.0
 Date: December 22, 2025
 Author: Fernando Nillsson Cidade
 
-Quick summary
-- Fixes and refinements in the Eisenhower Matrix module (svc_01_initUI.py): more robust drag & drop, selection behavior, locale support for date/time, CustomTimeEdit, palette synchronization and improved signal/exception handling.
-- Specific bug fix: when dragging tasks between lists, other tasks in the source quadrant are no longer inadvertently removed.
-- UX improvements: single-selection during drag, stable placeholders, immediate calendar update and persistence after drop operations.
+User summary
+- Fixes to drag-and-drop for tasks and improvements to editing times.
 
-Detailed description of main changes
-
-1) Drag & Drop (DragDropTaskList)
-- New custom QListWidget implementation for drag & drop with refined control:
-  - Drag enabled, drops accepted, visible drop indicator and configured drop mode.
-  - Forced SelectionMode SingleSelection to prevent accidental multi-item drags caused by residual selections.
-  - mousePressEvent adjusted to ensure only the clicked item is selected/dragged (setCurrentItem / clearSelection / setSelected).
-  - dragEnterEvent and dragMoveEvent accept the proposed action, improving interoperability between lists.
-  - dropEvent rewritten to:
-    - Correctly handle drops coming from the same list (fall back to default behavior and persist).
-    - Validate that the source is a QListWidget and reject invalid drops.
-    - Iterate only over selected items (single-selection guarantee) and call app.move_item_between_lists for consistent movement preserving metadata.
-    - Block signals from the lists during the operation to avoid callback side effects.
-    - Clear selection on the source after the operation to prevent additional removals by Qt's internal mechanism.
-    - Force setDropAction(Qt.CopyAction) + event.accept() at the end of the drop to prevent Qt from performing an automatic removal (MoveAction) that caused deletion of remaining items in the source quadrant.
-  - Robust error logging in dropEvent to aid diagnostics.
-
-Impact of the fix
-- Fixes the issue where dragging a task would remove all other tasks from the source quadrant (double removal caused by Qt's final MoveAction). The chosen strategy ensures the application explicitly controls removal and prevents Qt from finalizing the move by inadvertently removing remaining items.
-
-2) CustomTimeEdit
-- Implemented CustomTimeEdit (subclass of QTimeEdit) with:
-  - Wrapping enabled and stepBy adapted for continuous minute increments with wrap-around 0–1439.
-  - Robust behavior when navigating time sections (minutes vs other sections).
-  - Internal storage of the last time value for potential future uses.
-
-3) Locale and Date/Time Format
-- Applied locale to QDateEdit based on the translation manager, with a safe fallback:
-  - Explicit support for pt-BR and en-US when available.
-  - Determination of displayFormat derived from the locale; regex adjustments to ensure a 4-digit year.
-  - Connection to the idioma_alterado (language_changed) signal to reapply locale dynamically.
-- time_input (CustomTimeEdit) keeps displayFormat "HH:mm" with a handler to reapply locale / update the time-checkbox text when the language changes.
-
-4) Placeholders and UI Integration
-- Quadrant lists and completed-lists are instantiated as DragDropTaskList and receive initial placeholders via app.add_placeholder.
-- itemChanged connections established to synchronize check/uncheck with automatic moves (app.handle_item_checked).
-- Context menu: each list registers customContextMenuRequested connected to app.show_context_menu.
-
-5) Palette / Theme Synchronization
-- Utility functions to apply the window background color as Base/AlternateBase across Matrix widgets:
-  - _apply_window_as_base applies the palette to widgets and viewports (QListWidget.viewport when applicable).
-  - Installation of an eventFilter (_PaletteThemeSyncFilter) to listen for ApplicationPaletteChange / PaletteChange / StyleChange / ThemeChange / ColorSchemeChange (when available) and reapply backgrounds automatically.
-  - Exception handling with debug logging to avoid silent failures in restricted environments.
-
-6) Robustness and Logging
-- Consistent use of LogManager to record failures and exceptions at critical points (drag/drop, locale, signal connections).
-- Blocking signals during sensitive operations (drop, list manipulation) to reduce callback side effects.
-- Safe conditionals (hasattr / try/except) when invoking optional app methods (save_tasks, calendar_pane.update_task_list, gerenciador_traducao), maintaining compatibility with embedded or integrated execution.
-
-How to validate (quick steps)
-1. Start the application and create multiple tasks in a quadrant.
-2. Drag a single task between quadrants (pending ↔ pending, pending ↔ completed, completed ↔ pending).
-3. Confirm that only the dragged task leaves the source quadrant; other tasks remain.
-4. Verify that persistence (save_tasks) and calendar update (when present) occur after the drop.
-5. Test language switching and confirm date/time formats and the time-checkbox text update accordingly.
+What this means for you
+- Dragging tasks no longer causes accidental removals; editing times is easier.
 
 _________________________________________________
 
@@ -71,133 +68,11 @@ Version: 2025.12.21.0
 Date: December 21, 2025
 Author: Fernando Nillsson Cidade
 
-Quick summary
-- Adjustments and consolidations across multiple UI modules and utilities: robustness improvements, drag & drop behavior, theme/palette synchronization, localization support in date/time components, and refinements in persistence and asset lookup routines.
-- UX refinements on tabs (lazy-loading), Pomodoro panel, and integration between timer ↔ task manager.
-- Various fixes for exception handling and logging to ease production diagnostics.
+User summary
+- General UI improvements, Pomodoro and Kanban fixes; better stability and usability.
 
-Detailed description of main changes
-
-1) Utilities
-- source/utils/IconUtils.py
-  - get_app_base_path: improved detection for PyInstaller execution (sys._MEIPASS) and fallback to standalone executable; detailed logging.
-  - get_icon_path: searches multiple relative paths (assets/icones, source/assets/icones, _internal/icones, etc.), supports common extensions (.png/.ico/.svg/.jpg), LRU cache and success/failure logging including file size.
-
-- source/utils/CaminhoPersistenteUtils.py
-  - obter_caminho_persistente: defaults to %LOCALAPPDATA%\Lumen with safe directory creation and error logging.
-
-2) Time Management (Pomodoro + Kanban)
-- source/modules/tempo/tmp_02_PomodoroTimer.py
-  - Refined UI with buttons managed by GerenciadorBotoesUI and icons retrieved via IconUtils.
-  - Focus/short/long break configurations tied to widgets (spin-like controls such as QComboBox) with recalculation of remaining time preserving elapsed time.
-  - Robust timer using QTimer, display/progress updates and end-of-cycle handling (_executar_alerta).
-  - Integration with SoundManager (singleton) to play alerts in loop until dialog is dismissed; connection to stop sound when QMessageBox closes.
-  - Dynamic theme application to labels and combos (palette sync).
-  - Improvements to start/pause/reset/skip/reset-cycle flows with detailed logging.
-
-- source/modules/tempo/tmp_03_GerenciadorTarefas.py
-  - Implementation of Kanban lists with drag & drop, status synchronization and rowsMoved handling.
-  - Task persistence (tarefas.json) using path from obter_caminho_persistente; robust load/serialize with logging.
-  - Operations: add, move (single & multiple items), remove (single & checked), reset counters (scopes: task, column, global) with confirmation dialogs and informational messages.
-  - Automatic placeholders when lists become empty; items store metadata via Qt.UserRole.
-  - UI adjustments: checkboxes on items, priority emojis, pomodoro visuals, and synchronization with PomodoroTimer (registering completed pomodoros).
-  - Dynamic theme application and palette adjustments for widgets and viewports.
-
-- source/modules/tempo/tmp_04_GerenciadorTempo.py
-  - Composition of the panel integrating PomodoroTimer and GerenciadorTarefas.
-  - Side "In Progress" list updated from GerenciadorTarefas; listens to ciclo_completado to increment pomodoro counters.
-  - Dynamic theme application to the list (QPalette adjustment), installation of eventFilter at runtime and logging.
-
-3) Feynman Module (UI)
-- source/modules/feynman/fey_02_setup_ui.py
-  - Main layout reorganized: left panel (concept list) + right panel (title, explanation, gaps, review).
-  - CRUD buttons with icons via IconUtils; save button integrated with GerenciadorBotoesUI.
-  - Palette/theme synchronization for widgets and viewports; event filter to apply theme when app scheme changes.
-  - Initialization of translations and list updates with exception handling and logging.
-
-4) Accessible Reader (UI)
-- source/modules/leitor/leitor_acessivel/lta_01_setup_ui.py
-  - Control bar (load, play/pause/stop) integrated with audio generation and managed buttons.
-  - Speed and volume sliders with dynamic labels; font selection via FontManager and safe application to QTextEdit.
-  - Text / PDF tab with attempt to use QtPdf (fallback if unavailable) and configurable PDF toolbar.
-  - Focus ruler (toggle) with button and hint; theme/palette applied to QTextEdit via event filter.
-  - Connectivity with GerenciadorBotoesUI and IconUtils.
-
-5) Eisenhower Matrix (UI and Services)
-- source/modules/eisenhower/ui/ui_07_Calendar.py
-  - CalendarDialog / CalendarPanel: dialog and calendar panel with applied locale, date selection, filtering by day/week/month.
-  - Collects tasks from the matrix lists (pending and completed), builds displayable items, sorts and provides placeholders when no tasks exist.
-  - Visual highlighting of dates with tasks (setDateTextFormat) using colors derived from the palette and incremental updates of highlighted dates.
-  - Palette/theme synchronization via eventFilter.
-
-- source/modules/eisenhower/ui/ui_01_add_task.py, ui_02_handle_item_checked.py, ui_03_move_item_between_lists.py, ui_04_remove_task.py
-  - Flows to add tasks with date/time (stored in Qt.UserRole), formatted display and tooltips.
-  - Moving between lists preserves metadata (date/time), creates new QListWidgetItem with appropriate flags and checkState.
-  - Handler for check/uncheck that automatically moves items between pending/completed lists and persists changes.
-  - Routines to remove items with confirmation and ensure placeholders on empty lists.
-  - Robustness in drag & drop, cleanup of time groups and calendar updates.
-
-- source/modules/eisenhower/services/svc_06_show_context_menu.py
-  - Context menu to edit date/time (QDialog with QDateEdit/QTimeEdit and "Attach date/time" checkboxes), move task to another quadrant and remove.
-  - Applies locale to QDateEdit/QCalendarWidget, builds display/tooltip and integrates with save_tasks + calendar pane update.
-  - Helpers to determine destination lists, extract base text from item and build display payload.
-
-- source/modules/eisenhower/services/svc_01_initUI.py
-  - Matrix UI initialization with custom widgets:
-    - CustomTimeEdit: minute stepping with wrap-around 0–1439 (enables continuous rotation).
-    - DragDropTaskList: list with custom drag/drop that accepts items from other lists and updates completed state automatically.
-  - Full configuration of input controls (task_input, date/time, quadrant_selector), buttons (Add/Calendar) with icons via IconUtils and signal connections.
-  - Installation of palette filters to synchronize widget appearance with app theme.
-
-6) Mapping / Mind Map
-- source/modules/mapa/mapamental/mm_21_atualizar_tema.py
-  - Function atualizar_tema: applies the current QPalette to the mind map scene/view (setBackgroundBrush, viewport palette), forces unpolish/polish on widgets and scrollbars for correct repaint, with exception handling.
-  - Improves visual integration of MapaMental with system/app themes.
-
-7) Infra (main GUI)
-- source/gui/gui_01_setup_ui.py
-  - Lazy-loading of tabs: each tab registered with a factory and placeholder; on-demand loading with critical error handling (QMessageBox.critical) and fallback.
-  - Tab titles translated; factories for Reader, Time Manager, Mind Map, Feynman Method and Eisenhower with minimal integration required (e.g., passing translator to Eisenhower).
-  - Synchronization of labels after inserting the real widget.
-
-Main files changed/added in this set
-- source/utils/IconUtils.py
-- source/utils/CaminhoPersistenteUtils.py
-- source/modules/tempo/tmp_02_PomodoroTimer.py
-- source/modules/tempo/tmp_03_GerenciadorTarefas.py
-- source/modules/tempo/tmp_04_GerenciadorTempo.py
-- source/modules/feynman/fey_02_setup_ui.py
-- source/modules/leitor/leitor_acessivel/lta_01_setup_ui.py
-- source/modules/mapa/mapamental/mm_21_atualizar_tema.py
-- source/modules/eisenhower/ui/ui_01_add_task.py
-- source/modules/eisenhower/ui/ui_02_handle_item_checked.py
-- source/modules/eisenhower/ui/ui_03_move_item_between_lists.py
-- source/modules/eisenhower/ui/ui_04_remove_task.py
-- source/modules/eisenhower/ui/ui_07_Calendar.py
-- source/modules/eisenhower/services/svc_01_initUI.py
-- source/modules/eisenhower/services/svc_06_show_context_menu.py
-- source/gui/gui_01_setup_ui.py
-- (various integration points with LogManager, GerenciadorBotoesUI, FontManager and SoundManager)
-
-Impact and expected behavior
-- Appearance and theme: palette/theme changes now propagate correctly to widgets, views and the canvas (map), avoiding visual artifacts.
-- Task flows: drag & drop, moving via menu, date/time editing and calendar synchronization are now more robust and localized.
-- Pomodoro: sound playback loops until user confirmation; pomodoro counters synchronize with tasks in progress.
-- Lazy-loading: reduced startup time and clear error handling when loading heavy modules (PDF, NLP, etc).
-- More informative logs to aid debugging in user environments.
-
-Quick test steps
-1. Open the app and navigate the tabs — confirm lazy-load without errors and translated tab texts.
-2. Test Pomodoro: start/pause/reset, let a cycle complete and confirm alert with sound repeating until dialog is closed.
-3. Create tasks in the Eisenhower Matrix, attach dates/times, move between quadrants via drag & drop and menu; open Calendar and verify highlights and filtered list.
-4. Open Mind Map and switch system theme — confirm background/palette updated.
-5. Open Feynman Method and Accessible Reader — verify palette application and button/edit behaviors.
-
-Technical notes and relevant dependencies
-- Extensive use of PySide6 (Qt Widgets, QtPdf when available).
-- Assumptions: SoundManager implements interface instance().play_looping() / stop(); GerenciadorBotoesUI and LogManager are available globally.
-- Icon and asset files must exist in expected paths (assets/icones, source/assets/icones, _internal/icones); IconUtils logs the exact location found.
-- Locales: QLocale applied to QDateEdit/QCalendarWidget according to the app translation manager.
+What this means for you
+- Common flows (focus, moving tasks, search) are more predictable and have fewer errors.
 
 _________________________________________________
 
@@ -206,152 +81,11 @@ Version: 2025.12.20.0
 Date: December 20, 2025
 Author: Fernando Nillsson Cidade
 
-Quick summary
-- Fix in the "🤖 Reorganize with AI" button flow: when reorganizing, the map is no longer "destroyed" when the structure was imported from a document (e.g., PDF); the existing hierarchy is preserved.
-- Expanded the per-level color palette (cores_nivel) with semantic grading (trunk/branches/leaves) and automatic HSV fallback to support unlimited depth of sublevels without index errors.
-- Consolidated the document import pipeline and hierarchical map generation with informational enrichment (summaries, concepts, ideas), recursive layout, and hierarchical navigation.
-- Preservation of the existing hierarchy when using "🤖 Reorganize with AI": imported maps (e.g., PDF) are not destroyed; only the layout is applied when appropriate.
-- Expanded and organized per-level color palette (trunk → branches → leaves) with HSV fallback to support unlimited depth without index errors.
-- Recursive generation of a hierarchical map with informational enrichment: summaries, concepts, ideas, statistics, and informative badges.
-- Creation of idea-nodes visually linked to sections (leaves), with variable scale and connection thickness by level.
-- Runtime translation updates for hierarchical content and UI buttons.
-- Improvements to canvas drawing: grid, snap-to-grid, and zoom/pan behavior and focus animation.
-- Strengthened logging and exception handling in hierarchy generation and update routines.
+User summary
+- Better preservation of imported maps and improved color palette for mind maps.
 
-Change details
-
-🗺️ Mind Map (source/modules/mapa/mp_03_MapaMental.py)
-
-1) Reorganize with AI — preserving the existing hierarchy
-- Modified method: reorganizar_com_ia
-  - Detects when there is already an active hierarchy (_hierarquia_root and _hierarquia_children).
-  - For maps generated by import (PDF, DOCX), converts the object-based hierarchy (NoConceito objects) into an index-based hierarchy (root/children/levels) and reapplies only the tree layout via _aplicar_layout_arvore(...).
-  - Updates connection visibility (_atualizar_visibilidade_linhas()) and keeps visual focus on the root node (animate_focus_on) when present.
-  - Avoids reconfiguring the index-based hierarchy in this path to prevent nodes from being hidden improperly.
-
-2) Hierarchical level colors — support for many sublevels
-- Modified method: _gerar_mapa_de_hierarquia
-  - Kept and organized the cores_nivel palette to represent trunk → branches → twigs → leaves.
-  - Implemented fallback: for levels beyond the palette, generates the color procedurally with QColor.fromHsv(...), ensuring distinct colors for arbitrary depths.
-
-3) Hierarchical map generation from documents — visual and informational enrichment
-- Methods: importar_documento_ia + _gerar_mapa_de_hierarquia
-  - Import process uses QProgressDialog showing steps: load AI, extract text, analyze structure, generate map.
-  - Recursive node generation with:
-    - Dynamic scaling by depth (decreasing setScale).
-    - Connections with variable thickness by level.
-    - Building and storing info_associada (summary, concepts, ideas, statistics, structure).
-    - Informational badge on nodes (_badge) when associated information exists.
-
-4) Hierarchical navigation (expand/collapse) and connection visibility
-- Methods: _habilitar_navegacao_hierarquia, _clicar_no_para_expandir_hierarquia, _aplicar_visibilidade_por_foco, _atualizar_visibilidade_linhas, _instalar_handlers_nos
-  - Hierarchical navigation mode by click (expand/collapse).
-  - Connection lines (LinhaConexao) respect node visibility (lines are hidden if any connected node is hidden).
-  - Installed click handlers preserve the node’s original behavior and add rules for connection mode and hierarchical navigation.
-
-5) Canvas visual layout and usability
-- Classes/features: MapaScene, SmoothGraphicsView
-  - Gradient background, visual grid (light lines every 40px and strong lines every 200px).
-  - Snap-to-grid via MapaScene.snap(...) applied when creating nodes and after reorganization.
-  - Smooth zoom with limits, drag-to-pan, and focus animation (animate_focus_on).
-
-🤖 AI Processing (source/modules/mapa/mp_04_ProcessadorIA.py)
-
-1) Deep hierarchical document analysis pipeline
-- Main method: analisar_estrutura(texto)
-  - Language detection (pt/en) via heuristics.
-  - Advanced section/title extraction (Part/Chapter/Subchapters), including robustness to OCR errors and numbering (1.0, 1.1, 1.1.1).
-  - Builds a hierarchical tree with parent-child relationships and recursive processing to extract:
-    - Semantic concepts (entities, technical terms, concepts).
-    - Main ideas with scoring.
-    - Multilevel contextual summaries.
-  - Applies global TF-IDF to refine concept importance.
-  - Identifies semantic relations via dependency/context analysis.
-- The AI analysis pipeline was modularized into specialized functions under source/modules/mapa/iaprocessador, easing maintenance and testing.
-- spaCy model loading now supports multiple methods: direct import, local path, fallback to spacy.blank and basic mode, ensuring operation even without full models installed.
-- The _carregar_modelo_nlp method implements automatic language detection and safe fallback, with detailed logging of errors and attempts.
-- The _construir_arvore_hierarquica method was improved to build hierarchical trees from detected sections, preserving parent-child relationships and correctly delimiting each node’s text.
-- Semantic concept extraction (_extrair_conceitos_semanticos) combines named entities, noun chunks, and noun analysis, with heuristics for environments without a full parser. Dynamic per-level limits ensure relevance.
-- TF-IDF concept extraction (_extrair_conceitos_tfidf) uses ngrams (1–3), prioritizes noun chunks and technical terms, and falls back to semantic extraction if no results are found. Relevant contexts are associated with each concept.
-- The _identificar_relacoes_avancadas method detects relations between concepts using syntactic dependencies (nsubj, dobj, etc.) when a parser is available, or sentence co-occurrence when it is not. Relations are returned as triples (subject, verb, object) or generic pairs.
-- All methods include robust exception handling and detailed logging via LogManager, improving troubleshooting and traceability.
-
-2) Robustness in text extraction and preprocessing
-- PDF extraction via pdfplumber with normalization (unicodedata.normalize) and heuristics to correct patterns and recompose broken titles.
-
-🎯 Practical impact and expected behavior
-- Greater resilience when analyzing long documents or documents with irregular structure.
-- Richer results for concept and relation extraction, even in resource-constrained environments.
-- Modularization makes future expansion easier (new analysis types, integration with other models).
-- Improved logging helps quickly identify failures or environment limitations.
-- Reorganize with AI preserves views generated by import.
-- Colors remain distinguishable even in very deep trees.
-- Nodes display richer contextual information, improving usability and understanding of the map.
-
-✅ Reorganize with AI preserves imported maps
-- After importing a document and generating the map, "🤖 Reorganize with AI" repositions while respecting the existing hierarchy, avoiding recalculating a tree that collapses the visualization.
-
-🎨 Unlimited sublevel colors
-- Levels beyond the palette receive an automatically generated color (HSV), preventing index errors while keeping visual distinction.
-
-🧩 Runtime translations for AI-generated hierarchical content (source/modules/mapa/mapamental/mm_33_atualizar_traducoes_hierarquia.py + mm_12_atualizar_traducoes.py + mm_24_gerar_mapa_de_hierarquia.py)
-- Implemented/adjusted the workflow for dynamically updating texts and hierarchy metadata already rendered on the canvas when switching languages.
-- Nodes created from documents now carry internal “payload” (_lumen_hierarquia_payload / _lumen_ideia_payload) and translation keys (titulo_key) to allow re-rendering the title and rebuilding associated information without recreating the map.
-- Resilient node text update: tries multiple strategies (texto attribute, atualizar_texto, setText, and internal items texto_item/_texto_item/etc.), with silent fallback to avoid UI breakage.
-- Regenerates info_associada via helpers (_montar_info_associadas / _montar_info_folha), keeping badges visible when contextual content exists.
-
-🧠 Hierarchical map: informational and visual enrichment (source/modules/mapa/mapamental/mm_24_gerar_mapa_de_hierarquia.py)
-- Consolidated associated-information blocks (summary, concepts, ideas, statistics, and subsections) with more readable formatting and practical limits (e.g., top 10 concepts, top 8 ideas, top 15 subsections).
-- Creates “leaves” (idea-nodes) visually linked to the section node (when level >= 2), with:
-  - summarized text, reduced scale, dashed connection, and detailed information in the dialog (importance, location, full text, and link).
-- Reorganized and expanded per-level color palette; for levels beyond the palette, added a procedural HSV fallback for unlimited depth (prevents index errors and preserves color distinction).
-
-🧱 Setup and UX for the “🤖 Reorganize with AI” button (source/modules/mapa/mapamental/mm_11_setup_ui.py)
-- The “🤖 Reorganize with AI” action now works as a “toggle” with 3 states:
-  1) Reorganize (tree layout) with a snapshot of the original layout.
-  2) Apply a horizontal variation (simple rotation based on axis swap), preserving the set’s center.
-  3) Restore the original layout (returns to the captured positions).
-- Added an “AI in alpha” warning shown only once per action (import/reorganize), with pt-BR fallback if the key does not exist in translations.
-- After layout changes, applies snap-to-grid when the Scene supports snap(), and forces connection visibility refresh for visual coherence.
-- Kept focus animation on the item (when available) to provide immediate user feedback after reorganizations.
-
-🧹 Full map state reset (source/modules/mapa/mapamental/mm_20_limpar_mapa.py)
-- Strengthened cleanup to avoid residual states:
-  - resets hierarchical navigation state (root/parent/children/expanded nodes)
-  - resets reorganization state (_lumen_reorg_layout_state) and the original layout snapshot (_lumen_layout_original_positions)
-
-🌳 Base hierarchical tree: root with translation key (source/modules/mapa/iaprocessador/pia_20_construir_arvore_hierarquica.py)
-- Root node (“Main Document”) structured with titulo_key to support runtime translation on the map, keeping the title consistent across languages.
-- Tree structure preserves parent-child relationships via a stack, with texto_puro delimited by line ranges (posicao_inicio/posicao_fim), enabling later enrichment (concepts/ideas/summaries).
-
-How to test (quick steps)
-
-🧪 Test 1: Preserve imported map when reorganizing
-1. Open Mind Map.
-2. Import a PDF via "📄 Import Document (AI)".
-3. Click "🤖 Reorganize with AI".
-4. Verify the structure does not disappear and the imported hierarchy is preserved.
-
-🧪 Test 2: High depth and colors
-1. Import a document with many levels (or simulate the structure).
-2. Confirm that levels beyond the palette receive automatically generated colors and remain distinguishable.
-
-Main files changed
-- source/modules/mapa/mp_03_MapaMental.py
-- source/modules/mapa/mp_04_ProcessadorIA.py
-
-Code modularization
-- The code was reorganized into smaller modules with no changes to functionality or business rules — each routine was extracted into individual files under:
-  - source/modules/mapa/iaprocessador (pia_01_... → pia_29_...) — NLP loading, document extraction and processing, section detection, concept/idea/summary extraction, TF-IDF, and relation identification.
-  - source/modules/mapa/mapamental (mm_01_... → mm_32_...) — UI, scene/view, tree layout, map generation, handlers, and integration with ProcessadorIA.
-- Goal: improve readability, testability, and maintainability; behavior and logic remain the same.
-
-Technical notes and dependencies
-- spaCy 3.x (pt_core_news_lg / en_core_web_lg recommended)
-- scikit-learn (TfidfVectorizer)
-- PySide6 6.x (QGraphicsScene, QtMultimedia)
-- PyMuPDF / pdfplumber for PDF text extraction
-- python-docx for DOCX
+What this means for you
+- Imports are safer and map colors stay consistent even in deep hierarchies.
 
 _________________________________________________
 
@@ -360,273 +94,11 @@ Version: 2025.12.13.0
 Date: December 13, 2025
 Author: Fernando Nillsson Cidade
 
-Quick summary
-- Full integration between Mind Map and Feynman Method via EventBus: concepts created in the map can now be automatically sent for review in the Feynman Method.
-- New "➕ Integrate with Feynman Method" button in the Mind Map concept edit dialog, allowing direct sending of notes and contexts.
-- Visual badge system (🟡) on Mind Map nodes indicating presence of associated notes/information.
-- Enhanced AI processing (ProcessadorIA) with deep hierarchical analysis, contextual concept extraction, multi-level summary generation, and semantic relation identification.
-- Optimized tree layout for hierarchical viewing of imported documents in the Mind Map, with dynamic width calculation and recursive positioning.
-- Improvements to the Mind Map UI: visual grid, snap-to-grid, smooth zoom, focus animations, background gradients and node shadows.
-- Full support for dynamic translation (pt_BR/en_US) across all dialogs, labels and buttons in Mind Map and Feynman Method modules.
-- Architectural reorganization: code modularized into packages (source/modules/mapa, source/modules/feynman, source/gui) for better maintainability.
-- Bug fixes related to node movement, task status synchronization in the Task Manager (Kanban) and dynamic theme application.
+User summary
+- Integration between Mind Map and the Feynman method: send map concepts to review with one button.
 
-Detailed changes
-
-📋 Mind Map ↔ Feynman Method Integration
-
-- File changed: source/modules/mapa/mp_01_NoConceito.py
-  - Added "➕ Integrate with Feynman Method" button in the concept edit dialog (mouseDoubleClickEvent).
-  - Integration with EventBus: emits conceito_atualizado signal with data {titulo, notas} when the integrate button is clicked.
-  - Visual badge (yellow circle 🟡) displayed at the top of the node when notes or associated information exist (self._badge).
-  - Field validation: warns the user if title or notes are empty before integrating.
-  - Confirmation message (QMessageBox.information) after successful integration.
-  - Storage of associated information (self.info_associada: list[str]) coming from AI analysis of documents.
-  - Display of associated information in read-only mode in the edit dialog (QTextEdit read-only).
-
-- File changed: source/modules/mod_05_metodo_feynman.py
-  - New method receber_conceito_mapa_mental(dados: dict) connected to the EventBus conceito_atualizado signal.
-  - Smart merge logic: if the concept already exists, updates the 'revisao' field; otherwise creates a new concept with explicacao=notas.
-  - Automatic save (salvar_conceitos) and list update (atualizar_lista) after receiving a concept from the Mind Map.
-  - Detailed logging of integration events for traceability.
-  - EventBus connection established in MetodoFeynman.__init__.
-
-- File created: source/utils/EventBus.py
-  - Singleton QObject implementation for decoupled communication between modules.
-  - Signal conceito_atualizado = Signal(dict) to transmit concept data.
-  - Helper function get_event_bus() to facilitate global access to the single instance.
-  - Thread-safe: prevents instance recreation after initialization.
-
-🗺️ AI Processing and Hierarchical Analysis
-
-- File changed: source/modules/mapa/mp_04_ProcessadorIA.py
-  - New method analisar_estrutura(texto) with a full hierarchical analysis pipeline:
-    1. Automatic language detection (pt/en) via keywords.
-    2. Extraction of structural sections (_detectar_secoes_avancado) supporting PARTE/Parte, CAPÍTULO/Chapter, decimal numbering (1.0, 1.1.1).
-    3. Construction of recursive hierarchical tree (_construir_arvore_hierarquica) preserving parent-child relations.
-    4. Full processing of each node (_processar_hierarquia_completa):
-       - Extraction of semantic concepts via NER (Named Entity Recognition), noun chunks and frequency analysis.
-       - Extraction of main ideas with scoring based on position, semantic density, cue words and sentence length.
-       - Generation of multi-level contextual summaries (_gerar_resumo_contextual) with local TF-IDF, semantic diversity and position-based prioritization.
-    5. Application of global TF-IDF (_aplicar_tfidf_global) to refine concept importances across the document.
-    6. Identification of semantic relations (_identificar_relacoes_semanticas) via syntactic dependency analysis (nsubj, dobj, verb).
-
-  - _gerar_resumo_contextual method improved:
-    - Different configurations per hierarchical level (number of sentences and max_chars).
-    - Sophisticated scoring considering: position in text, local TF-IDF, noun/verb density, overlap with title, summary cue words.
-    - Semantic deduplication: avoids sentences with high lemma overlap already used.
-    - Robust fallback for short texts or texts without clear structure.
-
-  - Auxiliary methods added:
-    - _extrair_conceitos_semanticos: combines NER, noun chunks and frequency analysis; returns concepts with type, importance, frequency and contexts.
-    - _extrair_ideias_principais: extracts key sentences with scoring based on multiple linguistic factors.
-    - _extrair_conceitos_tfidf: TF-IDF based alternative with ngrams (1-3) and filtering by noun chunks.
-    - _identificar_relacoes_avancadas: builds triples (subject, verb, object) via syntactic analysis.
-    - _log_estrutura_completa: recursive logging of the tree with visual symbols (🌳🌿🌱🍃🌾) for debugging.
-
-  - Configuration adjustments:
-    - nlp.max_length increased to 2,000,000 characters to support large documents.
-    - spaCy model fallback: pt_core_news_lg → en_core_web_lg → pt_core_news_sm.
-    - Detailed logging at each pipeline step for troubleshooting.
-
-🎨 Mind Map Interface
-
-- File changed: source/modules/mapa/mp_03_MapaMental.py
-  - New class MapaScene(QGraphicsScene) with:
-    - Custom drawBackground method: linear gradient (#121212 → #1e1e1e) + visual grid (light lines every 40px, strong lines every 200px).
-    - snap(pos) method for configurable snap-to-grid (self._snap_enabled).
-    - Support for dynamic palettes (Qt dark/light mode).
-
-  - New class SmoothGraphicsView(QGraphicsView) with:
-    - Antialiased rendering for smooth graphics.
-    - DragMode: ScrollHandDrag for drag navigation.
-    - Wheel zoom with limits (-15 to +25 levels, factor 1.15).
-    - animate_focus_on(item) method to temporarily highlight item with a pulsating white border.
-
-  - importar_documento_ia method redesigned:
-    - QProgressDialog with visual feedback at each step (model loading, extraction, analysis, generation).
-    - Call to ProcessadorIA.analisar_estrutura to obtain the full hierarchy.
-    - Map generation via _gerar_mapa_de_hierarquia with recursive layout.
-
-  - _gerar_mapa_de_hierarquia method improved:
-    - Colors differentiated by hierarchical level (brown→dark green→medium green→light green→yellow) to represent trunk, branches, twigs and leaves.
-    - Dynamic scaling of nodes (decreasing with depth: 1.2 → 0.5).
-    - Visual connections (LinhaConexao) with variable thickness (4 → 1) according to level.
-    - Association of structured information (summary, concepts, ideas) to nodes via no_principal.info_associada.
-    - Creation of sub-nodes for concepts and main ideas (with emoji and visual formatting).
-    - Automatic expansion of canvas area (_expandir_area_se_necessario) as the tree grows.
-
-  - reorganizar_com_ia method redesigned:
-    - TF-IDF analysis of existing concepts.
-    - Construction of hierarchy based on connections (_construir_hierarquia).
-    - Application of tree layout (_aplicar_layout_arvore) with recursive width calculation (_calcular_larguras_subarvore) and optimized positioning (_posicionar_no_arvore).
-    - Snap-to-grid applied to all nodes after reorganization.
-
-  - UX improvements:
-    - "🤖 Reorganize with AI" button adds automatic reorganization of existing map.
-    - "📄 Import Document (AI)" button with PDF, DOCX, TXT support.
-    - Color dialog (QColorDialog) dynamically translated (Basic colors, Custom colors, OK, Cancel, etc).
-    - Instructions in the bottom label (double-click to edit, drag to move, connect to create relations).
-
-  - Bug fixes:
-    - Dynamic theme applied correctly to QGraphicsView and scrollbars.
-    - EventFilter captures palette/theme change events (PaletteChange, ColorSchemeChange, ThemeChange).
-    - JSON save/load preserves notes, color, position and connections.
-
-📦 Task Manager (Kanban)
-
-- File changed: source/modules/tempo/tmp_03_GerenciadorTarefas.py
-  - New method _on_rows_moved connected to QListWidget.model().rowsMoved signal to synchronize task status after internal drag-and-drop.
-  - _sincronizar_status_pos_movimento method: updates task statuses (Todo/Doing/Done) after movement within the same column, ensuring correct persistence.
-  - Fix in mover_tarefa method: now cycles states (Todo → Doing → Done → Todo) instead of advancing indefinitely.
-  - resetar_contagem_botao method expanded with three scopes:
-    - "🔹 A specific task" (select column → task).
-    - "📂 All tasks in a column" (select column).
-    - "🌐 All tasks (global)".
-  - Field validation and QMessageBox.information display when no tasks exist.
-  - _ajustar_largura_combo method to adjust QComboBox width dynamically according to content.
-  - atualizar_listas improved: shows priority emoji (🔴🟡🟢) + title + pomodoro count (🍅) in each item.
-  - CheckState (Qt.Unchecked) enabled on all items to support multiple selection.
-
-⏱️ Pomodoro Timer
-
-- File changed: source/modules/tempo/tmp_02_PomodoroTimer.py
-  - Integration with SoundManager.instance() for alarm playback at cycle end.
-  - _executar_alerta method redesigned:
-    - Starts looped playback (play_looping) BEFORE showing QMessageBox.
-    - Connects dialog close (finished.connect) to stop sound automatically.
-    - Robust exception handling with silent fallback if SoundManager fails.
-  - finalizar_ciclo method improved:
-    - Customized messages for focus and rest with cycle counting.
-    - Automatic alternation between short rest (5 min) and long rest (15 min) every 4 cycles.
-    - Perfect synchronization between progress bar, status label and internal timer.
-  - atualizar_configuracoes method: preserves elapsed time when changing focus/rest durations.
-  - resetar_ciclo method: resets cycle counter and returns to initial focus state.
-  - Dynamic theme application (_aplicar_tema_dinamico) for status and time labels.
-  - EventFilter captures palette/theme changes to re-render the interface.
-
-🎨 Utilities and Infrastructure
-
-- File changed: source/utils/IconUtils.py
-  - get_app_base_path function improved:
-    - Detection of execution via PyInstaller (sys._MEIPASS).
-    - Fallback for standalone executable (sys.executable).
-    - Development mode returns parent of the utils folder.
-  - get_icon_path function: searches multiple paths (assets/icones, source/assets/icones, _internal/icones) with support for multiple extensions (.png, .ico, .svg, .jpg).
-  - Detailed logging (✓/✗) for icon troubleshooting.
-
-- File changed: source/modules/mod_07_exibir_public.py
-  - _tr_multi function for translation fallback (App → InterfaceGrafica → manual fallback).
-  - _lbl function to select pt_BR/en_US label based on language.
-  - Dynamic translations applied to all buttons in SobreDialog (show_history, hide_history, show_details, etc).
-  - Integration of release notes (RELEASE_NOTES_pt_BR/en_US) with expandable button.
-  - Proportional resizing of the dialog (base 900x600 pixels, 1x width, 1.2x height).
-
-🏗️ Architecture and Modularization
-
-- File created: source/modules/mapa/__init__.py
-  - Exports NoConceito, LinhaConexao, MapaMental, ProcessadorIA via __all__.
-  - Facilitates imports (from source.modules.mapa import MapaMental).
-
-- File changed: source/__init__.py
-  - Lazy loading via __getattr__ for EstudoAcessivel.
-  - Reduces startup time by importing only when needed.
-
-- File changed: source/gui_01_estudo_acessivel.py
-  - Centralized QCoreApplication configuration (OrganizationName, ApplicationName) via CaminhoPersistenteUtils.
-  - Window icon loading (autismo.ico) via IconUtils with detailed logging.
-  - Integration with GerenciadorTraducao for dynamic translations.
-
-- File changed: source/src_01_InicializadorMain.py
-  - configurar_windows_app_id function for AppUserModelID on Windows (taskbar grouping).
-  - configurar_icone_aplicacao function with validation of available sizes (availableSizes).
-  - Detailed logging at each initialization step (✓/✗).
-
-Impact and expected behavior
-
-✅ Mind Map → Feynman Method Integration
-- User creates a concept in the Mind Map and adds contextual notes.
-- By clicking "➕ Integrate with Feynman Method", the concept is sent automatically.
-- Feynman Method receives the concept and updates the list; if the concept already exists, it merges notes into the "revisao" field.
-- Yellow badge (🟡) visually indicates the node has notes/information.
-
-📄 Document Import with AI
-- User imports PDF/DOCX/TXT via the "📄 Import Document (AI)" button.
-- ProcessadorIA analyzes hierarchical structure, extracts concepts, ideas and relations.
-- Mind Map is auto-generated with tree layout:
-  - Colors represent levels (brown=document, green=chapters, yellow=ideas).
-  - Nodes contain contextual summaries, key concepts and main ideas.
-  - Concepts and ideas appear as connected sub-nodes.
-- Structure is expandable and navigable via smooth zoom/pan.
-
-🔄 Automatic Reorganization
-- User clicks "🤖 Reorganize with AI" on an existing map.
-- Algorithm analyzes connections, builds hierarchy and applies optimized tree layout.
-- All nodes are repositioned automatically with snap-to-grid.
-
-⏱️ Pomodoro + Tasks
-- Alarm sounds immediately at cycle end and repeats until the alert window is closed.
-- Task Manager synchronizes status after internal drag-and-drop.
-- Pomodoro counters resettable per task, per column, or globally.
-
-How to test (quick steps)
-
-🧪 Test 1: Mind Map → Feynman Integration
-1. Open "Mind Map" module.
-2. Click "➕ Add Concept" and type "Shear Stress".
-3. Double-click the created node.
-4. Add notes in the "Notes (Feynman Method)" field: "Stress generated by parallel forces..."
-5. Click "➕ Integrate with Feynman Method".
-6. Confirm success message.
-7. Open "Feynman Method" module and verify the concept in the list.
-
-🧪 Test 2: Document Import
-1. Open "Mind Map" module.
-2. Click "📄 Import Document (AI)".
-3. Select a PDF/DOCX file from an academic handbook (e.g., Strength of Materials).
-4. Wait for analysis progress (may take 1-3 minutes).
-5. Verify generated hierarchical map with differentiated colors.
-6. Double-click a chapter node and check contextual summary, concepts and ideas.
-
-🧪 Test 3: Reorganize with AI
-1. In an existing Mind Map, add several concepts and connections manually.
-2. Click "🤖 Reorganize with AI".
-3. Verify nodes are repositioned in an optimized hierarchical layout.
-
-🧪 Test 4: Pomodoro + Tasks
-1. Task Manager: add task "Study Ch 3".
-2. Drag task between columns and verify status persistence.
-3. Pomodoro: start a short cycle (1 min) and wait for alarm.
-4. Verify alarm sounds immediately and repeats until dialog is closed.
-
-Technical notes
-
-🔧 Dependencies
-- spaCy 3.x: pt_core_news_lg or en_core_web_lg recommended for full AI analysis.
-- scikit-learn: TF-IDF vectorization (TfidfVectorizer).
-- PySide6 6.x: Qt for Python with support for QGraphicsScene, QMediaPlayer, QtMultimedia.
-- PyMuPDF (fitz): text extraction from PDFs.
-- python-docx: text extraction from DOCX files.
-
-🔧 Persisted settings
-- QSettings namespace: "Lumen"/"LumenApp".
-- Relevant keys:
-  - pomodoro/sound_path: bell path.
-  - pomodoro/alarm_interval: interval between alarm repetitions.
-  - (other settings in %LOCALAPPDATA%\TEA_TDAH_Dislexia).
-
-🔧 Modular architecture
-- source/modules/mapa/: NoConceito, LinhaConexao, MapaMental, ProcessadorIA.
-- source/modules/feynman/: Feynman Method logic (load, save, update).
-- source/modules/tempo/: PomodoroTimer, GerenciadorTarefas, Tarefa.
-- source/utils/: EventBus, IconUtils, LogManager, CaminhoPersistenteUtils, GerenciadorBotoesUI, SoundManager.
-- source/gui/: UI setup, menubar, translations, shortcuts.
-
-🔧 Performance
-- nlp.max_length = 2,000,000: supports documents up to ~400 pages (average 5000 chars/page).
-- TF-IDF: max_features=100 for global analysis; max_features=50 for local summaries.
-- Snap-to-grid: grid_step=40px; strong grid every 200px.
-- Icon cache: get_icon_path performs sequential search; consider memoization for production.
+What this means for you
+- Easier to turn ideas from a map into study items in the Feynman review flow.
 
 _________________________________________________
 
@@ -635,78 +107,13 @@ Version: 2025.12.2.0
 Date: December 2, 2025
 Author: Fernando Nillsson Cidade
 
-Quick summary
-- Pomodoro alarm system improved: selectable bell sound, preview, persistence, configurable repetition, and more robust playback.
-- Fixes and improvements in alarm playback: repetition respects the audio file duration + configured interval; alarm sounds immediately at cycle end and repeats until the user closes the alert dialog.
-- Sound configuration interface added to the Settings menu with duration preview and calculation of total time between repetitions.
-- Improved reliability of sound playback (recreating QSoundEffect) to avoid failures after stop/preview.
+User summary
+- Pomodoro with configurable alarm: choose a bell sound, preview it, and set repeat interval.
+- The alarm sounds when a cycle ends and repeats until you close the alert.
 
-Detailed changes
-- Modified file: source/utils/SoundManager.py
-  - New centralized sound manager (singleton) exposing: instance(), play(), play_repeating(), stop(), preview(), get_duration_for_path(), get_available_sounds(), get_alarm_interval(), set_alarm_interval().
-  - WAV duration detection using Python's wave module (method _get_wav_duration_ms) to obtain a reliable duration in ms.
-  - Repetition logic: play_repeating() plays the audio, computes the next trigger as (audio duration) + (configured interval) and schedules it with QTimer.
-  - Clean recreation of QSoundEffect in _prepare_effect() before each playback to avoid the behavior where the sound only plays once.
-  - Persistence of selected bell and interval in QSettings (keys: "pomodoro/sound_path" and "pomodoro/alarm_interval").
-  - Improved preview and stop methods; default fallback duration (3000ms) when detection fails.
-
-- Modified file: source/gui/gui_23_sound_config_dialog.py
-  - New dialog "🔔 Configure Pomodoro Sound" with:
-    - Combobox to select bell (list of WAVs in assets/sound).
-    - ▶️ Play button for preview.
-    - SpinBox to set the repetition interval (seconds) between repeats (0–60).
-    - Display of selected file duration and total time until next repetition (duration + interval).
-  - On save, stores bell and interval in QSettings via SoundManager.
-
-- Modified file: source/gui/gui_03_setup_menubar.py
-  - Added action "🔔 Sound..." in the "⚙️ Settings" menu to open the sound configuration dialog.
-  - Updates modules after dialog confirmation (calls atualizar_modulos when available).
-
-- Modified file: source/modules/tempo/tmp_02_PomodoroTimer.py
-  - Integrated with SoundManager.instance() to play alarms when focus/rest periods end.
-  - Method _executar_alerta shows a QMessageBox and starts the repeating alarm (play_repeating) before showing the dialog; connects dialog close to stop the alarm.
-  - Fix so the sound plays immediately when the cycle ends and continues repeating until the alert dialog is manually closed.
-  - Added logging and exception handling.
-
-- Modified file: source/gui/gui_08_atualizar_menu.py
-  - Ensures the "🔔 Sound..." label/action is updated when the language changes.
-
-Impact and expected behavior
-- When a focus or rest cycle ends:
-  - The alert dialog (QMessageBox) appears immediately.
-  - The alarm plays immediately and repeats until the user closes the dialog.
-  - Repetition respects the audio file duration: the next play occurs only after (audio duration) + (user-configured interval).
-- Selected bell and interval are persisted in local settings (QSettings).
-- Preview allows listening to the bell without enabling repetition.
-
-How to test (quick steps)
-1. Open the application and go to ⚙️ Settings → 🔔 Sound...
-2. Select a bell (WAV) and use ▶️ Play for preview.
-3. Adjust "Interval between repetitions" (e.g., 5s) and check the label "Repetition every: X.XX seconds" (file duration + interval).
-4. Save and run a short Pomodoro (or skip a cycle) until finalizar_ciclo fires.
-5. Confirm that:
-   - The sound plays immediately with the alert dialog.
-   - The sound repeats after (WAV duration) + (configured interval).
-   - Closing the alert dialog stops the sound immediately.
-6. Repeat for rest cycle; test changing bell between cycles.
-
-Technical notes
-- Implementation uses PySide6.QtMultimedia.QSoundEffect for local playback (WAV-compatible). WAV duration is measured with Python's standard wave module (no external dependencies).
-- Settings persisted via QSettings under namespace "Lumen"/"LumenApp".
-- Recommended to have PySide6 with multimedia (FFmpeg) support in the environment.
-- For non‑WAV files, duration detection falls back (3s). Full support for MP3/other formats may require QMediaPlayer or additional libraries.
-
-Main files changed
-- source/utils/SoundManager.py (new / modified)
-- source/gui/gui_23_sound_config_dialog.py (new config dialog)
-- source/gui/gui_03_setup_menubar.py (dialog integration in menu)
-- source/modules/tempo/tmp_02_PomodoroTimer.py (alarm integration and control)
-- source/gui/gui_08_atualizar_menu.py (menu translations)
-
-Known issues
-- Exact duration is only calculated for WAV files via wave; other formats may fall back. For full format support (MP3, OGG), consider using QMediaPlayer metadata or external libraries (pydub, mutagen).
-- Very large WAV files may increase read cost; the routine is simple and synchronous.
-- Translations: dialog strings and labels must be recompiled into .qm (pyside6-lrelease) after .ts changes to take effect.
+What this means for you
+- Set the bell and interval in Settings → Sound; use ▶ to preview before saving.
+- At the end of a cycle, an alert appears and the sound plays immediately; closing the alert stops the sound.
 
 _________________________________________________
 
@@ -715,36 +122,11 @@ Version: 2025.11.29.0
 Date: November 29, 2025
 Author: Fernando Nillsson Cidade
 
-Quick summary
-- Fix in the Accessible Reader (TTS) behavior: when clicking "⏸️ Pause" playback now remains paused and newly generated chunks are kept queued, preventing the reader from automatically advancing to the next chunk.
+User summary
+- Fix for Assisted Reader pause: when you pause narration, it stays paused until you resume.
 
-Detailed changes
-- Modified file: source/modules/leitor/leitor_acessivel/lta_09_play_generated_audio.py
-  - Pause behavior fixed:
-    - Before: when the user paused playback, newly generated audio files (chunks) could start automatically, causing the reader to skip the pause.
-    - Now: the _play_generated_audio function explicitly checks the player state (QMediaPlayer.PausedState) and the internal _is_paused flag. If the player is paused, new chunks do NOT start automatically — they are only added to the queue (_generated_queue) for later playback.
-  - Additional protections:
-    - Preservation of chunks during voice change: if _changing_voice is active, generated chunks are safely discarded (attempt to remove the file) and ignored.
-    - Duplicate control: generated file paths are recorded in _generated_files to avoid duplicate reprocessing.
-    - Playback state check: does not attempt to start new audio if already in PlayingState; respects PausedState.
-  - Robustness and logging:
-    - Expanded exception handling to avoid silent failures and ensure leitura_finalizada() is called when appropriate.
-    - Log messages document errors when starting chunk playback and failures when cleaning up generated files.
-
-Impact and expected behavior
-- User pauses narration with the "⏸️ Pause" button: playback stops; newly generated chunks from the TTS mechanism are queued and do NOT start playing until the user manually resumes (▶️ Continue) or the player is in a state that allows automatic playback.
-- Voice change during generation: chunks created during a voice change are safely discarded to avoid playback with the old voice.
-
-How to test (quick steps)
-1. Start Accessible Reader with a voice that uses chunked generation (Edge TTS or similar).
-2. Start reading.
-3. While playing, click "⏸️ Pause".
-4. Confirm playback stops and that newly generated chunks (e.g., for long texts) do not start automatically.
-5. Click "▶️ Continue" and confirm the queue is consumed normally and playback resumes.
-
-Technical notes
-- The fix focuses on _play_generated_audio and interacts with QMediaPlayer.playbackState() and the internal _is_paused flag.
-- Compatibility with existing audio generation and temporary file cleanup flows is preserved.
+What this means for you
+- Clicking "⏸️ Pause" stops playback; new generated chunks are queued and will play only after you press ▶ to continue.
 
 _________________________________________________
 
@@ -753,73 +135,24 @@ Version: 2025.11.26.0
 Date: November 26, 2025
 Author: Fernando Nillsson Cidade
 
-Release summary
-- Initial alpha/experimental release of the Lúmen project. Desktop tool to support neurodivergent youth and adults (ASD, ADHD, Dyslexia) in reading, organization and active study review. Replaces references to previous projects (e.g., Economia APP) and aligns package artifacts (EULA, PRIVACY_POLICY, NOTICES, COPYRIGHT, CLC) with the new scope.
+User summary
+- First alpha release of Lúmen: accessible reader, organization tools (Eisenhower Matrix, Kanban), Pomodoro, mind maps, and the Feynman method.
 
-Key features included
-- Accessible reader (TTS) with voice selection, speed and volume control; audio player for synthesized text.
-- Persistent typographic adjustments (font size and family) for readability.
-- Focus ruler (movable highlight) to facilitate line‑by‑line visual tracking.
-- Eisenhower Matrix for task prioritization with local saving.
-- Pomodoro timer and study session manager.
-- Tools for creating and reviewing mind maps and support for the Feynman Technique.
-- Local data import/export: PDF, JSON and text formats.
-- Localization: pt-BR and en-US ( .ts files included; generate .qm before packaging).
+What this means for you
+- Tools to study and organize tasks: assisted reading with voice control, focus ruler, mind map creation, and an integrated study timer.
+- Initial support for pt-BR and en-US; import/export for common formats.
 
-Files and resources included in this package
-- Code: source/ folder
-- Utilities: utils/ folder (logging, paths and helpers)
-- Assets: assets/ folder (ABOUT, EULA, NOTICES, COPYRIGHT, CLC, PRIVACY_POLICY, RELEASE)
-- Translations: language/translations/*.ts (pt_BR, en_US) — generate .qm with pyside6-lrelease
-- Documentation: assets/ABOUT/*.txt, assets/EULA/*.txt, assets/NOTICES/*.txt, assets/COPYRIGHT/*.txt, assets/CLC/*.txt
+_________________________________________________
 
-Installation (Windows — development)
-1. Install Python 3.10+.
-2. In PowerShell:
-   python -m venv .venv
-   .\.venv\Scripts\Activate.ps1
-   pip install -r requirements.txt
-3. Run in development:
-   python main.py
-
-Packaging for distribution (tips)
-- PyInstaller, Nuitka is recommended to generate a Windows executable. Include assets/ and language/translations/ in the .spec 'datas'.
-- Include license and notice files (assets/EULA, assets/NOTICES, assets/COPYRIGHT, assets/CLC, assets/PRIVACY_POLICY).
-- If bundling PySide6 libraries, document LGPL compliance procedures according to assets/NOTICES/NOTICE_pt_BR.txt.
-- Ensure .qm translation files are present in the bundle.
-
-Data storage location
-- Settings, history, temporary files and logs are saved at:
-  %LOCALAPPDATA%\TEA_TDAH_Dislexia
-- Note: local storage is the default; the application does not send telemetry automatically (see assets/PRIVACY_POLICY/Privacy_Policy_pt_BR.txt).
-
-Technical notes and dependencies
-- Main dependency: PySide6 (LGPL v3 as per version).
-- Check requirements.txt for additional dependencies.
-- Logging: utils/LogManager.py (logs at %LOCALAPPDATA%\TEA_TDAH_Dislexia).
-- Tests: current release uses manual tests; adding unit tests for reading/TTS, export and task management is recommended.
-
-Known issues (current release)
-- Some UI screens and flows still contain stubs to complete (source/ui, source/services).
-- Translations require compilation (.qm) before packaging.
-- Input validation needs strengthening (empty fields, decimal separator, negative limits).
-
-Roadmap / next steps
-- Complete and test all UI modules and services with automated test coverage.
-- Improve PDF export and report layout.
-- Automate build process and Windows installer generation.
-- Implement opt‑in telemetry for diagnostics (only with explicit consent).
-- Review and update license documentation and notices when additional components are included.
+Final notes
+- These releases focus on stability, performance, and ease of use for non-technical users.
+- If you find issues, report them with steps to reproduce and, if possible, the file or text used.
 
 Support and contact
-- Author: Fernando Nillsson Cidade
-- Bugs, issues and contributions: open an issue / pull request in the project repository (see README).
-- Email for privacy and license related requests: linceu_lighthouse@outlook.com
+- Report bugs and contributions via the project repository; for license/privacy questions, contact by email.
 
-Legal compliance notes
-- See the included assets/ files for full terms:
-  - EULA: assets/EULA/EULA_pt_BR.txt
-  - Privacy Policy: assets/PRIVACY_POLICY/Privacy_Policy_pt_BR.txt
-  - Notices / Third‑party licenses: assets/NOTICES/NOTICE_pt_BR.txt
-  - Copyright / Trademark: assets/COPYRIGHT/AVISO DE COPYRIGHT E MARCA REGISTRA_pt_BR.txt
-  - Commercial agreement: assets/CLC/CLC_pt_BR.txt
+Legal notes and licenses
+- License and notices are included in the distribution package (EULA, Privacy Policy, Notices).
+
+Thank you,
+Fernando Nillsson Cidade
