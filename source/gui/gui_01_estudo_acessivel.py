@@ -6,7 +6,6 @@ from source.language.tr_01_gerenciadorTraducao import GerenciadorTraducao
 from source.utils.LogManager import LogManager
 from source.utils.IconUtils import get_icon_path
 from source.utils.CaminhoPersistenteUtils import obter_caminho_persistente
-
 logger = LogManager.get_logger()
 
 try:
@@ -57,7 +56,7 @@ class EstudoAcessivel(QMainWindow):
             logger.critical(f"Erro crítico ao inicializar EstudoAcessivelApp: {str(e)}", exc_info=True)
             raise
 
-from source.gui import (
+from source.gui.ui import (
     setup_ui,
     sincronizar_regua_menu,
     setup_menubar,

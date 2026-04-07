@@ -1,6 +1,5 @@
 from PySide6.QtCore import QCoreApplication
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def atualizar_interface(self, codigo_idioma):

@@ -1,6 +1,19 @@
 RELEASE NOTES — Lúmen
+Version: 2026.1.8.0
+Date: January 8, 2026
+Author: Fernando Nillsson Cidade
+
+User summary
+- Integrated search in the reader (Text and PDF) with highlighted results and easy navigation.
+
+What this means for you
+- Use Ctrl+F to find terms in text or PDFs; matches are highlighted and easy to move through.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.1.2.0
-Date: January 2, 2026
+Date: January 3, 2026
 Author: Fernando Nillsson Cidade
 
 User summary

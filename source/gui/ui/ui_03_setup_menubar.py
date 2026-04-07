@@ -2,9 +2,8 @@ from PySide6.QtWidgets import QDialog
 from PySide6.QtGui import QAction
 from PySide6.QtCore import QCoreApplication, Qt
 from source.utils.LogManager import LogManager
-from source.gui.gui_22_font_config_dialog import FontConfigDialog
-from source.gui.gui_23_sound_config_dialog import SoundConfigDialog
-
+from source.gui.ui.ui_22_font_config_dialog import FontConfigDialog
+from source.gui.ui.ui_23_sound_config_dialog import SoundConfigDialog
 logger = LogManager.get_logger()
 
 def setup_menubar(self):

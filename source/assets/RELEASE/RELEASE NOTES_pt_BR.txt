@@ -1,6 +1,19 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.8.0
+Data: 8 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Busca integrada no leitor (Texto e PDF) com destaque das ocorrências e navegação por resultados.
+
+O que muda para você
+- Use Ctrl+F para localizar termos no texto ou no PDF; resultados são destacados e fáceis de percorrer.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.2.0
-Data: 2 de janeiro de 2026
+Data: 3 de janeiro de 2026
 Autor: Fernando Nillsson Cidade
 
 Resumo para usuários

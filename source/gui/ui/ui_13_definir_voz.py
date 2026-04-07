@@ -1,5 +1,4 @@
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def definir_voz(self, voz_id):

@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QTabWidget, QMessageBox, QWidget, QVBoxLayout, QLabel
 from PySide6.QtCore import QCoreApplication
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def _make_placeholder(text: str) -> QWidget:
