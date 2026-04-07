@@ -1,7 +1,8 @@
 from source.modules.leitor.lt_01_TTSThread import TTSThread
 from source.modules.leitor.lt_02_EdgeTTSThread import EdgeTTSThread
 from source.modules.leitor.lt_03_LeitorAcessivel import LeitorAcessivel
-from source.modules.leitor.lt_04_EdgeTTSWithTimestamps import EdgeTTSWithTimestamps, WordTimestamp
+from source.modules.leitor.lt_04_EdgeTTSWithTimestamps import EdgeTTSWithTimestamps
+from source.modules.leitor.lt_05_WordTimestamp import WordTimestamp
 
 __all__ = [
     "TTSThread",

@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QToolBar, QFrame, QMessageBox
 from PySide6.QtCore import QCoreApplication, QPointF
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def setup_ui(self):
@@ -217,7 +216,7 @@ def setup_ui(self):
                             pass
 
                 try:
-                    from source.modules.mapa.mapamental.mm_34_layout_hierarquia_navegacao import _resolver_sobreposicoes_global
+                    from source.modules.mapa.MapaMental.mm_34_layout_hierarquia_navegacao import _resolver_sobreposicoes_global
                     _resolver_sobreposicoes_global(self, nos=nos, apenas_visiveis=False, push_direcao="right")
                     _resolver_sobreposicoes_global(self, nos=nos, apenas_visiveis=False, push_direcao="down")
 

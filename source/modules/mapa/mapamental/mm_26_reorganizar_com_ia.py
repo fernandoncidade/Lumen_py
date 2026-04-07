@@ -1,6 +1,5 @@
 from source.utils.LogManager import LogManager
 from source.modules.mapa.mp_04_ProcessadorIA import ProcessadorIA
-
 logger = LogManager.get_logger()
 
 def reorganizar_com_ia(self):
@@ -14,7 +13,7 @@ def reorganizar_com_ia(self):
 
         def _pos_processar_layout():
             try:
-                from source.modules.mapa.mapamental.mm_34_layout_hierarquia_navegacao import _resolver_sobreposicoes_global
+                from source.modules.mapa.MapaMental.mm_34_layout_hierarquia_navegacao import _resolver_sobreposicoes_global
                 _resolver_sobreposicoes_global(self, nos=getattr(self, "nos", []) or [], apenas_visiveis=False, push_direcao="down")
 
             except Exception:

@@ -1,5 +1,4 @@
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def _aplicar_visibilidade_por_foco(self, foco, abrir_foco: bool):
@@ -37,11 +36,11 @@ def _aplicar_visibilidade_por_foco(self, foco, abrir_foco: bool):
                     removidos = set(vis_antes - vis_depois)
                     fixos = set(vis_antes & vis_depois)
 
-                    from source.modules.mapa.mapamental.mm_34_layout_hierarquia_navegacao import (_layout_incremental_preservando_base,)
+                    from source.modules.mapa.MapaMental.mm_34_layout_hierarquia_navegacao import (_layout_incremental_preservando_base,)
                     _layout_incremental_preservando_base(self, novos_visiveis=novos, fixos_visiveis=fixos, removidos_visiveis=removidos)
 
                 else:
-                    from source.modules.mapa.mapamental.mm_34_layout_hierarquia_navegacao import (_layout_hierarquia_navegacao,)
+                    from source.modules.mapa.MapaMental.mm_34_layout_hierarquia_navegacao import (_layout_hierarquia_navegacao,)
                     _layout_hierarquia_navegacao(self)
 
             except Exception:

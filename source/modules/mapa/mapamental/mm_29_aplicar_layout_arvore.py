@@ -1,7 +1,6 @@
 from typing import Dict, Optional, Set
 from PySide6.QtCore import QPointF
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def _aplicar_layout_arvore(self, hierarquia: Dict, orientacao: str = "vertical", espacamento_vertical: int | None = None, espacamento_horizontal_base: int | None = None, visiveis: Optional[Set[int]] = None):
@@ -51,7 +50,7 @@ def _aplicar_layout_arvore(self, hierarquia: Dict, orientacao: str = "vertical",
             pass
 
         try:
-            from source.modules.mapa.mapamental.mm_34_layout_hierarquia_navegacao import _resolver_sobreposicoes_global
+            from source.modules.mapa.MapaMental.mm_34_layout_hierarquia_navegacao import _resolver_sobreposicoes_global
 
             if orientacao == "horizontal":
                 _resolver_sobreposicoes_global(self, nos=getattr(self, "nos", []) or [], apenas_visiveis=True, push_direcao="right")

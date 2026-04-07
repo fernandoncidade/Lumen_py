@@ -1,0 +1,26 @@
+from source.utils.LogManager import LogManager
+from source.modules.tempo.tmp_01_Tarefa import Tarefa
+from source.utils.EventBus import get_event_bus
+from uuid import uuid4
+logger = LogManager.get_logger()
+
+def _on_tarefa_adicionada_gestao_tempo(self, dados: dict):
+    try:
+        if not hasattr(self, 'btn_eisenhower_integrado') or not self.btn_eisenhower_integrado.isChecked():
+            return
+
+        titulo = (dados or {}).get("titulo")
+        prioridade = (dados or {}).get("prioridade")
+        if not titulo:
+            return
+
+        payload = {
+            "integration_id": str(uuid4()),
+            "origin": "tempo",
+            "titulo": titulo,
+            "prioridade": Tarefa.normalizar_prioridade(prioridade),
+        }
+        get_event_bus().send_tarefa(payload)
+
+    except Exception as e:
+        logger.debug(f"Falha ao enviar tarefa para Eisenhower: {e}", exc_info=True)

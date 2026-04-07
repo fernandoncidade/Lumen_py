@@ -1,5 +1,12 @@
 from PySide6.QtWidgets import QWidget
 from PySide6.QtMultimedia import QMediaPlayer, QAudioOutput
+
+try:
+    from PySide6.QtMultimedia import QMediaDevices
+
+except Exception:
+    QMediaDevices = None
+
 from source.utils.LogManager import LogManager
 from source.utils.GerenciadorBotoesUI import GerenciadorBotoesUI
 
@@ -24,7 +31,18 @@ class LeitorAcessivel(QWidget):
         self.setup_ui()
 
         self.player = QMediaPlayer(self)
-        self.audio_output = QAudioOutput(self)
+
+        try:
+            if QMediaDevices is not None:
+                dev = QMediaDevices.defaultAudioOutput()
+                self.audio_output = QAudioOutput(dev, self)
+
+            else:
+                self.audio_output = QAudioOutput(self)
+
+        except Exception:
+            self.audio_output = QAudioOutput(self)
+
         self.player.setAudioOutput(self.audio_output)
 
         self._generated_queue = []
@@ -39,7 +57,7 @@ class LeitorAcessivel(QWidget):
 
         self.player.mediaStatusChanged.connect(self._on_media_status)
 
-from source.modules.leitor.leitor_acessivel import (
+from source.modules.leitor.LeitorAcessivel import (
     setup_ui,
     atualizar_traducoes,
     _update_pause_button,

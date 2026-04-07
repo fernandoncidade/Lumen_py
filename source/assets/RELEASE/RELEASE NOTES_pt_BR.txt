@@ -1,4 +1,17 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.23.0
+Data: 23 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Reestruturamos internamente o aplicativo para torná‑lo mais robusto e facilitar futuras melhorias.
+
+O que muda para você
+- Mais estabilidade geral e menor risco de erros ao usar recursos como leitura e mapas mentais.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.21.0
 Data: 21 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

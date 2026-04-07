@@ -8,7 +8,7 @@ except Exception:
 
 logger = LogManager.get_logger()
 
-from source.modules.mapa.iaprocessador import (
+from source.modules.mapa.ProcessadorIA import (
     _carregar_modelo_nlp as pia__carregar_modelo_nlp,
     _detectar_idioma_texto as pia__detectar_idioma_texto,
     extrair_texto_pdf as pia_extrair_texto_pdf,
@@ -62,44 +62,34 @@ class ProcessadorIA:
 
     _carregar_modelo_nlp = pia__carregar_modelo_nlp
     _detectar_idioma_texto = pia__detectar_idioma_texto
-
     extrair_texto_pdf = pia_extrair_texto_pdf
     extrair_texto_docx = pia_extrair_texto_docx
     extrair_texto_txt = pia_extrair_texto_txt
     extrair_texto = pia_extrair_texto
-
     analisar_estrutura = pia_analisar_estrutura
-
     _corrigir_caracteres_extraidos = pia__corrigir_caracteres_extraidos
     _corrigir_palavras_conhecidas = pia__corrigir_palavras_conhecidas
-
     _preprocessar_linhas = pia__preprocessar_linhas
     _linha_parece_sumario = pia__linha_parece_sumario
     _proximo_titulo = pia__proximo_titulo
     _remover_acentos = pia__remover_acentos
     _variantes_para_match = pia__variantes_para_match
-
     _detectar_secoes_avancado = pia__detectar_secoes_avancado
     _ajustar_niveis_relativos = pia__ajustar_niveis_relativos
     _e_titulo_maiusculas = pia__e_titulo_maiusculas
     _e_titulo_isolado = pia__e_titulo_isolado
     _inferir_nivel_titulo = pia__inferir_nivel_titulo
-
     _construir_arvore_hierarquica = pia__construir_arvore_hierarquica
     _processar_hierarquia_completa = pia__processar_hierarquia_completa
-
     _gerar_resumo_contextual = pia__gerar_resumo_contextual
     _extrair_conceitos_semanticos = pia__extrair_conceitos_semanticos
     _extrair_ideias_principais = pia__extrair_ideias_principais
     _extrair_conceitos_tfidf = pia__extrair_conceitos_tfidf
     _aplicar_tfidf_global = pia__aplicar_tfidf_global
-
     _gerar_resumo_avancado = pia__gerar_resumo_avancado
     _load_sentence_transformer = pia__load_sentence_transformer
     _get_sentence_embeddings = pia__get_sentence_embeddings
     _gerar_resumo_semantico = pia__gerar_resumo_semantico
-
     _identificar_relacoes_semanticas = pia__identificar_relacoes_semanticas
     _identificar_relacoes_avancadas = pia__identificar_relacoes_avancadas
-
     _log_estrutura_completa = pia__log_estrutura_completa

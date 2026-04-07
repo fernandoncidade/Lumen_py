@@ -1,4 +1,84 @@
 RELEASE NOTES — Lúmen
+Version: 2026.1.23.0
+Date: January 23, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+- This update focuses on broad modularization of the source code and structural improvements across the Lúmen application modules. The main change was extracting functionality previously contained in monolithic files and classes with nested methods, transforming them into smaller modules, top-level functions and reusable components. The goal was to improve readability, testability, maintainability and to ease future extensions.
+
+Main changes
+- Massive modularization: several large files were split into multiple modules organized by responsibility (UI, mind map logic, reader/TTS, study methods, UI managers, etc.).
+- Removal of nested methods: functions that were nested inside classes were promoted to module-level functions or independent handlers, reducing coupling and simplifying flow.
+- Strengthened logging and exception handling: consistent use of LogManager for logging, with more localized try/except to avoid silent failures and improve diagnostics.
+- Separation of concerns: UI, processing (TTS/AI), and data handling are now clearly separated into distinct modules.
+- Better TTS support: Edge TTS processing was isolated into modules with timestamps, text splitting, voice normalization and thread control, improving stability and error recovery.
+
+Detailed improvements by subsystem
+- Mind Map
+  - Extracted files/new handlers: `source/modules/mapa/NoConceito/nocon_02_mousePressEvent.py`, `nocon_03_mouseReleaseEvent.py`, `nocon_04_mouseDoubleClickEvent.py` and other handlers. These handlers encapsulate concept node events, keeping MapaMental logic leaner.
+  - `source/modules/mapa/MapaMental/*.py` reorganized into smaller units (e.g., `mm_07_aplicar_visibilidade_por_foco.py`, `mm_11_setup_ui.py`, `mm_26_reorganizar_com_ia.py`, `mm_29_aplicar_layout_arvore.py`, `mm_33_atualizar_traducoes_hierarquia.py`). Result: layout and rendering, animations, translation and AI integration are now isolatable modules.
+
+- Reader & TTS
+  - TTS modules reorganized under `source/modules/leitor/EdgeTTSWithTimestamps/` and `EdgeTTSThread/`: functions like `_split_text`, `_normalize_voice`, `_calculate_text_offset`, `_find_word_in_full_text`, `run`, `stop` are now separate testable units.
+  - `LeitorAcessivel` was modularized: UI setup, playback controls, find bars, PDF selection, speech highlight, and resource cleanup moved to files `lta_01_*` through `lta_35_*`. This facilitates maintenance of reading flow, font adjustments and synchronized highlighting.
+  - Improved resource management: playbacks handled with `QMediaPlayer` and `QAudioOutput`, temporary file cleanup with retries, and user-visible error handling via `QMessageBox` when applicable.
+
+- Feynman Method
+  - Clear separation between UI and background worker: `FeynmanWorker` and UI handlers placed in `source/modules/feynman/` (e.g., `fey_01_FeynmanWorker.py`, `fey_02_carregar_conceitos.py`, `fey_03_setup_ui.py`, `fey_07_salvar_conceito_atual.py`). Load/save flow for concepts was isolated to improve concurrency and avoid UI blocking.
+
+- Eisenhower / Task Management
+  - UI and task logic reorganized: modules `eis_01_*` through `eis_19_*` separate worker, UI initialization, list operations, event bus integration and persistence. Time grouping and cleanup routines were isolated to facilitate unit testing.
+
+- Utilities
+  - `source/utils/*` keeps cross-cutting services (e.g., `LogManager`, `FontManager`, `CaminhoPersistenteUtils`, `EventBus`) and are now consumed more consistently by the restructured modules.
+
+Observable benefits and improvements
+- Readability: smaller, focused files ease navigation and onboarding.
+- Testability: independent functions and decoupled workers are easier to test in isolation.
+- Robustness: localized exception handling and richer logs reduce time to investigate failures.
+- Performance: less recomputation in large monolithic files and targeted improvements in thread and multimedia resource management.
+- Maintainability: new boundaries of responsibility make future changes (e.g., swapping TTS backend, layout tweaks) safer.
+
+Impacts and recommendations for developers
+- Imports: due to modularization, some imports were changed to explicit paths (e.g., `from source.modules.leitor.EdgeTTSWithTimestamps import run`). Adjust any external custom imports if necessary.
+- Tests: we recommend running basic application scenarios and tests for reading/TTS, mind map and Feynman Method.
+- Code migration: if you had extensions depending on private nested methods, review and adapt them to the new public functions exported by the modules.
+
+Relevant files/paths (examples)
+- source/modules/mapa/NoConceito/nocon_02_mousePressEvent.py
+- source/modules/mapa/NoConceito/nocon_03_mouseReleaseEvent.py
+- source/modules/mapa/NoConceito/nocon_04_mouseDoubleClickEvent.py
+- source/modules/mapa/MapaMental/mm_07_aplicar_visibilidade_por_foco.py
+- source/modules/mapa/MapaMental/mm_11_setup_ui.py
+- source/modules/mapa/MapaMental/mm_26_reorganizar_com_ia.py
+- source/modules/mapa/MapaMental/mm_29_aplicar_layout_arvore.py
+- source/modules/mapa/MapaMental/mm_33_atualizar_traducoes_hierarquia.py
+- source/modules/leitor/EdgeTTSWithTimestamps/ettswt_01_stop.py
+- source/modules/leitor/EdgeTTSWithTimestamps/ettswt_02_split_text.py
+- source/modules/leitor/EdgeTTSWithTimestamps/ettswt_06_run.py
+- source/modules/leitor/EdgeTTSThread/ettst_04_run.py
+- source/modules/leitor/LeitorAcessivel/lta_01_setup_ui.py (and other lta_**)
+- source/modules/feynman/fey_01_FeynmanWorker.py (and fey_02.. fey_16)
+- source/modules/eisenhower/eis_01_EisenhowerWorker.py (and eis_02..eis_19)
+
+Quick test guide
+1) Environment: ensure dependencies listed in `requirements.txt` are installed (includes PySide6 and TTS libraries when applicable).
+2) Run: start the main application:
+
+   python main.py
+
+3) Main checks:
+   - Open Mind Map module: interact with nodes, test double-click and drag.
+   - Reader/TTS: load a PDF or text, start reading and observe synchronized highlight; test voice selection and speed.
+   - Feynman Method: create, save and reload concepts.
+   - Eisenhower: add/edit/remove tasks and verify grouping by time.
+
+Final notes
+- This release does not change the application's main functional behavior for end users, but reorganizes the code to enable faster development, reduce bugs related to monolithic complexity and prepare the project for future enhancements (e.g., integration with new AI services, cross-platform TTS, automated tests). For migration or import review questions, contact the author.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.1.21.0
 Date: January 21, 2026
 Author: Fernando Nillsson Cidade

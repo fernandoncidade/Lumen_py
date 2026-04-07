@@ -1,0 +1,30 @@
+from PySide6.QtCore import QCoreApplication
+from source.utils.LogManager import LogManager
+logger = LogManager.get_logger()
+
+def atualizar_traducoes(self):
+    try:
+        self.input_tarefa.setPlaceholderText(QCoreApplication.translate("App", "Digite uma nova tarefa... (Ex: 'Estudar Resistência dos Materiais - Cap 3')"))
+        self.combo_prioridade.clear()
+        self.combo_prioridade.addItems([
+            QCoreApplication.translate("App", "🔴 Importante e Urgente"),
+            QCoreApplication.translate("App", "🟠 Importante, mas Não Urgente"),
+            QCoreApplication.translate("App", "🟡 Não Importante, mas Urgente"),
+            QCoreApplication.translate("App", "🟢 Não Importante e Não Urgente")
+        ])
+        self.combo_prioridade.setCurrentText(QCoreApplication.translate("App", "🔴 Importante e Urgente"))
+        self._ajustar_largura_combo(self.combo_prioridade)
+
+        self.btn_adicionar.setText(QCoreApplication.translate("App", "➕ Adicionar"))
+        self.btn_remover.setText(QCoreApplication.translate("App", "🗑️ Remover Tarefa(s)"))
+        self.btn_mover.setText(QCoreApplication.translate("App", "🔀 Mover Tarefa(s)"))
+
+        if hasattr(self, 'btn_resetar_contagem'):
+            self.btn_resetar_contagem.setText(QCoreApplication.translate("App", "🔄 Resetar Contagem"))
+
+        self.col_todo.setTitle(QCoreApplication.translate("App", "📋 A Fazer"))
+        self.col_doing.setTitle(QCoreApplication.translate("App", "⚙️ Em Progresso"))
+        self.col_done.setTitle(QCoreApplication.translate("App", "✅ Concluído"))
+
+    except Exception as e:
+        logger.error(f"Erro ao atualizar traduções do GerenciadorTarefas: {str(e)}", exc_info=True)

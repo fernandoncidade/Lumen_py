@@ -1,7 +1,8 @@
 from .lt_01_TTSThread import TTSThread
 from .lt_02_EdgeTTSThread import EdgeTTSThread
 from .lt_03_LeitorAcessivel import LeitorAcessivel
-from .lt_04_EdgeTTSWithTimestamps import EdgeTTSWithTimestamps, WordTimestamp
+from .lt_04_EdgeTTSWithTimestamps import EdgeTTSWithTimestamps
+from .lt_05_WordTimestamp import WordTimestamp
 
 __all__ = [
     "TTSThread",

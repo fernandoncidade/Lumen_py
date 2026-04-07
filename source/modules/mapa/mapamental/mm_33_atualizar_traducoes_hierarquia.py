@@ -1,13 +1,12 @@
 from PySide6.QtCore import QCoreApplication
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def _atualizar_traducoes_hierarquia(self):
     try:
         tr = QCoreApplication.translate
 
-        from source.modules.mapa.mapamental.mm_24_gerar_mapa_de_hierarquia import (
+        from source.modules.mapa.MapaMental.mm_24_gerar_mapa_de_hierarquia import (
             _montar_info_associadas,
             _montar_info_folha,
         )
