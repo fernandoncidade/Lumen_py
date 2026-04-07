@@ -1,0 +1,54 @@
+# Normalize text files by default.
+* text=auto
+
+# Keep repository metadata and common text-based project files normalized.
+.gitattributes text eol=lf
+.gitignore text eol=lf
+*.md text
+*.txt text
+*.rst text
+*.yml text
+*.yaml text
+*.toml text
+*.ini text
+*.cfg text
+*.json text
+*.xml text
+
+# Python source and helpers.
+*.py text diff=python
+*.pyw text diff=python
+
+# Windows-focused scripts and installer files used by this project.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.iss text eol=crlf
+
+# Shell scripts should keep Unix line endings.
+*.sh text eol=lf
+
+# Qt translation sources are text; compiled catalogs are binary.
+*.ts text
+*.qm binary
+
+# Binary assets shipped with the desktop application.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.bmp binary
+*.webp binary
+*.ico binary
+*.icns binary
+*.pdf binary
+
+# Common packaged/compiled artifacts that should never be normalized.
+*.7z binary
+*.zip binary
+*.exe binary
+*.msi binary
+*.dll binary
+*.pyd binary
+*.whl binary
+*.docx binary
