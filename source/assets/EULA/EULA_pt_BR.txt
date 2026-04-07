@@ -1,7 +1,7 @@
 LICENÇA DE USO DE USUÁRIO FINAL - Lúmen
-Versão 2025.12.30.0, 30 de dezembro de 2025
+Versão 2026.1.2.0, 2 de janeiro de 2026
 
-Copyright (c) 2025 Fernando Nillsson Cidade. Todos os direitos reservados.
+Copyright (c) 2025-2026 Fernando Nillsson Cidade. Todos os direitos reservados.
 
 Ao instalar, copiar ou utilizar o Software distribuído como executável ou como código‑fonte, você concorda em estar vinculado pelos termos desta Licença. Se não concordar com os termos, não instale nem utilize o Software.
 
