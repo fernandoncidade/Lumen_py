@@ -1,4 +1,18 @@
 RELEASE NOTES — Lúmen
+Version: 2026.1.21.0
+Date: January 21, 2026
+Author: Fernando Nillsson Cidade
+
+User summary
+- Improved task editing and calendar panel with time grouping.
+
+What this means for you
+- Context menu offers quick options to adjust date, time, and description.
+- Tasks grouped by time make it easier to see your day at a glance.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.1.18.0
 Date: January 18, 2026
 Author: Fernando Nillsson Cidade

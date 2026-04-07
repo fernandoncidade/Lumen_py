@@ -1,4 +1,18 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.21.0
+Data: 21 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Aperfeiçoamento da edição de tarefas e do painel de calendário, com agrupamento por horário.
+
+O que muda para você
+- Menu de contexto com opções diretas para ajustar data, hora e descrição.
+- Tarefas agrupadas por horário facilitam a visualização do seu dia.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.18.0
 Data: 18 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

@@ -2165,5 +2165,55 @@ Defina 0 para repetir imediatamente após o áudio terminar.</translation>
       <translation>Erro ao carregar aplicação: {e}</translation>
     </message>
 
+    <message>
+      <source>Prioridade</source>
+      <translation>Prioridade</translation>
+    </message>
+
+    <message>
+      <source>Editar Tarefa...</source>
+      <translation>Editar Tarefa...</translation>
+    </message>
+
+    <message>
+      <source>Editar Tarefa</source>
+      <translation>Editar Tarefa</translation>
+    </message>
+
+    <message>
+      <source>Tarefa:</source>
+      <translation>Tarefa:</translation>
+    </message>
+
+    <message>
+      <source>Arquivo vinculado (arraste ou escolha):</source>
+      <translation>Arquivo vinculado (arraste ou escolha):</translation>
+    </message>
+
+    <message>
+      <source>Escolher...</source>
+      <translation>Escolher...</translation>
+    </message>
+
+    <message>
+      <source>Remover</source>
+      <translation>Remover</translation>
+    </message>
+
+    <message>
+      <source>Descrição (opcional):</source>
+      <translation>Descrição (opcional):</translation>
+    </message>
+
+    <message>
+      <source>Abrir Arquivo Vinculado...</source>
+      <translation>Abrir Arquivo Vinculado...</translation>
+    </message>
+
+    <message>
+      <source>Lista Global de Tarefas:</source>
+      <translation>Lista Global de Tarefas:</translation>
+    </message>
+
   </context>
 </TS>

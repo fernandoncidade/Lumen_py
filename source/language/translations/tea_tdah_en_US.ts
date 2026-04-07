@@ -2165,5 +2165,55 @@ Set 0 to repeat immediately after the audio finishes.</translation>
       <translation>Error loading application: {e}</translation>
     </message>
 
+    <message>
+      <source>Prioridade</source>
+      <translation>Priority</translation>
+    </message>
+
+    <message>
+      <source>Editar Tarefa...</source>
+      <translation>Edit Task...</translation>
+    </message>
+
+    <message>
+      <source>Editar Tarefa</source>
+      <translation>Edit Task</translation>
+    </message>
+
+    <message>
+      <source>Tarefa:</source>
+      <translation>Task:</translation>
+    </message>
+
+    <message>
+      <source>Arquivo vinculado (arraste ou escolha):</source>
+      <translation>Linked file (drag or choose):</translation>
+    </message>
+
+    <message>
+      <source>Escolher...</source>
+      <translation>Choose...</translation>
+    </message>
+
+    <message>
+      <source>Remover</source>
+      <translation>Remove</translation>
+    </message>
+
+    <message>
+      <source>Descrição (opcional):</source>
+      <translation>Description (optional):</translation>
+    </message>
+
+    <message>
+      <source>Abrir Arquivo Vinculado...</source>
+      <translation>Open Linked File...</translation>
+    </message>
+
+    <message>
+      <source>Lista Global de Tarefas:</source>
+      <translation>Global Task List:</translation>
+    </message>
+
   </context>
 </TS>
