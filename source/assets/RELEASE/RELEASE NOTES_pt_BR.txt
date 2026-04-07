@@ -1,4 +1,17 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2025.12.30.0
+Data: 30 de dezembro de 2025
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Encerramento e limpeza de recursos mais seguros; exportação de textos mais confiável.
+
+O que muda para você
+- Menos problemas ao fechar o app e melhor experiência ao salvar/exportar documentos.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2025.12.28.0
 Data: 28 de dezembro de 2025
 Autor: Fernando Nillsson Cidade
