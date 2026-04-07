@@ -69,9 +69,11 @@ def abrir_arquivo(app):
         if " — " in base:
             left, right = base.rsplit(" — ", 1)
             tail = right.strip()
+
             try:
                 from PySide6.QtCore import QDate, QTime
                 fmts = []
+
                 try:
                     fmts.append(app.date_input.displayFormat())
 
@@ -125,6 +127,7 @@ def abrir_arquivo(app):
 
         try:
             wb = load_workbook(path, read_only=True)
+
             def populate_from_sheet(name, lst, completed=False):
                 if name in wb.sheetnames:
                     sheet = wb[name]
@@ -172,6 +175,7 @@ def abrir_arquivo(app):
             populate_from_sheet("quadrant4_completed", app.quadrant4_completed_list, completed=True)
 
             app.save_tasks()
+
             try:
                 if hasattr(app, "calendar_pane") and app.calendar_pane:
                     app.calendar_pane.calendar_panel.update_task_list()
@@ -314,6 +318,7 @@ def abrir_arquivo(app):
             populate_from_list("quadrant4_completed", app.quadrant4_completed_list, True)
 
             app.save_tasks()
+
             try:
                 if hasattr(app, "calendar_pane") and app.calendar_pane:
                     app.calendar_pane.calendar_panel.update_task_list()
@@ -564,7 +569,14 @@ def salvar_como(app):
 
                             extra_order = []
                             if data.get("priority") is not None:
-                                extra_order.append(("Prioridade", str(data.get("priority"))))
+                                try:
+                                    from source.modules.eisenhower.services.svc_09_prioridade_display import prioridade_para_texto
+                                    prio_txt = prioridade_para_texto(data.get("priority"), app)
+
+                                except Exception:
+                                    prio_txt = str(data.get("priority"))
+
+                                extra_order.append(("Prioridade", prio_txt))
 
                             if data.get("description"):
                                 extra_order.append(("Descrição", data.get("description")))

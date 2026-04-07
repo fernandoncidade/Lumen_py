@@ -14,7 +14,10 @@ def from_dict(data):
             data.get('etapas', []),
             prioridade,
             data.get('status', 'Todo'),
-            id=data.get('id', str(uuid4()))
+            id=data.get('id', str(uuid4())),
+            file_path=data.get('file_path'),
+            date=data.get('date'),
+            time=data.get('time')
         )
         tarefa.data_criacao = data.get('data_criacao', datetime.now().isoformat())
         tarefa.pomodoros_completados = data.get('pomodoros', 0)

@@ -11,5 +11,5 @@ __all__ = [
     "GerenciadorTarefas",
     "_KanbanListWidget",
     "GerenciadorTempo",
-    "_TimeWorker",
+    "_TimeWorker"
 ]

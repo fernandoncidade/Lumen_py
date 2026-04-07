@@ -29,17 +29,17 @@ def setup_ui(self):
         self.label_tarefas.setStyleSheet("font-size: 16pt; font-weight: bold; margin-top: 20px;")
         header.addWidget(self.label_tarefas, 1)
 
-        self.btn_eisenhower_integrado = QPushButton()
-        self.btn_eisenhower_integrado.setCheckable(True)
-        self.btn_eisenhower_integrado.setChecked(False)
+        # self.btn_eisenhower_integrado = QPushButton()
+        # self.btn_eisenhower_integrado.setCheckable(True)
+        # self.btn_eisenhower_integrado.setChecked(False)
 
-        try:
-            self.btn_eisenhower_integrado.toggled.connect(lambda _: self._atualizar_rotulo_botao_eisenhower())
+        # try:
+        #     self.btn_eisenhower_integrado.toggled.connect(lambda _: self._atualizar_rotulo_botao_eisenhower())
 
-        except Exception:
-            pass
+        # except Exception:
+        #     pass
 
-        header.addWidget(self.btn_eisenhower_integrado, 0)
+        # header.addWidget(self.btn_eisenhower_integrado, 0)
         layout.addLayout(header)
 
         self.tarefas = GerenciadorTarefas(self)

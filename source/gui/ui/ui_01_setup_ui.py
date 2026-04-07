@@ -91,8 +91,8 @@ def setup_ui(self) -> None:
         return MetodoFeynman()
 
     def _factory_eisenhower():
-        from source.modules.mod_06_eisenhower import EisenhowerMatrixApp
-        return EisenhowerMatrixApp(gerenciador_traducao=self.tradutor, embedded=True)
+        from source.modules.mod_06_eisenhower import MatrizEisenhower
+        return MatrizEisenhower(gerenciador_traducao=self.tradutor, embedded=True)
 
     _register_lazy_tab(0, "leitor", _factory_leitor)
     _register_lazy_tab(1, "gerenciador", _factory_tempo)

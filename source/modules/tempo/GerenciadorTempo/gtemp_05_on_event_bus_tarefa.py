@@ -16,12 +16,24 @@ def _on_event_bus_tarefa(self, dados: dict):
 
         titulo = (payload.get("titulo") or "").strip()
         prioridade = payload.get("prioridade") or "Importante e Urgente"
+        date_iso = payload.get("date") or payload.get("date_iso") or None
+        time_str = payload.get("time") or None
+        description = payload.get("description") or payload.get("desc") or None
+        file_path = payload.get("file_path") or None
 
         if not titulo:
             return
 
         if hasattr(self, 'tarefas') and self.tarefas:
-            self.tarefas.adicionar_tarefa_externa(titulo=titulo, prioridade=prioridade)
+            try:
+                self.tarefas.adicionar_tarefa_externa(titulo=titulo, prioridade=prioridade, description=description, file_path=file_path, date=date_iso, time=time_str)
+
+            except Exception:
+                try:
+                    self.tarefas.adicionar_tarefa_externa(titulo=titulo, prioridade=prioridade)
+
+                except Exception:
+                    pass
 
     except Exception as e:
         logger.debug(f"Falha ao receber tarefa do Eisenhower: {e}", exc_info=True)

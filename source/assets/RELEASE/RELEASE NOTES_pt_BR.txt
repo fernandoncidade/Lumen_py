@@ -1,4 +1,21 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.27.0
+Data: 27 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Edição e gestão de tarefas mais estáveis e fáceis de usar.
+- Calendário com contadores visíveis (badges) por dia e filtros úteis.
+- Salvamento em segundo plano para evitar lentidão ao salvar suas mudanças.
+- Melhor compatibilidade ao abrir arquivos e ao alternar idioma/tema.
+
+O que muda para você
+- Editar, mover e excluir tarefas está mais confiável e rápido.
+- Calendário mostra onde há tarefas, facilitando a organização do seu dia.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.23.0
 Data: 23 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

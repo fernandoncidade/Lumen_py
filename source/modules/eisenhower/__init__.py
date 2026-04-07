@@ -28,7 +28,7 @@ from .ui import (
     CalendarDialog,
     RotatedTabButton,
     CalendarPanel,
-    Calendar,
+    Calendar
 )
 
 from .services import (
@@ -43,7 +43,7 @@ from .services import (
     limpar_tudo,
     sair,
     abrir_arquivo,
-    salvar_como,
+    salvar_como
 )
 
 __all__ = [
@@ -91,5 +91,5 @@ __all__ = [
     "limpar_tudo",
     "sair",
     "abrir_arquivo",
-    "salvar_como",
+    "salvar_como"
 ]

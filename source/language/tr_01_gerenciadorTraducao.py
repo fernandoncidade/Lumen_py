@@ -37,6 +37,7 @@ class GerenciadorTraducao(QObject):
 
     def carregar_configuracao_idioma(self):
         config_path = self.obter_caminho_configuracao()
+
         try:
             if os.path.exists(config_path):
                 with open(config_path, 'r', encoding='utf-8') as f:
@@ -49,6 +50,7 @@ class GerenciadorTraducao(QObject):
 
     def salvar_configuracao_idioma(self):
         config_path = self.obter_caminho_configuracao()
+
         try:
             os.makedirs(os.path.dirname(config_path), exist_ok=True)
             config = {'idioma': self.idioma_atual}
@@ -191,6 +193,12 @@ class GerenciadorTraducao(QObject):
                     logger.error(f"Erro ao carregar arquivo de tradução: {caminho_traducao}")
 
             if self.idioma_atual == self.idioma_padrao and aplicou_app_trad:
+                try:
+                    QLocale.setDefault(QLocale(self.idioma_atual))
+
+                except Exception:
+                    pass
+
                 return True
 
             try:
@@ -200,19 +208,39 @@ class GerenciadorTraducao(QObject):
                 logger.debug(f"Erro ao tentar carregar qt translations: {e}", exc_info=True)
 
             if aplicou_app_trad:
+                try:
+                    QLocale.setDefault(QLocale(self.idioma_atual))
+
+                except Exception:
+                    pass
+
                 return True
 
             if self.idioma_atual == self.idioma_padrao:
+                try:
+                    QLocale.setDefault(QLocale(self.idioma_atual))
+
+                except Exception:
+                    pass
+
                 return True
 
             logger.warning(f"Arquivo de tradução não encontrado: {caminho_traducao}")
             logger.warning(f"Arquivos disponíveis em {self.dir_traducoes}:")
+
             try:
                 for arquivo in os.listdir(self.dir_traducoes):
                     logger.warning(f"  - {arquivo}")
 
             except Exception as e:
                 logger.error(f"Erro ao listar diretório: {e}", exc_info=True)
+
+            try:
+                QLocale.setDefault(QLocale(self.idioma_atual))
+                logger.debug(f"QLocale padrão definido para: {self.idioma_atual}")
+
+            except Exception as e:
+                logger.debug(f"Falha ao definir QLocale padrão: {e}", exc_info=True)
 
             return False
 

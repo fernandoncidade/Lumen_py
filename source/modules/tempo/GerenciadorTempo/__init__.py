@@ -23,5 +23,5 @@ __all__ = [
     "registrar_pomodoro",
     "cleanup",
     "__del__",
-    "atualizar_coluna_doing_timer",
+    "atualizar_coluna_doing_timer"
 ]

@@ -25,5 +25,5 @@ __all__ = [
     "resetar_ciclo",
     "pular_ciclo",
     "_aplicar_tema_dinamico",
-    "eventFilter",
+    "eventFilter"
 ]

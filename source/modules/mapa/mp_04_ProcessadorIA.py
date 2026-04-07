@@ -1,4 +1,5 @@
 from source.utils.LogManager import LogManager
+from typing import List, Dict, Tuple, Any
 
 try:
     from PySide6.QtCore import QCoreApplication
@@ -9,39 +10,39 @@ except Exception:
 logger = LogManager.get_logger()
 
 from source.modules.mapa.ProcessadorIA import (
-    _carregar_modelo_nlp as pia__carregar_modelo_nlp,
-    _detectar_idioma_texto as pia__detectar_idioma_texto,
-    extrair_texto_pdf as pia_extrair_texto_pdf,
-    extrair_texto_docx as pia_extrair_texto_docx,
-    extrair_texto_txt as pia_extrair_texto_txt,
-    extrair_texto as pia_extrair_texto,
-    analisar_estrutura as pia_analisar_estrutura,
-    _corrigir_caracteres_extraidos as pia__corrigir_caracteres_extraidos,
-    _corrigir_palavras_conhecidas as pia__corrigir_palavras_conhecidas,
-    _preprocessar_linhas as pia__preprocessar_linhas,
-    _linha_parece_sumario as pia__linha_parece_sumario,
-    _proximo_titulo as pia__proximo_titulo,
-    _remover_acentos as pia__remover_acentos,
-    _variantes_para_match as pia__variantes_para_match,
-    _detectar_secoes_avancado as pia__detectar_secoes_avancado,
-    _ajustar_niveis_relativos as pia__ajustar_niveis_relativos,
-    _e_titulo_maiusculas as pia__e_titulo_maiusculas,
-    _e_titulo_isolado as pia__e_titulo_isolado,
-    _inferir_nivel_titulo as pia__inferir_nivel_titulo,
-    _construir_arvore_hierarquica as pia__construir_arvore_hierarquica,
-    _processar_hierarquia_completa as pia__processar_hierarquia_completa,
-    _gerar_resumo_contextual as pia__gerar_resumo_contextual,
-    _extrair_conceitos_semanticos as pia__extrair_conceitos_semanticos,
-    _extrair_ideias_principais as pia__extrair_ideias_principais,
-    _extrair_conceitos_tfidf as pia__extrair_conceitos_tfidf,
-    _aplicar_tfidf_global as pia__aplicar_tfidf_global,
-    gerar_resumo_avancado as pia__gerar_resumo_avancado,
-    _load_sentence_transformer as pia__load_sentence_transformer,
-    get_sentence_embeddings as pia__get_sentence_embeddings,
-    gerar_resumo_semantico as pia__gerar_resumo_semantico,
-    _identificar_relacoes_semanticas as pia__identificar_relacoes_semanticas,
-    _identificar_relacoes_avancadas as pia__identificar_relacoes_avancadas,
-    _log_estrutura_completa as pia__log_estrutura_completa,
+    _carregar_modelo_nlp,
+    _detectar_idioma_texto,
+    extrair_texto_pdf,
+    extrair_texto_docx,
+    extrair_texto_txt,
+    extrair_texto,
+    _corrigir_caracteres_extraidos,
+    _corrigir_palavras_conhecidas,
+    _preprocessar_linhas,
+    _linha_parece_sumario,
+    _proximo_titulo,
+    _remover_acentos,
+    _variantes_para_match,
+    _detectar_secoes_avancado,
+    _ajustar_niveis_relativos,
+    _e_titulo_maiusculas,
+    _e_titulo_isolado,
+    _inferir_nivel_titulo,
+    _construir_arvore_hierarquica,
+    _processar_hierarquia_completa,
+    analisar_estrutura,
+    _gerar_resumo_contextual,
+    _extrair_conceitos_semanticos,
+    _extrair_ideias_principais,
+    _extrair_conceitos_tfidf,
+    _aplicar_tfidf_global,
+    gerar_resumo_avancado,
+    _load_sentence_transformer,
+    get_sentence_embeddings,
+    gerar_resumo_semantico,
+    _identificar_relacoes_semanticas,
+    _identificar_relacoes_avancadas,
+    _log_estrutura_completa
 )
 
 
@@ -60,36 +61,102 @@ class ProcessadorIA:
         except Exception as e:
             logger.error(f"Erro ao inicializar ProcessadorIA: {e}", exc_info=True)
 
-    _carregar_modelo_nlp = pia__carregar_modelo_nlp
-    _detectar_idioma_texto = pia__detectar_idioma_texto
-    extrair_texto_pdf = pia_extrair_texto_pdf
-    extrair_texto_docx = pia_extrair_texto_docx
-    extrair_texto_txt = pia_extrair_texto_txt
-    extrair_texto = pia_extrair_texto
-    analisar_estrutura = pia_analisar_estrutura
-    _corrigir_caracteres_extraidos = pia__corrigir_caracteres_extraidos
-    _corrigir_palavras_conhecidas = pia__corrigir_palavras_conhecidas
-    _preprocessar_linhas = pia__preprocessar_linhas
-    _linha_parece_sumario = pia__linha_parece_sumario
-    _proximo_titulo = pia__proximo_titulo
-    _remover_acentos = pia__remover_acentos
-    _variantes_para_match = pia__variantes_para_match
-    _detectar_secoes_avancado = pia__detectar_secoes_avancado
-    _ajustar_niveis_relativos = pia__ajustar_niveis_relativos
-    _e_titulo_maiusculas = pia__e_titulo_maiusculas
-    _e_titulo_isolado = pia__e_titulo_isolado
-    _inferir_nivel_titulo = pia__inferir_nivel_titulo
-    _construir_arvore_hierarquica = pia__construir_arvore_hierarquica
-    _processar_hierarquia_completa = pia__processar_hierarquia_completa
-    _gerar_resumo_contextual = pia__gerar_resumo_contextual
-    _extrair_conceitos_semanticos = pia__extrair_conceitos_semanticos
-    _extrair_ideias_principais = pia__extrair_ideias_principais
-    _extrair_conceitos_tfidf = pia__extrair_conceitos_tfidf
-    _aplicar_tfidf_global = pia__aplicar_tfidf_global
-    _gerar_resumo_avancado = pia__gerar_resumo_avancado
-    _load_sentence_transformer = pia__load_sentence_transformer
-    _get_sentence_embeddings = pia__get_sentence_embeddings
-    _gerar_resumo_semantico = pia__gerar_resumo_semantico
-    _identificar_relacoes_semanticas = pia__identificar_relacoes_semanticas
-    _identificar_relacoes_avancadas = pia__identificar_relacoes_avancadas
-    _log_estrutura_completa = pia__log_estrutura_completa
+    def _carregar_modelo_nlp(self):
+        _carregar_modelo_nlp(self)
+
+    def _detectar_idioma_texto(self, texto: str) -> str:
+        return _detectar_idioma_texto(self, texto)
+
+    def extrair_texto_pdf(self, caminho: str) -> str:
+        return extrair_texto_pdf(self, caminho)
+
+    def _corrigir_caracteres_extraidos(self, texto: str) -> str:
+        return _corrigir_caracteres_extraidos(self, texto)
+
+    def _corrigir_palavras_conhecidas(self, linha: str) -> str:
+        return _corrigir_palavras_conhecidas(self, linha)
+
+    def extrair_texto_docx(self, caminho: str) -> str:
+        return extrair_texto_docx(self, caminho)
+
+    def extrair_texto_txt(self, caminho: str) -> str:
+        return extrair_texto_txt(self, caminho)
+
+    def extrair_texto(self, caminho: str) -> str:
+        return extrair_texto(self, caminho)
+
+    def analisar_estrutura(self, texto: str) -> Dict:
+        return analisar_estrutura(self, texto)
+
+    def _preprocessar_linhas(self, texto: str) -> List[str]:
+        return _preprocessar_linhas(self, texto)
+
+    def _linha_parece_sumario(self, linha: str) -> bool:
+        return _linha_parece_sumario(self, linha)
+
+    def _proximo_titulo(self, linhas: List[str], idx: int) -> str:
+        return _proximo_titulo(self, linhas, idx)
+
+    def _remover_acentos(self, s: str) -> str:
+        return _remover_acentos(self, s)
+
+    def _variantes_para_match(self, linha: str) -> Dict[str, str]:
+        return _variantes_para_match(self, linha)
+
+    def _detectar_secoes_avancado(self, texto: str, idioma: str = 'pt') -> List[Dict]:
+        return _detectar_secoes_avancado(self, texto, idioma)
+
+    def _ajustar_niveis_relativos(self, secoes: List[Dict]) -> List[Dict]:
+        return _ajustar_niveis_relativos(self, secoes)
+
+    def _e_titulo_maiusculas(self, linha: str, linhas: List[str], idx: int) -> bool:
+        return _e_titulo_maiusculas(self, linha, linhas, idx)
+
+    def _e_titulo_isolado(self, linha: str, linhas: List[str], idx: int) -> bool:
+        return _e_titulo_isolado(self, linha, linhas, idx)
+
+    def _inferir_nivel_titulo(self, titulo: str, nivel_anterior: int, tem_parte: bool) -> int:
+        return _inferir_nivel_titulo(self, titulo, nivel_anterior, tem_parte)
+
+    def _construir_arvore_hierarquica(self, texto: str, secoes_raw: List[Dict]) -> Dict:
+        return _construir_arvore_hierarquica(self, texto, secoes_raw)
+
+    def _processar_hierarquia_completa(self, texto_completo: str, no: Dict, idioma: str):
+        return _processar_hierarquia_completa(self, texto_completo, no, idioma)
+
+    def _gerar_resumo_contextual(self, doc, texto: str, nivel: int, titulo: str, idioma: str) -> str:
+        return _gerar_resumo_contextual(self, doc, texto, nivel, titulo, idioma)
+
+    def _extrair_conceitos_semanticos(self, doc, texto: str, nivel: int) -> List[Dict]:
+        return _extrair_conceitos_semanticos(self, doc, texto, nivel)
+
+    def _extrair_ideias_principais(self, doc, texto: str, nivel: int) -> List[Dict]:
+        return _extrair_ideias_principais(self, doc, texto, nivel)
+
+    def _aplicar_tfidf_global(self, texto: str, arvore: Dict):
+        return _aplicar_tfidf_global(self, texto, arvore)
+
+    def _identificar_relacoes_semanticas(self, arvore: Dict) -> List[Tuple[str, str, str]]:
+        return _identificar_relacoes_semanticas(self, arvore)
+
+    def _log_estrutura_completa(self, no: Dict, nivel: int = 0):
+        return _log_estrutura_completa(self, no, nivel)
+
+    def _extrair_conceitos_tfidf(self, doc, texto: str, max_conceitos: int = 15) -> List[Dict]:
+        return _extrair_conceitos_tfidf(self, doc, texto, max_conceitos)
+
+    def _identificar_relacoes_avancadas(self, doc, conceitos: List[Dict]) -> List[Tuple[str, str, str]]:
+        return _identificar_relacoes_avancadas(self, doc, conceitos)
+
+    def gerar_resumo_avancado(self, caminho_arquivo: str, top_n: int = 5) -> Dict[str, Any]:
+        return gerar_resumo_avancado(self, caminho_arquivo, top_n)
+
+    def _load_sentence_transformer(self, model_name: str = 'all-MiniLM-L6-v2'):
+        return _load_sentence_transformer(self, model_name)
+
+    def get_sentence_embeddings(self, texts: List[str], model_name: str = 'all-MiniLM-L6-v2'):
+        return get_sentence_embeddings(self, texts, model_name)
+
+    def gerar_resumo_semantico(self, caminho_arquivo: str, top_n: int = 5, model_name: str = 'all-MiniLM-L6-v2') -> Dict[str, Any]:
+        return gerar_resumo_semantico(self, caminho_arquivo, top_n, model_name)
+    

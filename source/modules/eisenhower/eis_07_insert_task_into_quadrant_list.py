@@ -1,5 +1,6 @@
 from PySide6.QtCore import QCoreApplication, Qt
 from PySide6.QtGui import QFont
+from source.modules.eisenhower.services.svc_09_prioridade_display import prioridade_para_texto
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -56,7 +57,13 @@ def insert_task_into_quadrant_list(self, lst, item):
 
                 prio = data.get("priority")
                 if prio is not None and prio != "":
-                    tooltip_lines.append((get_text("Prioridade") or "Prioridade") + f": {prio}")
+                    try:
+                        prio_t = prioridade_para_texto(prio, self)
+
+                    except Exception:
+                        prio_t = str(prio)
+
+                    tooltip_lines.append((get_text("Prioridade") or "Prioridade") + f": {prio_t}")
 
                 if tooltip_lines:
                     try:
@@ -185,7 +192,13 @@ def insert_task_into_quadrant_list(self, lst, item):
 
             prio = data.get("priority")
             if prio is not None and prio != "":
-                tooltip_lines.append((get_text("Prioridade") or "Prioridade") + f": {prio}")
+                    try:
+                        prio_t = prioridade_para_texto(prio, self)
+
+                    except Exception:
+                        prio_t = str(prio)
+
+                    tooltip_lines.append((get_text("Prioridade") or "Prioridade") + f": {prio_t}")
 
             if tooltip_lines:
                 try:

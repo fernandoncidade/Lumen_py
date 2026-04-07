@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (QDialog, QHBoxLayout, QVBoxLayout, QCalendarWidge
 from PySide6.QtCore import Qt, QDate, QCoreApplication, QLocale, QSize, QObject, QEvent, QRect, QUrl
 from PySide6.QtGui import QPainter, QFontMetrics, QTextCharFormat, QBrush, QColor, QFont, QPalette, QDesktopServices
 from source.modules.eisenhower.services import show_context_menu
+from source.modules.eisenhower.services.svc_09_prioridade_display import prioridade_para_texto
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -470,7 +471,13 @@ class CalendarDialog(QDialog):
 
                     prio = task.get("priority")
                     if prio is not None and prio != "":
-                        tooltip_lines.append(f"{get_text('Prioridade') or 'Prioridade'}: {prio}")
+                        try:
+                            prio_t = prioridade_para_texto(prio, self)
+
+                        except Exception:
+                            prio_t = str(prio)
+
+                        tooltip_lines.append(f"{get_text('Prioridade') or 'Prioridade'}: {prio_t}")
 
                     if tooltip_lines:
                         try:

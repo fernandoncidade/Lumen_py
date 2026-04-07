@@ -1200,8 +1200,8 @@ This may take a few minutes.</translation>
     </message>
 
     <message>
-        <source>Mover para outro quadrante</source>
-        <translation>Move to another quadrant</translation>
+        <source>🔀 Mover para outro quadrante</source>
+        <translation>🔀 Move to another quadrant</translation>
     </message>
 
     <message>
@@ -2171,8 +2171,8 @@ Set 0 to repeat immediately after the audio finishes.</translation>
     </message>
 
     <message>
-      <source>Editar Tarefa...</source>
-      <translation>Edit Task...</translation>
+      <source>✏️ Editar Tarefa...</source>
+      <translation>✏️ Edit Task...</translation>
     </message>
 
     <message>
@@ -2213,6 +2213,81 @@ Set 0 to repeat immediately after the audio finishes.</translation>
     <message>
       <source>Lista Global de Tarefas:</source>
       <translation>Global Task List:</translation>
+    </message>
+
+    <message>
+      <source>1️⃣ Conceito</source>
+      <translation>1️⃣ Concept</translation>
+    </message>
+
+    <message>
+      <source>2️⃣ Explique</source>
+      <translation>2️⃣ Explain</translation>
+    </message>
+
+    <message>
+      <source>3️⃣ Lacunas</source>
+      <translation>3️⃣ Gaps</translation>
+    </message>
+
+    <message>
+      <source>4️⃣ Revisão</source>
+      <translation>4️⃣ Review</translation>
+    </message>
+
+    <message>
+      <source>✏️ Editar Tarefa</source>
+      <translation>✏️ Edit Task</translation>
+    </message>
+
+    <message>
+      <source>Título:</source>
+      <translation>Title:</translation>
+    </message>
+
+    <message>
+      <source>Prioridade:</source>
+      <translation>Priority:</translation>
+    </message>
+
+    <message>
+      <source>Descrição:</source>
+      <translation>Description:</translation>
+    </message>
+
+    <message>
+      <source>Sucesso</source>
+      <translation>Success</translation>
+    </message>
+
+    <message>
+      <source>Tarefa enviada com sucesso para ⏱️ Gestão de Tempo - Pomodoro!⏱️</source>
+      <translation>Task successfully sent to ⏱️ Time Management - Pomodoro!⏱️</translation>
+    </message>
+
+    <message>
+      <source>⏱️ Compartilhar com Pomodoro...</source>
+      <translation>⏱️ Share with Pomodoro...</translation>
+    </message>
+
+    <message>
+      <source>Tarefa removida com sucesso!</source>
+      <translation>Task successfully removed!</translation>
+    </message>
+
+    <message>
+      <source>🗂️ Compartilhar com Eisenhower</source>
+      <translation>🗂️ Share with Eisenhower</translation>
+    </message>
+
+    <message>
+      <source>Tarefa enviada com sucesso para 🗂️ Matriz Eisenhower! 🗂️</source>
+      <translation>Task successfully sent to 🗂️ Eisenhower Matrix! 🗂️</translation>
+    </message>
+
+    <message>
+      <source>Pomodoros concluídos:</source>
+      <translation>Pomodoros completed:</translation>
     </message>
 
   </context>

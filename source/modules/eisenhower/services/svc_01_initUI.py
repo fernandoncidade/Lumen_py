@@ -384,33 +384,33 @@ def init_ui(app):
     app.calendar_button.clicked.connect(app.open_calendar)
     input_layout_row1.addWidget(app.calendar_button)
 
-    def _update_integrate_time_button_text() -> None:
-        try:
-            if not hasattr(app, "integrate_time_button") or not app.integrate_time_button:
-                return
+    # def _update_integrate_time_button_text() -> None:
+    #     try:
+    #         if not hasattr(app, "integrate_time_button") or not app.integrate_time_button:
+    #             return
 
-            if app.integrate_time_button.isChecked():
-                app.integrate_time_button.setText(get_text("⏱️ Gestão de Tempo Conectado"))
+    #         if app.integrate_time_button.isChecked():
+    #             app.integrate_time_button.setText(get_text("⏱️ Gestão de Tempo Conectado"))
 
-            else:
-                app.integrate_time_button.setText(get_text("⏱️ Gestão de Tempo Desconectado"))
+    #         else:
+    #             app.integrate_time_button.setText(get_text("⏱️ Gestão de Tempo Desconectado"))
 
-        except Exception:
-            pass
+    #     except Exception:
+    #         pass
 
-    app._update_integrate_time_button_text = _update_integrate_time_button_text
+    # app._update_integrate_time_button_text = _update_integrate_time_button_text
 
-    app.integrate_time_button = QPushButton(get_text("⏱️ Gestão de Tempo Desconectado"))
-    app.integrate_time_button.setCheckable(True)
-    app.integrate_time_button.setChecked(False)
+    # app.integrate_time_button = QPushButton(get_text("⏱️ Gestão de Tempo Desconectado"))
+    # app.integrate_time_button.setCheckable(True)
+    # app.integrate_time_button.setChecked(False)
 
-    try:
-        app.integrate_time_button.toggled.connect(lambda _: _update_integrate_time_button_text())
+    # try:
+    #     app.integrate_time_button.toggled.connect(lambda _: _update_integrate_time_button_text())
 
-    except Exception:
-        pass
+    # except Exception:
+    #     pass
 
-    input_layout_row1.addWidget(app.integrate_time_button)
+    # input_layout_row1.addWidget(app.integrate_time_button)
 
     app.main_layout.addLayout(input_layout_row1)
     app.main_layout.addLayout(input_layout_row2)

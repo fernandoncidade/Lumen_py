@@ -19,7 +19,20 @@ def _on_event_bus_tarefa(self, dados: dict):
         if not titulo:
             return
 
-        self._adicionar_tarefa_integrada_do_tempo(titulo=titulo, prioridade=prioridade)
+        date_iso = payload.get("date") or payload.get("date_iso") or None
+        time_str = payload.get("time") or None
+        description = payload.get("description") or payload.get("desc") or None
+        file_path = payload.get("file_path") or None
+
+        try:
+            self._adicionar_tarefa_integrada_do_tempo(titulo=titulo, prioridade=prioridade, date=date_iso, time=time_str, description=description, file_path=file_path)
+
+        except Exception:
+            try:
+                self._adicionar_tarefa_integrada_do_tempo(titulo=titulo, prioridade=prioridade)
+
+            except Exception:
+                pass
 
     except Exception as e:
         logger.debug(f"Falha ao receber tarefa do Tempo no Eisenhower: {e}", exc_info=True)

@@ -3,7 +3,7 @@ from source.modules.mod_02_regua_foco import ReguaFoco
 from source.modules.mod_03_gerenciador_tempo import GerenciadorTempo
 from source.modules.mod_04_mapa_mental import MapaMental
 from source.modules.mod_05_metodo_feynman import MetodoFeynman
-from source.modules.mod_06_eisenhower import EisenhowerMatrixApp
+from source.modules.mod_06_eisenhower import MatrizEisenhower
 
 __all__ = [
     'LeitorAcessivel',
@@ -11,5 +11,5 @@ __all__ = [
     'MapaMental',
     'MetodoFeynman',
     'ReguaFoco',
-    'EisenhowerMatrixApp',
+    'MatrizEisenhower',
 ]

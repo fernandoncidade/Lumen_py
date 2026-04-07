@@ -26,5 +26,12 @@ def atualizar_traducoes(self):
         self.col_doing.setTitle(QCoreApplication.translate("App", "⚙️ Em Progresso"))
         self.col_done.setTitle(QCoreApplication.translate("App", "✅ Concluído"))
 
+        try:
+            if hasattr(self, 'atualizar_listas') and callable(self.atualizar_listas):
+                self.atualizar_listas()
+
+        except Exception as e:
+            logger.error(f"Erro ao atualizar listas: {str(e)}", exc_info=True)
+
     except Exception as e:
         logger.error(f"Erro ao atualizar traduções do GerenciadorTarefas: {str(e)}", exc_info=True)

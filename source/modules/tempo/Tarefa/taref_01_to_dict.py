@@ -11,7 +11,10 @@ def to_dict(self):
             'prioridade': self.prioridade,
             'status': self.status,
             'data_criacao': self.data_criacao,
-            'pomodoros': self.pomodoros_completados
+            'pomodoros': self.pomodoros_completados,
+            'file_path': getattr(self, 'file_path', None),
+            'date': getattr(self, 'date', None),
+            'time': getattr(self, 'time', None),
         }
 
     except Exception as e:

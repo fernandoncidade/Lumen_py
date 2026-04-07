@@ -18,5 +18,5 @@ __all__ = [
     "limpar_tudo",
     "sair",
     "abrir_arquivo",
-    "salvar_como",
+    "salvar_como"
 ]

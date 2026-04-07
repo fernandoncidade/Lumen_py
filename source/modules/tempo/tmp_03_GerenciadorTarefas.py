@@ -27,7 +27,7 @@ from source.modules.tempo.GerenciadorTarefas import (
     _ajustar_largura_combo,
     _aplicar_tema_dinamico_inputs,
     eventFilter,
-    _update_rounded_mask,
+    _update_rounded_mask
 )
 
 
@@ -47,6 +47,17 @@ class GerenciadorTarefas(QWidget):
             app = QCoreApplication.instance()
             if app:
                 app.installEventFilter(self)
+
+                try:
+                    if hasattr(app, 'gerenciador_traducao') and app.gerenciador_traducao is not None:
+                        try:
+                            app.gerenciador_traducao.idioma_alterado.connect(self.atualizar_traducoes)
+
+                        except Exception:
+                            pass
+
+                except Exception:
+                    pass
 
             self._aplicar_tema_dinamico_inputs()
 
@@ -80,11 +91,11 @@ class GerenciadorTarefas(QWidget):
     def adicionar_tarefa(self):
         return adicionar_tarefa(self)
 
-    def _adicionar_tarefa_interna(self, titulo: str, prioridade: str, status: str = "Todo", emitir_sinal: bool = True):
-        return _adicionar_tarefa_interna(self, titulo, prioridade, status, emitir_sinal)
+    def _adicionar_tarefa_interna(self, titulo: str, prioridade: str, status: str = "Todo", emitir_sinal: bool = True, description: str = None, file_path: str = None, date: str = None, time: str = None):
+        return _adicionar_tarefa_interna(self, titulo, prioridade, status, emitir_sinal, description, file_path, date, time)
 
-    def adicionar_tarefa_externa(self, titulo: str, prioridade: str = "Importante e Urgente") -> None:
-        return adicionar_tarefa_externa(self, titulo, prioridade)
+    def adicionar_tarefa_externa(self, titulo: str, prioridade: str = "Importante e Urgente", description: str = None, file_path: str = None, date: str = None, time: str = None) -> None:
+        return adicionar_tarefa_externa(self, titulo, prioridade, description, file_path, date, time)
 
     def mover_tarefa(self, item, status_atual):
         return mover_tarefa(self, item, status_atual)

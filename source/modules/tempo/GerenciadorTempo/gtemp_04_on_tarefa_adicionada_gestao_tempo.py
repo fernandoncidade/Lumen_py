@@ -19,6 +19,10 @@ def _on_tarefa_adicionada_gestao_tempo(self, dados: dict):
             "origin": "tempo",
             "titulo": titulo,
             "prioridade": Tarefa.normalizar_prioridade(prioridade),
+            "description": (dados or {}).get("description") or (dados or {}).get("desc") or None,
+            "file_path": (dados or {}).get("file_path") or None,
+            "date": (dados or {}).get("date") or (dados or {}).get("date_iso") or None,
+            "time": (dados or {}).get("time") or None,
         }
         get_event_bus().send_tarefa(payload)
 

@@ -47,5 +47,5 @@ __all__ = [
     "_ajustar_largura_combo",
     "_aplicar_tema_dinamico_inputs",
     "eventFilter",
-    "_update_rounded_mask",
+    "_update_rounded_mask"
 ]

@@ -1,9 +1,7 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QGroupBox, QProgressBar, QMessageBox
-from PySide6.QtCore import Qt, QTimer, Signal, QCoreApplication, QEvent
-from PySide6.QtGui import QFont, QIcon, QPalette
+from PySide6.QtWidgets import QWidget
+from PySide6.QtCore import QTimer, Signal, QCoreApplication
 from source.utils.LogManager import LogManager
 from source.utils.GerenciadorBotoesUI import GerenciadorBotoesUI
-from source.utils.IconUtils import get_icon_path
 from source.utils.SoundManager import SoundManager
 from source.modules.tempo.PomodoroTimer import (
     setup_ui,
@@ -18,7 +16,7 @@ from source.modules.tempo.PomodoroTimer import (
     resetar_ciclo,
     pular_ciclo,
     _aplicar_tema_dinamico,
-    eventFilter,
+    eventFilter
 )
 
 

@@ -15,10 +15,61 @@ def criar_coluna(self, status):
         lista.setDropIndicatorShown(True)
         lista.setDefaultDropAction(Qt.MoveAction)
         lista.setDragDropMode(QListWidget.DragDrop)
-
         lista.tarefas_soltadas.connect(self._on_drop_sincronizar)
-        lista.itemDoubleClicked.connect(lambda item: self.mover_tarefa(item, status))
 
+        def _open_linked_file(item):
+            try:
+                if item is None:
+                    return
+
+                tarefa_id = item.data(Qt.UserRole)
+                alvo = None
+                for t in getattr(self, 'tarefas', []):
+                    if getattr(t, 'id', None) == tarefa_id:
+                        alvo = t
+                        break
+
+                if not alvo:
+                    titulo_item = (item.text() or "").split('\n')[0]
+                    titulo_item = titulo_item.replace('🔴 ', '').replace('🟠 ', '').replace('🟡 ', '').replace('🟢 ', '').strip()
+                    for t in getattr(self, 'tarefas', []):
+                        if getattr(t, 'titulo', '').strip() == titulo_item:
+                            alvo = t
+                            break
+
+                if not alvo:
+                    return
+
+                path = getattr(alvo, 'file_path', None)
+                if not path:
+                    return
+
+                import os, subprocess
+                from PySide6.QtWidgets import QMessageBox
+
+                if os.path.exists(path):
+                    try:
+                        if os.name == 'nt':
+                            os.startfile(path)
+
+                        else:
+                            subprocess.Popen(["xdg-open", path])
+
+                    except Exception as e:
+                        logger.error(f"Erro ao abrir arquivo vinculado (Gestão de Tempo): {str(e)}", exc_info=True)
+                        try:
+                            subprocess.Popen([path], shell=True)
+
+                        except Exception as e2:
+                            logger.error(f"Erro ao abrir arquivo vinculado (Gestão de Tempo): {str(e2)}", exc_info=True)
+
+                else:
+                    QMessageBox.warning(self, "Erro", "Arquivo não encontrado.")
+
+            except Exception as e:
+                logger.error(f"Erro ao abrir arquivo vinculado (Gestão de Tempo): {str(e)}", exc_info=True)
+
+        lista.itemDoubleClicked.connect(lambda item: _open_linked_file(item))
         lista.setContextMenuPolicy(Qt.CustomContextMenu)
         lista.customContextMenuRequested.connect(lambda pos, l=lista: self.mostrar_menu_contexto(pos, l))
 
@@ -26,8 +77,8 @@ def criar_coluna(self, status):
             model = lista.model()
             model.rowsMoved.connect(lambda *args, l=lista: self._on_rows_moved(l))
 
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Erro ao conectar rowsMoved: {str(e)}", exc_info=True)
 
         layout.addWidget(lista)
         grupo.setLayout(layout)
@@ -46,11 +97,11 @@ def criar_coluna(self, status):
                 if callable(vp):
                     self._update_rounded_mask(grupo.lista.viewport(), max(0, radius - 2))
 
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error(f"Erro ao atualizar máscara arredondada da viewport: {str(e)}", exc_info=True)
 
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"Erro ao atualizar máscara arredondada do grupo: {str(e)}", exc_info=True)
 
         return grupo
 

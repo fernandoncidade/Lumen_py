@@ -1,4 +1,145 @@
 RELEASE NOTES — Lúmen
+Version: 2026.1.27.0
+Date: January 27, 2026
+Author: Fernando Nillsson Cidade
+
+Summary
+- Delivery focused on hardening and polishing the Eisenhower Matrix module and the Calendar panel: improvements to the edit flow via context menu, time-based ordering/grouping, calendar badges, locale and palette synchronization, non-blocking saving and defensive EventBus integration. Defensive fixes and expanded logging to avoid crashes in edge-case scenarios.
+
+Key changes and improvements
+
+1) Context menu and task editing (source/modules/eisenhower/services/svc_06_show_context_menu.py)
+- New / improved:
+  - Full context-menu actions: Edit Task (rich dialog with FileDropLineEdit), Edit Date/Time (dialog with checkboxes), Open Linked File (QDesktopServices + platform fallback), Move to Another Quadrant, and Remove Task.
+  - Edit Date/Time dialog:
+    - Checkboxes to link date and time; QDateEdit + QTimeEdit with calendar popup.
+    - Locale applied to QCalendarWidget; minimum heights applied to widgets; app palette considered to keep contrast.
+    - Changes correctly propagated back to the source item (including items originating from the CalendarDialog).
+  - Edit Task dialog:
+    - Title field, FileDropLineEdit (drag & drop), choose-file button (QFileDialog), remove file and rich description field (QTextEdit).
+    - Tooltip rebuilt; bold font when a file is attached; preservation of the check state.
+  - Open Linked File:
+    - Tries QDesktopServices.openUrl first; fallback to os.startfile (Windows) or xdg-open / subprocess on Unix, with detailed failure logging.
+  - Move to Quadrant:
+    - Destination quadrant selection, respects completed/pending state, blocks signals during operation and updates priority consistently.
+- Robustness and observability:
+  - Standardized try/except and LogManager usage with exc_info at critical points.
+  - Protections for placeholder items and null lists.
+
+2) Calendar panel and BadgeCalendarWidget (source/modules/eisenhower/ui/ui_07_Calendar.py)
+- BadgeCalendarWidget:
+  - Task-per-date counter implemented; badges drawn in QCalendarWidget cells with a visual cap "99+".
+  - Aggregated counts by week and month prepared for display/filtering.
+- CalendarDialog / CalendarPanel:
+  - Global list filterable by Day/Week/Month; sorting by date/time/text.
+  - Full tooltips (File/Date/Time/Description/Priority) and double-click support to open linked file (with robust fallback).
+  - Calendar locale synchronized with GerenciadorTraducao and with app date_input display format.
+  - Visual highlight (background + bold) on dates that have tasks; incremental updates of date formats.
+  - Filter controls update content dynamically.
+- UX / Integration:
+  - Calendar (with RotatedTabButton) supports expand/collapse; resizing respects screen limits.
+  - RotatedTabButton draws rotated text and toggles the panel on click.
+- Palette and theme:
+  - Palette/theme change handling to maintain contrast between base/alternate and widgets (lists, viewports).
+
+3) Insertion, grouping and time-based ordering (source/modules/eisenhower/eis_07_insert_task_into_quadrant_list.py)
+- Time-slot grouping:
+  - Non-selectable group headers marked via Qt.UserRole + 1 == "group_header".
+  - Dynamic creation and correct ordering of headers; ordered insertion within a group by time key and text.
+- Order and position:
+  - Insertion index computed to preserve chronological/alphabetical order within groups.
+- Tooltip and emphasis:
+  - Detailed tooltip (File/Date/Time/Description/Priority); items with attached files rendered bold and with differentiated color.
+- Tasks without time:
+  - Fallback handling (simple append) with appropriate tooltip.
+
+4) Movement between lists and synchronization with CalendarPanel (source/modules/eisenhower/ui/ui_03_move_item_between_lists.py and mod_06_eisenhower.py)
+- move_item_between_lists:
+  - Preserves original data in Qt.UserRole (text, date, time, file_path, description, priority) when moving.
+  - Determines priority based on destination list (1..4) and updates the payload.
+  - Preserves checkbox state; rebuilds tooltip on destination.
+  - Updates corresponding item in CalendarPanel (if present), synchronizing priority and tooltip.
+  - Placeholder handling: removes placeholder if the target contains only a placeholder before adding.
+  - Blocks signals during changes to avoid repaints and listener cascades.
+
+5) Removal of tasks and placeholders (source/modules/eisenhower/ui/ui_04_remove_task.py)
+- remove_task:
+  - Configurable confirmation via QMessageBox (localizable).
+  - Removal synchronized both in the displayed list and in the source when the item originated from the calendar (comparing text/date/time).
+  - Recreates appropriate placeholders in affected lists and calls app.save_tasks() + refresh of calendar_pane when applicable.
+  - Robust logging and defensive fallbacks.
+
+6) Non-blocking saving and persistence worker (source/modules/mod_06_eisenhower.py and eis_15_save_tasks_save.py)
+- Persistence worker:
+  - Implemented _EisenhowerWorker moved to a QThread with a request_save(path, tasks) signal to perform asynchronous JSON writes (ensure_ascii=False, indent=2).
+  - Thread errors are signaled and logged; app.aboutToQuit triggers safe worker stop.
+- save_tasks:
+  - Robust serialization of all lists (quadrant1..4 + completed) with metadata (file_path, description, priority).
+  - Emits request_save when worker is active; falls back to synchronous save when worker is not available.
+
+7) EventBus integration and duplicate prevention (source/modules/mod_06_eisenhower.py, source/modules/tempo)
+- _setup_integracao_gestao_tempo:
+  - Connects to get_event_bus() and registers handlers to send/receive tasks between Eisenhower and Time Management.
+  - When sending, includes integration_id (uuid4) and origin="eisenhower".
+- _on_event_bus_tarefa:
+  - Processes messages originating from "tempo" only; keeps a set _integracao_ids_recebidos to avoid duplicates.
+  - Adds integrated tasks with presence checks by title/priority.
+
+8) Localization and UI synchronization (source/language/tr_01_gerenciadorTraducao.py and various services/ui)
+- Consistent use of QCoreApplication.translate via get_text wrappers for all dynamic strings (buttons, menus, tooltips, messages).
+- Connection to gerenciador_traducao.idioma_alterado to retranslate UIs dynamically (Eisenhower, Calendar, Task Manager, Pomodoro).
+- date_input.displayFormat() used to generate user-readable strings in tooltips (conversion from ISODate to user format).
+
+9) Overall robustness, UX and defensive fixes
+- Increased try/except around I/O, parsing and UI operations to avoid crashes in restricted environments (e.g., missing openpyxl, PyPDF2, reportlab).
+- LogManager widely used for exc_info at critical points (editing, moves, file opening, writing).
+- Solid cross-platform fallbacks for opening files.
+- Adjustments to widget sizes / minimum heights in dialogs for predictable UI across platforms/resolutions.
+
+Impact on imports and performance
+- Asynchronous saving reduces I/O impact on the UI, avoiding stalls during drag-and-drop and edit operations.
+- Badge calculations and CalendarPanel updates are lazy (executed in update_task_list) to minimize work when the panel is not visible.
+- Blocking signals during list mutations reduces redundant repaints and side effects.
+
+Recommended tests
+- Context menu:
+  - Edit task, edit description, edit date/time (with and without date/time), open linked file on Windows/Mac/Linux; confirm tooltip and persistence.
+- Calendar:
+  - Verify badges for multiple tasks on the same day; test Day/Week/Month filters and highlight days with tasks.
+  - Expand/collapse the calendar panel and check main window resize behavior.
+- Movement and grouping:
+  - Create tasks with varied times and validate headers (group_header), ordering, and removal of empty headers after deleting items.
+- Saving:
+  - Save with active worker; verify JSON file created and metadata integrity.
+  - Test synchronous fallback when worker is unavailable and destination directory missing.
+- EventBus:
+  - Send/receive tasks between Time <-> Eisenhower modules; ensure duplicate prevention by integration_id.
+- Internationalization:
+  - Switch language at runtime (pt/en) and verify menus, dialogs and date formats update.
+- Robustness:
+  - Force I/O errors (permissions, missing files) and validate logs without UI crashes.
+
+Developer notes
+- Persistence:
+  - Date/time persisted as ISODate / "HH:mm" — preserve compatibility when changing serialization.
+- Sentinels:
+  - Group header sentinel uses Qt.UserRole + 1 == "group_header" — keep this when refactoring.
+- FileDropLineEdit:
+  - Edit dialog depends on FileDropLineEdit (API: setText, toolTip, drag support) — preserve behavior.
+- LogManager:
+  - get_logger() is used widely; keep low startup overhead.
+- CalendarPanel:
+  - Preserve the logic that searches/updates the corresponding item in the calendar tasks_list when moving/editing items.
+- Suggestions:
+  - Consider additional asynchronous handlers (e.g., thread pool) for parsing large files.
+  - For very large task volumes, evaluate virtualization/pagination of the tasks_list in the CalendarPanel.
+
+Final summary
+- This delivery strengthens the edit and task management flows in Eisenhower: a rich, safe context menu, calendar panel with badges and filters, time-based grouping with ordered headers, threaded saving to reduce blocking I/O, and protected EventBus integration. UX and hardening improvements (palette/locale/tooltips/file opening) reduce crash risk and increase predictable behavior across platforms.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.1.23.0
 Date: January 23, 2026
 Author: Fernando Nillsson Cidade

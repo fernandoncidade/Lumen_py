@@ -2,6 +2,12 @@ from PySide6.QtCore import Qt
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
+try:
+    from source.modules.eisenhower.ui.ui_05_save_tasks import save_tasks as _ui_save_tasks
+
+except Exception:
+    _ui_save_tasks = None
+
 def save_tasks_save(self):
     try:
         def _list_to_entries(lst):
@@ -63,10 +69,30 @@ def save_tasks_save(self):
 
             except Exception as e:
                 logger.error(f"Erro ao emitir sinal de salvar: {e}", exc_info=True)
-                globals()['save_tasks'](self)
+                if _ui_save_tasks is not None:
+                    _ui_save_tasks(self)
+
+                else:
+                    try:
+                        if hasattr(self, 'save_tasks') and callable(getattr(self, 'save_tasks')):
+                            logger.debug('Chamando método save_tasks da instância como fallback')
+                            getattr(self, 'save_tasks')()
+
+                    except Exception:
+                        pass
 
         else:
-            globals()['save_tasks'](self)
+            if _ui_save_tasks is not None:
+                _ui_save_tasks(self)
+
+            else:
+                try:
+                    if hasattr(self, 'save_tasks') and callable(getattr(self, 'save_tasks')):
+                        logger.debug('Chamando método save_tasks da instância como fallback')
+                        getattr(self, 'save_tasks')()
+
+                except Exception:
+                    pass
 
     except Exception as e:
         logger.error(f"Erro ao salvar tasks via thread: {e}", exc_info=True)

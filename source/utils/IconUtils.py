@@ -1,8 +1,8 @@
 import os
 import sys
 from functools import lru_cache
+import unicodedata
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 @lru_cache(maxsize=1)
@@ -60,8 +60,68 @@ def get_icon_path(icon_name):
                 logger.debug(f"✓ Ícone encontrado: {icon_path} ({file_size} bytes)")
                 return icon_path
 
-        logger.error(f"✗ Ícone '{icon_name}' NÃO encontrado em nenhum dos {len(possible_paths)} caminhos")
-        return None
+        try:
+            def _normalize(s: str) -> str:
+                if s is None:
+                    return ''
+
+                s = s.lower()
+                s = unicodedata.normalize('NFKD', s)
+                return ''.join(ch for ch in s if not unicodedata.combining(ch))
+
+            search_dirs = list({
+                os.path.join(base_path, "assets", "icones"),
+                os.path.join(base_path, "source", "assets", "icones"),
+                os.path.join(base_path, "icones"),
+                os.path.join(base_path, "_internal", "icones"),
+                os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "assets", "icones"))
+            })
+
+            norm_name = _normalize(icon_name)
+            logger.debug(f"Procurando fallback para ícone '{icon_name}' nos diretórios: {search_dirs}")
+
+            for d in search_dirs:
+                try:
+                    if not os.path.isdir(d):
+                        continue
+
+                    for root, _, files in os.walk(d):
+                        for f in files:
+                            stem, _ = os.path.splitext(f)
+                            if norm_name in _normalize(stem) or _normalize(stem) in norm_name:
+                                candidate = os.path.abspath(os.path.join(root, f))
+                                file_size = os.path.getsize(candidate)
+                                logger.warning(f"¡ Ícone aproximado encontrado para '{icon_name}': {candidate} ({file_size} bytes)")
+                                return candidate
+
+                except Exception:
+                    continue
+
+        except Exception as e:
+            logger.error(f"Erro no fallback de busca de ícone '{icon_name}': {e}", exc_info=True)
+
+        logger.error(f"✗ Ícone '{icon_name}' NÃO encontrado em nenhum dos {len(possible_paths)} caminhos e no fallback")
+
+        try:
+            placeholder_dir = os.path.join(base_path, "assets", "icones")
+            os.makedirs(placeholder_dir, exist_ok=True)
+            placeholder_file = os.path.join(placeholder_dir, f"missing_icon_{norm_name}.svg")
+            if not os.path.exists(placeholder_file):
+                svg_content = (
+                    '<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">'
+                    '<rect width="100%" height="100%" fill="transparent"/>'
+                    f'<text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" '
+                    'font-size="10" fill="#888">' + str(icon_name) + '</text></svg>'
+                )
+                with open(placeholder_file, 'w', encoding='utf-8') as fh:
+                    fh.write(svg_content)
+
+            logger.warning(f"Retornando placeholder para ícone '{icon_name}': {placeholder_file}")
+            return os.path.abspath(placeholder_file)
+
+        except Exception as e:
+            logger.error(f"Falha ao criar placeholder para ícone '{icon_name}': {e}", exc_info=True)
+            return None
 
     except Exception as e:
         logger.error(f"Erro ao obter caminho do ícone '{icon_name}': {e}", exc_info=True)

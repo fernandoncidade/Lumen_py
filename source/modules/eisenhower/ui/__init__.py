@@ -16,5 +16,5 @@ __all__ = [
     "CalendarDialog",
     "RotatedTabButton",
     "CalendarPanel",
-    "Calendar",
+    "Calendar"
 ]

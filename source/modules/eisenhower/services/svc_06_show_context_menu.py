@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import (QMenu, QInputDialog, QDialog, QVBoxLayout, QHBoxLayout, QTextEdit, QPushButton, QLabel, QDateEdit, 
-                               QTimeEdit, QCheckBox, QDialogButtonBox, QCalendarWidget, QApplication, QFileDialog, QLineEdit)
+                               QTimeEdit, QCheckBox, QDialogButtonBox, QCalendarWidget, QApplication, QFileDialog, QLineEdit, QMessageBox)
 from PySide6.QtGui import QAction, QColor, QPalette, QFont, QDesktopServices
 from PySide6.QtCore import QCoreApplication, Qt, QDate, QTime, QLocale, QUrl
 from source.modules.eisenhower.services.svc_01_initUI import FileDropLineEdit
+from source.modules.eisenhower.services.svc_09_prioridade_display import prioridade_para_texto
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -432,7 +433,13 @@ def _edit_date_time_dialog(app, item):
             try:
                 prio = new_data.get("priority")
                 if prio is not None and prio != "":
-                    tooltip_lines.append((get_text("Prioridade") or "Prioridade") + f": {prio}")
+                    try:
+                        prio_t = prioridade_para_texto(prio, app)
+
+                    except Exception:
+                        prio_t = str(prio)
+
+                    tooltip_lines.append((get_text("Prioridade") or "Prioridade") + f": {prio_t}")
 
             except Exception:
                 pass
@@ -538,195 +545,10 @@ def mostrar_menu_contexto(app, point, list_widget):
 
         menu = QMenu(list_widget)
 
-        try:
-            def _edit_description():
-                try:
-                    class DescriptionDialog(QDialog):
-                        def __init__(self, parent=None, initial_text=""):
-                            super().__init__(parent or app)
-                            self.setModal(True)
-                            self.setWindowTitle(get_text("Descrição da Tarefa") or "Descrição da Tarefa")
-                            layout = QVBoxLayout(self)
-                            layout.addWidget(QLabel(get_text("Adicione uma descrição para a tarefa:")))
-                            self.text = QTextEdit(self)
-                            self.text.setPlainText(initial_text or "")
-                            self.text.setMinimumSize(400, 150)
-                            layout.addWidget(self.text)
-                            btns = QHBoxLayout()
-                            btns.addStretch(1)
-                            btn_cancel = QPushButton(get_text("Cancelar") or "Cancelar")
-                            btn_ok = QPushButton(get_text("OK") or "OK")
-                            btn_cancel.clicked.connect(self.reject)
-                            btn_ok.clicked.connect(self.accept)
-                            btns.addWidget(btn_cancel)
-                            btns.addWidget(btn_ok)
-                            layout.addLayout(btns)
-
-                        def get_text(self):
-                            return self.text.toPlainText()
-
-                    current_data = item.data(Qt.UserRole) or {}
-                    existing = current_data.get("description", "")
-
-                    try:
-                        src_list = None
-                        src_item = None
-                        if isinstance(current_data, dict) and current_data.get("category"):
-                            src_list, src_item = _find_source_item_for_calendar(app, current_data)
-                            if src_list is None:
-                                src_list = list_widget
-                                src_item = item
-
-                        else:
-                            src_list = list_widget
-                            src_item = item
-
-                    except Exception:
-                        src_list = list_widget
-                        src_item = item
-
-                    dlg = DescriptionDialog(parent=app, initial_text=existing)
-                    if dlg.exec() == QDialog.Accepted:
-                        desc = dlg.get_text().strip()
-                        data = dict(current_data) if isinstance(current_data, dict) else {}
-                        if desc:
-                            data["description"] = desc
-
-                        else:
-                            data.pop("description", None)
-
-                        try:
-                            src_list.blockSignals(True)
-
-                        except Exception:
-                            pass
-
-                        try:
-                            src_item.setData(Qt.UserRole, data)
-
-                            tooltip_lines = []
-                            try:
-                                date_val = data.get("date")
-                                time_val = data.get("time")
-                                if date_val:
-                                    qd = QDate.fromString(date_val, Qt.ISODate)
-                                    if qd.isValid() and hasattr(app, "date_input"):
-                                        date_human = qd.toString(app.date_input.displayFormat())
-                                        tooltip_lines.append(f"{get_text('Data') or 'Data'}: {date_human}")
-                                        if time_val:
-                                            tooltip_lines.append(f"{get_text('Horário') or 'Horário'}: {time_val}")
-
-                            except Exception:
-                                pass
-
-                            try:
-                                fp = data.get("file_path")
-                                if fp:
-                                    tooltip_lines.append((get_text("Arquivo") or "Arquivo") + f": {fp}")
-
-                            except Exception:
-                                pass
-
-                            try:
-                                desc_full = data.get("description")
-                                if desc_full:
-                                    preview_lines = [ln for ln in desc_full.splitlines() if ln.strip()]
-                                    preview = "\n".join(preview_lines[:3])
-                                    if preview:
-                                        tooltip_lines.append((get_text("Descrição") or "Descrição") + ":")
-                                        tooltip_lines.append(preview)
-
-                            except Exception:
-                                pass
-
-                            try:
-                                prio = data.get("priority")
-                                if prio is not None and prio != "":
-                                    tooltip_lines.append((get_text("Prioridade") or "Prioridade") + f": {prio}")
-
-                            except Exception:
-                                pass
-
-                            if tooltip_lines:
-                                src_item.setToolTip("\n".join(tooltip_lines))
-
-                        finally:
-                            try:
-                                src_list.blockSignals(False)
-
-                            except Exception:
-                                pass
-
-                        try:
-                            app.save_tasks()
-
-                        except Exception:
-                            pass
-
-                        try:
-                            if item is not None and item is not src_item:
-                                try:
-                                    item.setData(Qt.UserRole, data)
-                                    if tooltip_lines:
-                                        item.setToolTip("\n".join(tooltip_lines))
-
-                                except Exception:
-                                    pass
-
-                        except Exception:
-                            pass
-
-                        try:
-                            if hasattr(app, "calendar_pane") and app.calendar_pane:
-                                app.calendar_pane.calendar_panel.update_task_list()
-
-                        except Exception:
-                            pass
-
-                except Exception as e:
-                    logger.error(f"Erro no diálogo de descrição: {e}", exc_info=True)
-
-            descricao_acao = QAction(get_text("Adicionar/Editar Descrição...") or "Adicionar/Editar Descrição...", app)
-            descricao_acao.triggered.connect(_edit_description)
-            menu.addAction(descricao_acao)
-
-        except Exception:
-            pass
-
-        try:
-            current_data = item.data(Qt.UserRole) or {}
-            fp = current_data.get("file_path")
-            if fp:
-                abrir_acao = QAction(get_text("Abrir Arquivo Vinculado...") or "Abrir Arquivo Vinculado...", app)
-                def _abrir_arquivo():
-                    try:
-                        QDesktopServices.openUrl(QUrl.fromLocalFile(fp))
-
-                    except Exception:
-                        try:
-                            import os, subprocess, sys
-                            if sys.platform.startswith("win"):
-                                os.startfile(fp)
-
-                            elif sys.platform.startswith("darwin"):
-                                subprocess.Popen(["open", fp])
-
-                            else:
-                                subprocess.Popen(["xdg-open", fp])
-
-                        except Exception as e:
-                            logger.error(f"Falha ao abrir arquivo vinculado: {e}", exc_info=True)
-
-                abrir_acao.triggered.connect(_abrir_arquivo)
-                menu.addAction(abrir_acao)
-
-        except Exception:
-            pass
-
         def _edit_task():
             try:
                 class EditTaskDialog(QDialog):
-                    def __init__(self, parent=None, initial_text="", initial_file="", initial_description=""):
+                    def __init__(self, parent=None, initial_text="", initial_file="", initial_description="", initial_date=None, initial_time=None):
                         super().__init__(parent or app)
                         self.setModal(True)
                         self.setWindowTitle(get_text("Editar Tarefa") or "Editar Tarefa")
@@ -767,8 +589,35 @@ def mostrar_menu_contexto(app, point, list_widget):
                                 pass
 
                         btn_clear.clicked.connect(_clear)
+                        btn_open = QPushButton(get_text("Abrir") or "Abrir")
+
+                        def _open_file():
+                            fp = self.file_field.toolTip() or None
+                            if not fp:
+                                return
+
+                            try:
+                                QDesktopServices.openUrl(QUrl.fromLocalFile(fp))
+
+                            except Exception:
+                                try:
+                                    import os, subprocess, sys
+                                    if sys.platform.startswith("win"):
+                                        os.startfile(fp)
+
+                                    elif sys.platform.startswith("darwin"):
+                                        subprocess.Popen(["open", fp])
+
+                                    else:
+                                        subprocess.Popen(["xdg-open", fp])
+
+                                except Exception:
+                                    pass
+
+                        btn_open.clicked.connect(_open_file)
                         hl.addWidget(btn_choose)
                         hl.addWidget(btn_clear)
+                        hl.addWidget(btn_open)
                         layout.addLayout(hl)
 
                         layout.addWidget(QLabel(get_text("Descrição (opcional):")))
@@ -776,6 +625,70 @@ def mostrar_menu_contexto(app, point, list_widget):
                         self.desc.setPlainText(initial_description or "")
                         self.desc.setMinimumHeight(120)
                         layout.addWidget(self.desc)
+
+                        row_date = QHBoxLayout()
+                        self.cb_date = QCheckBox(get_text("Vincular data"), self)
+                        self.de = QDateEdit(self)
+                        self.de.setCalendarPopup(True)
+                        self.de.setDisplayFormat(app.date_input.displayFormat() if hasattr(app, "date_input") else "dd/MM/yyyy")
+                        self.de.setDate(QDate.currentDate())
+                        _apply_widget_min_height(app, self.de, "dialog_date_edit")
+                        _apply_locale_to_dateedit(app, self.de)
+
+                        try:
+                            self.cb_date.setChecked(True)
+
+                        except Exception:
+                            pass
+
+                        row_date.addWidget(self.cb_date)
+                        row_date.addWidget(self.de)
+                        layout.addLayout(row_date)
+
+                        row_time = QHBoxLayout()
+                        self.cb_time = QCheckBox(get_text("Vincular horário"), self)
+                        self.te = QTimeEdit(self)
+                        self.te.setDisplayFormat("HH:mm")
+                        self.te.setTime(QTime.currentTime())
+                        _apply_widget_min_height(app, self.te, "dialog_time_edit")
+
+                        try:
+                            self.cb_time.setChecked(True)
+
+                        except Exception:
+                            pass
+
+                        row_time.addWidget(self.cb_time)
+                        row_time.addWidget(self.te)
+                        layout.addLayout(row_time)
+
+                        if initial_date:
+                            try:
+                                qd = QDate.fromString(initial_date, Qt.ISODate)
+                                if qd.isValid():
+                                    self.cb_date.setChecked(True)
+                                    self.de.setDate(qd)
+
+                            except Exception:
+                                pass
+
+                        if initial_time:
+                            try:
+                                qt = QTime.fromString(initial_time, "HH:mm")
+                                if qt.isValid():
+                                    self.cb_time.setChecked(True)
+                                    self.te.setTime(qt)
+
+                            except Exception:
+                                pass
+
+                        def _sync_time_enabled():
+                            self.de.setEnabled(self.cb_date.isChecked())
+                            self.te.setEnabled(self.cb_date.isChecked() and self.cb_time.isChecked())
+
+                        self.cb_date.toggled.connect(lambda _: _sync_time_enabled())
+                        self.cb_time.toggled.connect(lambda _: _sync_time_enabled())
+                        _sync_time_enabled()
 
                         btns = QHBoxLayout()
                         btns.addStretch(1)
@@ -789,7 +702,14 @@ def mostrar_menu_contexto(app, point, list_widget):
 
                     def get_values(self):
                         fp = self.file_field.toolTip() or None
-                        return self.title.text().strip(), fp, self.desc.toPlainText().strip()
+                        new_date_iso = None
+                        new_time_str = None
+                        if self.cb_date.isChecked():
+                            new_date_iso = self.de.date().toString(Qt.ISODate)
+                            if self.cb_time.isChecked():
+                                new_time_str = self.te.time().toString("HH:mm")
+
+                        return self.title.text().strip(), fp, self.desc.toPlainText().strip(), new_date_iso, new_time_str
 
                 data = item.data(Qt.UserRole) or {}
 
@@ -814,11 +734,13 @@ def mostrar_menu_contexto(app, point, list_widget):
                 initial_file = data.get("file_path") or ""
                 initial_desc = data.get("description") or ""
 
-                dlg = EditTaskDialog(parent=app, initial_text=initial_text, initial_file=initial_file, initial_description=initial_desc)
+                initial_date = data.get("date")
+                initial_time = data.get("time")
+                dlg = EditTaskDialog(parent=app, initial_text=initial_text, initial_file=initial_file, initial_description=initial_desc, initial_date=initial_date, initial_time=initial_time)
                 if dlg.exec() != QDialog.Accepted:
                     return
 
-                new_text, new_file_path, new_desc = dlg.get_values()
+                new_text, new_file_path, new_desc, new_date_iso, new_time_str = dlg.get_values()
                 if not new_text:
                     return
 
@@ -835,6 +757,18 @@ def mostrar_menu_contexto(app, point, list_widget):
 
                 else:
                     new_data.pop("description", None)
+
+                if new_date_iso is not None:
+                    new_data["date"] = new_date_iso
+
+                else:
+                    new_data.pop("date", None)
+
+                if new_time_str is not None:
+                    new_data["time"] = new_time_str
+
+                else:
+                    new_data.pop("time", None)
 
                 date_iso = new_data.get("date")
                 time_str = new_data.get("time")
@@ -929,17 +863,83 @@ def mostrar_menu_contexto(app, point, list_widget):
             except Exception as e:
                 logger.error(f"Erro ao editar tarefa via menu: {e}", exc_info=True)
 
-        editar_data_acao = QAction(get_text("Editar data/horário..."), app)
-        editar_data_acao.triggered.connect(lambda: _edit_date_time_dialog(app, item))
-        menu.addAction(editar_data_acao)
-
-        editar_acao = QAction(get_text("Editar Tarefa...") or "Editar Tarefa...", app)
+        editar_acao = QAction(get_text("✏️ Editar Tarefa...") or "✏️ Editar Tarefa...", app)
         editar_acao.triggered.connect(_edit_task)
         menu.addAction(editar_acao)
 
         try:
+            compartilhar_acao = QAction(get_text("⏱️ Compartilhar com Pomodoro...") or "⏱️ Compartilhar com Pomodoro...", app)
+
+            def _compartilhar():
+                try:
+                    from uuid import uuid4
+                    from source.utils.EventBus import get_event_bus
+                    from source.modules.tempo.tmp_01_Tarefa import Tarefa
+
+                    data = item.data(Qt.UserRole) or {}
+                    titulo = (data.get("text") or _base_text_from_item(item) or "").strip()
+                    if not titulo:
+                        return
+
+                    pr = data.get("priority") or data.get("prioridade")
+                    if isinstance(pr, (int, float)) or (isinstance(pr, str) and str(pr).isdigit()):
+                        try:
+                            pnum = int(pr)
+
+                        except Exception:
+                            pnum = 1
+
+                        mapa = {
+                            1: "🔴 Importante e Urgente",
+                            2: "🟠 Importante, mas Não Urgente",
+                            3: "🟡 Não Importante, mas Urgente",
+                            4: "🟢 Não Importante e Não Urgente",
+                        }
+                        prioridade_raw = mapa.get(pnum, mapa[1])
+
+                    else:
+                        prioridade_raw = pr or "Importante e Urgente"
+
+                    prioridade_norm = Tarefa.normalizar_prioridade(prioridade_raw)
+                    date_iso = data.get("date")
+                    time_str = data.get("time")
+                    description = data.get("description") or data.get("desc") or None
+                    file_path = data.get("file_path") or None
+
+                    payload = {
+                        "integration_id": str(uuid4()),
+                        "origin": "eisenhower",
+                        "titulo": titulo,
+                        "prioridade": prioridade_norm,
+                        "date": date_iso,
+                        "time": time_str,
+                        "description": description,
+                        "file_path": file_path,
+                    }
+
+                    try:
+                        get_event_bus().send_tarefa(payload)
+                        try:
+                            QMessageBox.information(app, get_text("Sucesso") or "Sucesso", get_text("Tarefa enviada com sucesso para ⏱️ Gestão de Tempo - Pomodoro!⏱️"))
+
+                        except Exception:
+                            pass
+
+                    except Exception as e:
+                        logger.debug(f"Falha ao enviar tarefa ao Gerenciador de Tempo: {e}", exc_info=True)
+
+                except Exception as e:
+                    logger.error(f"Erro ao compartilhar tarefa com Pomodoro: {e}", exc_info=True)
+
+            compartilhar_acao.triggered.connect(_compartilhar)
+            menu.addAction(compartilhar_acao)
+
+        except Exception:
+            pass
+
+        try:
             opts = _quadrant_options(app)
-            mover_menu = QMenu(get_text("Mover para outro quadrante"), app)
+            mover_menu = QMenu(get_text("🔀 Mover para outro quadrante"), app)
 
             try:
                 data_for_resolution = item.data(Qt.UserRole) or {}
@@ -1001,12 +1001,12 @@ def mostrar_menu_contexto(app, point, list_widget):
             menu.addMenu(mover_menu)
 
         except Exception:
-            mover_acao = QAction(get_text("Mover para outro quadrante"), app)
+            mover_acao = QAction(get_text("🔀 Mover para outro quadrante"), app)
             mover_acao.triggered.connect(lambda: _move_to_quadrant(app, item, list_widget))
             menu.addAction(mover_acao)
 
         menu.addSeparator()
-        remover_acao = QAction(get_text("Remover Tarefa"), app)
+        remover_acao = QAction(get_text("🗑️ Remover Tarefa"), app)
 
         try:
             current_data_for_removal = item.data(Qt.UserRole) or {}

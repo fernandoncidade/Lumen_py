@@ -2,7 +2,7 @@ from PySide6.QtCore import Qt
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
-def _adicionar_tarefa_integrada_do_tempo(self, titulo: str, prioridade: str):
+def _adicionar_tarefa_integrada_do_tempo(self, titulo: str, prioridade: str, date: str = None, time: str = None, description: str = None, file_path: str = None):
     try:
         lst = self._lista_por_prioridade(prioridade)
         if lst is None:
@@ -29,10 +29,40 @@ def _adicionar_tarefa_integrada_do_tempo(self, titulo: str, prioridade: str):
             lst.clear()
 
         from PySide6.QtWidgets import QListWidgetItem
-        task_item = QListWidgetItem(titulo)
+
+        display_text = titulo
+        date_human = None
+        if date:
+            try:
+                from PySide6.QtCore import QDate
+                qd = QDate.fromString(date, Qt.ISODate)
+                if qd.isValid() and hasattr(self, "date_input"):
+                    date_human = qd.toString(self.date_input.displayFormat())
+
+                else:
+                    date_human = date
+
+            except Exception:
+                date_human = date
+
+            if time:
+                display_text = f"{titulo} — {date_human} {time}"
+
+            else:
+                display_text = f"{titulo} — {date_human}"
+
+        task_item = QListWidgetItem(display_text)
         task_item.setFlags(task_item.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsSelectable | Qt.ItemIsEnabled)
         task_item.setCheckState(Qt.Unchecked)
-        task_item.setData(Qt.UserRole, {"text": titulo, "date": None, "time": None})
+        task_item.setData(Qt.UserRole, {
+            "text": titulo,
+            "date": date,
+            "time": time,
+            "description": description,
+            "file_path": file_path,
+            "prioridade": prioridade,
+            "priority": prioridade,
+        })
 
         if hasattr(self, "insert_task_into_quadrant_list"):
             self.insert_task_into_quadrant_list(lst, task_item)
