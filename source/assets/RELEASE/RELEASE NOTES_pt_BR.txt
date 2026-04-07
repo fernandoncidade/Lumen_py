@@ -1,4 +1,17 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.10.0
+Data: 10 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- Seleção de texto em PDF melhorada; renderização e navegação mais suaves.
+
+O que muda para você
+- Selecionar, copiar e navegar em PDFs está mais preciso e rápido.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.8.0
 Data: 8 de janeiro de 2026
 Autor: Fernando Nillsson Cidade
@@ -12,7 +25,7 @@ O que muda para você
 _________________________________________________
 
 NOTAS DE LANÇAMENTO — Lúmen
-Versão: 2026.1.2.0
+Versão: 2026.1.3.0
 Data: 3 de janeiro de 2026
 Autor: Fernando Nillsson Cidade
 
