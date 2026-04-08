@@ -1,4 +1,57 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.12.0
+Date: February 12, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Update focused on improving integration between Mind Maps and the Feynman Method, making node and concept editing more reliable, and strengthening automatic saving of the Mind Map. Includes visual refinements to respect the system theme and fixes that prevent repeated behavior when attaching/removing files.
+
+Main improvements
+- Mind Maps → Feynman integration
+  - Concepts sent from the map are integrated safely: empty titles or concepts without notes are ignored, duplicate concepts are merged preserving history, and changes appear immediately in the study list.
+  - Improved identification and normalization of fields to avoid invalid entries.
+
+- Node editing and attachments
+  - Centralized node edit dialog to edit text and notes and to attach/remove files in a predictable way.
+  - Support for opening a linked file with Ctrl+double-click.
+  - Fixed behavior that caused actions to execute multiple times when attaching/removing files repeatedly.
+
+- Feynman Method experience and usability
+  - Fields and lists better follow the system palette/theme, reducing visual artifacts when switching between light/dark modes.
+  - Translations and interface texts update without losing the selected domain level.
+  - More informative tooltips and organized editing areas to facilitate reading and navigation between Concept → Explain → Gaps → Review.
+  - More robust concept selection even when the list shows only the summarized text.
+
+- Concept management
+  - Deletion with confirmation for multiple selection and safe removal of selected items.
+  - Context menu to quickly adjust the domain level (Beginner / Intermediate / Advanced) with immediate interface update.
+
+- Mind Map persistence and backup
+  - Serialization more tolerant to missing data and that preserves layout metadata.
+  - Optimized automatic backup: avoids rewriting when there was no effective change, reducing redundant I/O.
+  - Configurable backup timer and safer handling against concurrency.
+
+Bug fixes (main)
+- Prevents duplication of integrations and invalid entries when receiving data from the map.
+- Prevents accumulation of repeated actions when attaching or removing attachments multiple times.
+- Removes visual artifacts caused by improper application of palette on some controls.
+- Automatic backup does not rewrite the file when there was no significant change.
+- Opening linked files via shortcut (Ctrl+double-click) is reliable.
+
+Quick checks
+1. Send a concept from the Mind Map to the Feynman Method: confirm creation or update and immediate visibility in the list.
+2. Open the node edit dialog, attach and remove a file several times, and verify each action occurs only once.
+3. Press Ctrl+double-click on a node with an attachment to open the file.
+4. Switch the system theme (light/dark) and check there are no rectangles or artifacts in fields and lists.
+5. Modify the map, wait for backup, and confirm the backup file is not rewritten if nothing relevant changed.
+
+Notes
+- The update prioritizes reliability and user experience; existing workflows remain unchanged.
+- If unexpected behavior occurs, reproduce the step and check the logs for diagnosis.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.11.0
 Date: February 11, 2026
 Author: Fernando Nillsson Cidade

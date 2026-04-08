@@ -1,4 +1,104 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.12.0
+Data: 12 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em integração entre Mapas Mentais ↔ Método Feynman, melhorias de usabilidade/robustez na edição de nós e conceitos, e refinamentos no persistente/backup do Mapa Mental. Inclui sincronização de paleta/tema no módulo Feynman, tratamento defensivo de cargas/seleções e ajustes para evitar leaks de handlers em diálogos de nó.
+
+Melhorias principais
+1. Integração Mapas → Método Feynman
+   - Endpoint de recepção de conceitos (fey_13_receber_conceito_mapa_mental.py):
+     - Novo fluxo para integrar conceitos enviados pelo Mapa Mental: valida título/explicação, normaliza campos (explicacao, lacunas, revisao, dominio) e faz merge quando conceito já existe (atualiza revisão, preserva ou concatena explicações conforme conteúdo).
+     - Evita duplicatas e mantém historicidade das notas; grava e atualiza UI imediatamente (salvar_conceitos / atualizar_lista).
+     - Logging informativo com fallback caso event_bus não esteja disponível.
+
+2. Edição e diálogo de nó com vínculo de arquivo
+   - Duplo-clique em NoConceito abre diálogo de edição aprimorado (nocon_04_mouseDoubleClickEvent.py):
+     - Suporte CTRL+duplo-clique para abrir arquivo vinculado via QDesktopServices.openUrl.
+     - Diálogo centralizado para editar texto, notas e associar/remover arquivo; botões atualizam handlers dinamicamente desconectando handlers anteriores para evitar múltiplas conexões e leaks.
+     - Botão "Integrar ao Método Feynman" envia payload estruturado ao event_bus com fallback para sinal local, e confirma integração ao usuário.
+
+3. Robustez e UX no Método Feynman
+   - Setup UI e sincronização de paleta (fey_03_setup_ui.py):
+     - Aplica QPalette baseada em QPalette.Window aos QTextEdit/QListWidget/QComboBox do módulo, com tratamento de view()/viewport() para widgets compostos.
+     - Instala filtro de eventos que reaplica paleta em ApplicationPaletteChange/PaletteChange/StyleChange, evitando uso de stylesheets e vazamentos visuais.
+   - Atualização de traduções e texto do UI (fey_04_atualizar_traducoes.py):
+     - Strings traduzidas centralmente; combo de domínio preserva índice atual ao atualizar itens.
+   - Seleção, exibição e tooltips (fey_10_atualizar_lista.py / fey_08_selecionar_conceito.py):
+     - Formatação de tooltips com blocos (Conceito / Explique / Lacunas / Revisão), extração segura das primeiras linhas, e uso de Qt.UserRole para payload persistente.
+     - Seleção robusta: recuperação segura do conceito via UserRole ou parsing do texto do item.
+
+4. Gerenciamento de conceitos (exclusão / domínio)
+   - Exclusão com confirmação (fey_09_deletar_conceito.py):
+     - Diálogo de confirmação multi-seleção com mensagens traduzidas; coleta e deduplicação de títulos antes de persistir a remoção.
+   - Menu de contexto para redefinir domínio (fey_12_menu_contexto.py):
+     - Menu contextual com ações (Iniciante/Intermediário/Avançado) que atualizam payload em UserRole ou na lista interna, persistem alterações e atualizam UI; atualizações defensivas para manter combo_dominio sincronizado quando conceito atual está aberto.
+
+5. Persistência defensiva do Mapa Mental / Backup automático
+   - Serialização segura (mm_36_backup_runtime.py):
+     - _serializar_mapa converte atributos complexos em payloads seguros (primitivos, listas, dicts), inclui metadados de layout (sceneRect, grid, transform, zoom) e mapeia hierarquia por índices.
+     - Proteções para atributos opcionais (_lumen_*), leitura segura de scene/view e tolerância a missing values.
+   - Backup automático por hash (mm_36_backup_runtime.py):
+     - Cálculo SHA256 do JSON serializado para evitar escritas redundantes; flag _lumen_backup_paused e _lumen_backup_last_hash para controlar concorrência/I/O.
+     - Timer configurável (_configurar_backup_automatico) que dispara _salvar_backup_automatico de forma segura.
+
+Correções de bugs
+1. Leaks de handlers em diálogos de nó
+   - Ao atualizar botões de abrir/vincular arquivo, handlers anteriores são desconectados antes de nova conexão, evitando múltiplas invocações ao longo do tempo.
+
+2. Integração Feynman com payload inconsistente
+   - Normalização defensiva nos campos recebidos de Mapas Mentais; ignorados conceitos sem título ou sem explicação para evitar entradas inválidas.
+
+3. Paleta/tema causando vazamentos visuais
+   - Aplicação condicional de palette apenas em widgets e view()/viewport() existentes; evita setAutoFillBackground indiscriminado em widgets nativos.
+
+4. Escrita de backup redundante
+   - Hash do JSON previne regravação quando não há mudança no mapa.
+
+Arquivos principais alterados / adicionados nesta entrega
+- source/modules/feynman/fey_03_setup_ui.py
+- source/modules/feynman/fey_04_atualizar_traducoes.py
+- source/modules/feynman/fey_08_selecionar_conceito.py
+- source/modules/feynman/fey_09_deletar_conceito.py
+- source/modules/feynman/fey_10_atualizar_lista.py
+- source/modules/feynman/fey_12_menu_contexto.py
+- source/modules/feynman/fey_13_receber_conceito_mapa_mental.py
+- source/modules/mapa/NoConceito/nocon_04_mouseDoubleClickEvent.py
+- source/modules/mapa/MapaMental/mm_36_backup_runtime.py
+
+Recomendações de validação (tests & verificação)
+- Integração Mapas → Feynman:
+  1. Enviar conceito com título e notas a partir do Mapa Mental; confirmar criação ou merge no Método Feynman, persistência e atualização da lista.
+  2. Enviar payloads incompletos (sem título / sem explicação) e verificar que são ignorados sem crash.
+
+- Edição de nó / Vínculo de arquivo:
+  1. CTRL+duplo-clique num nó com arquivo vinculado: arquivo deve abrir (QDesktopServices).
+  2. Vincular/remover arquivo no diálogo repetidamente e confirmar que handlers não acumulam invocações.
+
+- UI / Paleta:
+  1. Alternar tema do sistema (claro/escuro) e verificar reaplicação de paleta nos campos do Método Feynman (QTextEdit/QListWidget/QComboBox).
+  2. Conferir ausência de retângulos de fundo indesejados em widgets nativos.
+
+- Backup Mapa Mental:
+  1. Modificar mapa e observar criação de mapa_mental.json no caminho persistente; reaplicar sem mudanças e validar que não há regravação de arquivo quando o hash não muda.
+  2. Fornecer arquivo JSON com índices de nós inválidos e validar que o carregamento (ou restauração parcial) não causa crash.
+
+Notas técnicas
+- Comunicação entre módulos usa event_bus.send_conceito quando disponível; há fallback para emissão de sinal local para compatibilidade.
+- Todas as manipulações de cor usam QPalette (sem setStyleSheet), com verificações callable(view)/callable(viewport) para prevenir exceções em diferentes versões PySide6.
+- Logging detalhado (logger.info/debug/error com exc_info) em pontos sensíveis: integração de conceitos, persistência de mapa, abertura/vínculo de arquivos e operações de UI.
+- Serialização do mapa prioriza interoperabilidade (payloads simples, versão explícita) e tolerância a atributos desconhecidos.
+
+Próximos passos sugeridos
+1. Testes automatizados para fluxo Mapas→Feynman e mocks do event_bus.
+2. Expor preferências de integração (confirmar integração automático / perguntar).
+3. Adicionar testes de regressão para backup (hash + concorrência) e cenários de arquivo corrompido.
+4. Considerar feedback visual após integração de conceito (notificação/undo rápido).
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.11.0
 Data: 11 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

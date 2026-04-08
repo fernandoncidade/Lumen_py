@@ -367,6 +367,11 @@
     </message>
 
     <message>
+      <source>Deseja realmente deletar os {n} conceitos selecionados?</source>
+      <translation>Deseja realmente deletar os {n} conceitos selecionados?</translation>
+    </message>
+
+    <message>
       <source>➕ Adicionar Conceito</source>
       <translation>➕ Adicionar Conceito</translation>
     </message>

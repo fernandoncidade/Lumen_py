@@ -1,4 +1,57 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.12.0
+Data: 12 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Atualização focada em melhorar a integração entre Mapas Mentais e o Método Feynman, tornar a edição de nós e conceitos mais confiável e reforçar o salvamento automático do Mapa Mental. Inclui refinamentos visuais para respeitar o tema do sistema e correções que evitam comportamento repetido ao vincular/remover anexos.
+
+Principais melhorias
+- Integração Mapas → Método Feynman
+  - Conceitos enviados do mapa são integrados de forma segura: títulos vazios ou sem notas são ignorados, conceitos duplicados são mesclados preservando histórico e as mudanças aparecem imediatamente na lista de estudo.
+  - Melhoria na identificação e normalização dos campos para evitar entradas inválidas.
+
+- Edição de nós e anexos
+  - Diálogo de edição de nó centralizado para editar texto e notas e para associar/remover arquivos de forma previsível.
+  - Suporte a abrir arquivo vinculado com Ctrl+duplo-clique.
+  - Corrigido comportamento que causava múltiplas execuções de ação ao vincular/remover arquivos repetidamente.
+
+- Experiência e usabilidade do Método Feynman
+  - Campos e listas seguem melhor a paleta/tema do sistema, reduzindo artefatos visuais ao alternar entre claro/escuro.
+  - Traduções e textos da interface atualizam sem perder a seleção do nível de domínio.
+  - Tooltips mais informativos e organização das áreas de edição para facilitar leitura e navegação entre Conceito → Explique → Lacunas → Revisão.
+  - Seleção de conceitos mais robusta mesmo quando a lista exibe apenas o texto resumido.
+
+- Gerenciamento de conceitos
+  - Exclusão com confirmação para múltipla seleção e remoção segura dos itens selecionados.
+  - Menu de contexto para ajustar rapidamente o nível de domínio (Iniciante / Intermediário / Avançado) com atualização imediata da interface.
+
+- Persistência e backup do Mapa Mental
+  - Serialização mais tolerante a dados ausentes e que preserva metadados de layout.
+  - Backup automático otimizado: evita regravação quando não houve alteração efetiva, reduzindo I/O redundante.
+  - Timer de backup configurável e mais seguro contra concorrência.
+
+Correções de bugs (principais)
+- Evita duplicação de integrações e entradas inválidas ao receber dados do mapa.
+- Evita acumulo de ações/execuções ao vincular ou remover anexos repetidamente.
+- Remove artefatos visuais causados por aplicação inadequada de paleta em alguns controles.
+- Backup automático não regrava arquivo quando não houve alteração significativa.
+- Abertura de arquivo vinculado via atalho (Ctrl+duplo-clique) confiável.
+
+O que verificar rapidamente
+1. Enviar um conceito do Mapa Mental para o Método Feynman: confirmar criação ou atualização e visualização imediata na lista.
+2. Abrir diálogo de edição do nó, associar e remover arquivo várias vezes e verificar que cada ação ocorre apenas uma vez.
+3. Pressionar Ctrl+duplo-clique sobre um nó com anexo para abrir o arquivo.
+4. Alternar tema do sistema (claro/escuro) e conferir ausência de retângulos ou artefatos em campos e listas.
+5. Modificar o mapa, aguardar backup e confirmar que o arquivo de backup não é regravado se nada relevante mudou.
+
+Observações
+- Atualização prioriza confiabilidade e experiência; fluxos já conhecidos permanecem inalterados.
+- Em caso de comportamento inesperado, reproduza o passo e consulte os logs para diagnóstico.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.11.0
 Data: 11 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

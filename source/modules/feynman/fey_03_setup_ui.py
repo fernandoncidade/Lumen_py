@@ -1,10 +1,9 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit, QLabel, QComboBox, QListWidget, QSplitter, QFrame
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit, QLabel, QComboBox, QListWidget, QSplitter, QFrame, QAbstractItemView
 from PySide6.QtWidgets import QTabWidget
 from PySide6.QtCore import Qt, QObject, QEvent, QCoreApplication
-from PySide6.QtGui import QIcon, QPalette, QColor
+from PySide6.QtGui import QPalette, QColor
 from source.modules.feynman.fey_17_limpar_abas import adicionar_botao_limpar
 from source.utils.LogManager import LogManager
-from source.utils.IconUtils import get_icon_path
 logger = LogManager.get_logger()
 
 def setup_ui(self):
@@ -34,6 +33,7 @@ def setup_ui(self):
         layout_esquerdo.addWidget(self.label_meus_conceitos)
 
         self.lista_conceitos = QListWidget()
+        self.lista_conceitos.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.lista_conceitos.itemClicked.connect(self.selecionar_conceito)
         self.lista_conceitos.setContextMenuPolicy(Qt.CustomContextMenu)
         self.lista_conceitos.customContextMenuRequested.connect(self.mostrar_menu_contexto)

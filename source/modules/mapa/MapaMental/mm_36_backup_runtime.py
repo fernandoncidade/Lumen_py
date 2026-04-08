@@ -187,7 +187,7 @@ def _salvar_backup_automatico(self):
     except Exception as e:
         logger.error(f"Erro ao salvar backup do mapa mental: {e}", exc_info=True)
 
-def _configurar_backup_automatico(self, intervalo_ms: int = 8000):
+def _configurar_backup_automatico(self, intervalo_ms: int = 1000):
     try:
         timer = getattr(self, "_lumen_backup_timer", None)
         if isinstance(timer, QTimer):

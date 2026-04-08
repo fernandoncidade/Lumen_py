@@ -42,7 +42,13 @@ def mouseDoubleClickEvent(self, event):
 
         layout.addWidget(QLabel(QCoreApplication.translate("App", "Informações associadas:"), dialogo))
         info_view = QTextEdit(dialogo)
-        info_view.setReadOnly(True)
+        info_view.setReadOnly(False)
+
+        try:
+            info_view.setPlaceholderText(QCoreApplication.translate("App", "Edite as informações associadas. Separe itens por uma linha em branco."))
+
+        except Exception:
+            pass
 
         if self.info_associada:
             info_view.setPlainText("\n\n".join(self.info_associada))
@@ -209,7 +215,14 @@ def mouseDoubleClickEvent(self, event):
                     )
                     return
 
-                dados = {'titulo': titulo, 'notas': notas_texto}
+                dados = {
+                    'titulo': titulo,
+                    'notas': notas_texto,
+                    'explicacao': notas_texto,
+                    'lacunas': '',
+                    'revisao': notas_texto,
+                    'dominio': 0,
+                }
                 try:
                     self.event_bus.send_conceito(dados)
 
@@ -238,6 +251,15 @@ def mouseDoubleClickEvent(self, event):
         if dialogo.exec():
             self.texto = input_texto.toPlainText().strip()
             self.notas = input_notas.toPlainText().strip()
+
+            try:
+                raw_info = info_view.toPlainText()
+                entries = [s.strip() for s in raw_info.split('\n\n') if s.strip()]
+                self.info_associada = entries
+
+            except Exception:
+                pass
+
             self.texto_item.setPlainText(self.texto)
             rect = self.texto_item.boundingRect()
             self.texto_item.setPos(-rect.width()/2, -rect.height()/2)

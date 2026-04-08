@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QListWidgetItem
-from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication, Qt
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -17,6 +17,12 @@ def atualizar_lista(self):
         for conceito in self.conceitos:
             emoji = ["🔴", "🟡", "🟢"][conceito.get('dominio', 0)]
             item = QListWidgetItem(f"{emoji} {conceito.get('titulo', '')}")
+
+            try:
+                item.setData(Qt.UserRole, conceito)
+
+            except Exception:
+                pass
 
             titulo = conceito.get('titulo', '') or ''
             explicacao = conceito.get('explicacao', '') or ''

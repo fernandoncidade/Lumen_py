@@ -3,15 +3,26 @@ logger = LogManager.get_logger()
 
 def receber_conceito_mapa_mental(self, dados: dict):
     try:
-        titulo = dados.get('titulo', '').strip()
-        notas = dados.get('notas', '').strip()
+        titulo = dados.get('titulo', '') or ''
+        titulo = titulo.strip()
+
+        explicacao_in = (dados.get('explicacao') or dados.get('notas') or '')
+        explicacao_in = explicacao_in.strip()
+
+        lacunas_in = (dados.get('lacunas') or '')
+        lacunas_in = lacunas_in.strip()
+
+        revisao_in = (dados.get('revisao') or explicacao_in)
+        revisao_in = revisao_in.strip()
+
+        dominio_in = int(dados.get('dominio', 0) or 0)
 
         if not titulo:
             logger.warning("Título vazio recebido do Mapa Mental, ignorando")
             return
 
-        if not notas:
-            logger.warning(f"Notas vazias para conceito '{titulo}', ignorando")
+        if not explicacao_in:
+            logger.warning(f"Notas/explicacao vazias para conceito '{titulo}', ignorando")
             return
 
         logger.info(f"Recebendo conceito do Mapa Mental para integração: '{titulo}'")
@@ -19,25 +30,34 @@ def receber_conceito_mapa_mental(self, dados: dict):
         existente = next((c for c in self.conceitos if c.get('titulo') == titulo), None)
 
         if existente:
-            existente['revisao'] = notas
+            existente['revisao'] = revisao_in
 
             exp = existente.get('explicacao', '') or ''
             if not exp.strip():
-                existente['explicacao'] = notas
+                existente['explicacao'] = explicacao_in
 
             else:
-                if notas.strip() and notas.strip() not in exp:
-                    existente['explicacao'] = exp + "\n\n" + notas
+                if explicacao_in.strip() and explicacao_in.strip() not in exp:
+                    existente['explicacao'] = exp + "\n\n" + explicacao_in
+
+            if lacunas_in:
+                existente['lacunas'] = lacunas_in
+
+            try:
+                existente['dominio'] = dominio_in
+
+            except Exception:
+                pass
 
             logger.info(f"Conceito '{titulo}' atualizado com notas do Mapa Mental (merge/append)")
 
         else:
             novo = {
                 'titulo': titulo,
-                'explicacao': notas,
-                'lacunas': '',
-                'revisao': notas,
-                'dominio': 0
+                'explicacao': explicacao_in,
+                'lacunas': lacunas_in,
+                'revisao': revisao_in,
+                'dominio': dominio_in
             }
             self.conceitos.append(novo)
             logger.info(f"Novo conceito '{titulo}' criado a partir do Mapa Mental")

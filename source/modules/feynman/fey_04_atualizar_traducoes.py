@@ -28,7 +28,7 @@ def atualizar_traducoes(self):
 
         self.texto_lacunas.setPlaceholderText(QCoreApplication.translate("App", "Liste os pontos onde você travou ou ficou confuso."))
 
-        self.label_passo3.setText(QCoreApplication.translate("App","4️⃣ <b>Revisão e Simplificação Final</b> (depois de estudar as lacunas):"))
+        self.label_passo3.setText(QCoreApplication.translate("App", "4️⃣ <b>Revisão e Simplificação Final</b> (depois de estudar as lacunas):"))
         self.texto_revisao.setPlaceholderText(QCoreApplication.translate("App", "Reescreva sua explicação de forma ainda mais clara e completa."))
 
         self.label_nivel.setText(QCoreApplication.translate("App", "📊 Nível de Domínio:"))
