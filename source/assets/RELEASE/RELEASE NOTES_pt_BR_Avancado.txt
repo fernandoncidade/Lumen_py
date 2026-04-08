@@ -1,4 +1,98 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.28.0
+Data: 28 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+- Esta versão contém melhorias e refatorações no módulo "Método Feynman" (interfaces e traduções), implementadas nos arquivos fey_03_setup_ui.py e fey_04_atualizar_traducoes.py.
+- Objetivos: melhorar usabilidade, acessibilidade, robustez frente a temas (paletas), internacionalização (i18n) e tolerância a falhas (fallbacks).
+
+Principais Modificações
+1) Estrutura e Layout da UI (`fey_03_setup_ui.py`)
+- Nova função `setup_ui(self)` que constrói a interface do Método Feynman de forma modular:
+  - Organização com `QVBoxLayout` principal, `QFrame` central e `QSplitter` horizontal para painel esquerdo (lista de conceitos) e direito (editor de conceitos).
+  - Painel esquerdo contém: label de seção, `QListWidget` para os conceitos, conexões para `itemClicked` e menu de contexto (`customContextMenuRequested`), botões "Novo" e "Deletar".
+  - Painel direito contém: labels, `QTextEdit` para título/explicação/lacunas/revisão, `QComboBox` para nível de domínio, `QTabWidget` com 4 abas (Conceito / Explique / Lacunas / Revisão), e botão de salvar.
+  - Uso de `setObjectName("feynman_user_input")` em campos de texto para facilitar estilização/seletores e testes.
+  - Ajustes de acessibilidade: `setWordWrap(True)` em labels, placeholder texts (definidos por traduções), limite visual para instruções (`setMaximumHeight(60)`).
+  - Responsividade: `splitter.setStretchFactor(0,1)` e `(1,3)` para comportamento adequado ao redimensionar.
+- Conexões e pontos de extensão:
+  - Conexões padrão a métodos do host: `selecionar_conceito`, `mostrar_menu_contexto`, `novo_conceito`, `deletar_conceito`, `salvar_conceito_atual`.
+  - Uso de `self.gerenciador_botoes.create_button()` com fallback para `QPushButton()` caso o gerenciador não esteja disponível — evita exceções e melhora robustez.
+- Segurança e logging:
+  - Blocos `try/except` amplos com `LogManager.get_logger()` para reportar erros sem travar a aplicação.
+
+2) Sincronização de Tema / Paleta (`fey_03_setup_ui.py`)
+- Implementado mecanismo para harmonizar o fundo dos widgets de edição com a cor de janela da aplicação:
+  - Função `_apply_window_as_base(widget)` que aplica `QPalette.Base` e `AlternateBase` com a cor `QPalette.Window` do `QApplication`.
+  - Tratamento específico para `QComboBox` (aplica `QPalette.Button`) e tentativa de ajustar `viewport()`/`view()` quando existirem (ex.: `QListWidget`, `QTableView`).
+- Filtro de eventos `_PaletteThemeSyncFilter(QObject)`:
+  - Intercepta eventos de mudança de paleta/tema/estilo (ex.: `ApplicationPaletteChange`, `PaletteChange`, `StyleChange`, `ThemeChange`, e condicional `ColorSchemeChange`) para re-aplicar sincronização.
+  - O filtro é instalado globalmente no `QApplication` para mudanças dinâmicas de tema.
+- Benefício: mantém campos de texto e listas legíveis e visualmente consistentes quando o usuário altera temas/skins/cores, especialmente em ambientes com modos escuro/claro ou alterações de esquema.
+
+3) Internacionalização e Textos Dinâmicos (`fey_04_atualizar_traducoes.py`)
+- Função `atualizar_traducoes(self)` centraliza todos os textos visíveis na interface:
+  - Textos de instrução, labels, placeholders, títulos das abas e itens do `QComboBox` são definidos via `QCoreApplication.translate("App", ...)`.
+  - Preserva o índice atual do `combo_dominio` ao recarregar itens, evitando perda da seleção do usuário durante troca de idioma.
+  - Usa `self.gerenciador_botoes.set_button_text(self.btn_salvar, ...)` para padronizar textagem de botões via gerenciador (se disponível).
+  - Proteção com `try/except` ao atualizar textos das abas para evitar falhas em casos incomuns.
+- Benefício: facilita manutenção de traduções, permite suporte dinâmico a múltiplos idiomas e melhora a experiência ao alternar idioma em tempo de execução.
+
+Melhorias de Robustez e Manutenibilidade
+- Separação clara entre construção da UI (`setup_ui`) e atualização de textos (`atualizar_traducoes`):
+  - Facilita testes unitários, manutenção e futuras extensões (ex.: adicionar novos modos, integração com serviços).
+- Uso consistente de `LogManager` para centralizar logs e facilitar rastreamento de falhas.
+- Fallbacks implementados quando recursos externos (ex.: `gerenciador_botoes`, ícones via `get_icon_path`) não estiverem disponíveis — reduz risco de exceção em runtime.
+- Comentários e blocos de código temporariamente desativados (ex.: configuração de ícone do botão salvar) permanecem como referência para reativação futura.
+
+Impacto na Funcionalidade
+- Experiência do usuário:
+  - Interface mais organizada e guiada (abas numeradas com etapas do Método Feynman), placeholders instrutivos e botões de ação claros.
+  - Melhor compatibilidade visual com temas — reduz confusão em modos escuros/claros.
+  - Preservação do estado do `combo_dominio` ao trocar idioma evita frustração.
+- Integração:
+  - Módulos esperam que o objeto `self` possua métodos/atributos específicos: `gerenciador_botoes`, `selecionar_conceito`, `mostrar_menu_contexto`, `novo_conceito`, `deletar_conceito`, `salvar_conceito_atual`, `atualizar_lista`. Se estes não existirem no host, o módulo lançará exceções ou usará fallbacks onde implementado.
+- Performance:
+  - O filtro de evento global adiciona overhead insignificante; a execução ocorre apenas quando há eventos de mudança de paleta/tema/estilo, não em cada paint/frame.
+- Compatibilidade:
+  - Mudanças são compatíveis retroativamente desde que o host forneça as integrações esperadas; o uso de fallbacks melhora compatibilidade com versões anteriores sem o `gerenciador_botoes`.
+
+Notas Técnicas / Dependências
+- Arquivos alterados/criados:
+  - fey_03_setup_ui.py — implementação do layout, conexões, sincronização de paleta, instalação de filtro.
+  - fey_04_atualizar_traducoes.py — centralização das traduções e textos dinâmicos.
+- Dependências internas:
+  - `source.utils.LogManager` (logger)
+  - `source.utils.IconUtils.get_icon_path` (opcional, com fallback)
+  - Presença de `self.gerenciador_botoes` é esperada para melhor integração; caso ausente, o código usa `QPushButton` padrão.
+- Requisitos de execução:
+  - `PySide6` (widgets, QtCore, QtGui) presente no ambiente.
+  - `QApplication` existente no contexto de execução para aplicar a sincronização de paleta; caso a aplicação seja executada em contexto sem `QApplication.instance()`, as rotinas de paleta são silenciosamente ignoradas.
+
+Riscos Conhecidos e Recomendações
+- Risco: métodos de domínio (ex.: `atualizar_lista`, `selecionar_conceito`) não implementados no host causam erros se chamados. Recomenda-se validar a presença desses métodos ao integrar o módulo ou implementar stubs/fallbacks.
+- Recomendação: garantir que `gerenciador_botoes` e `LogManager` estejam corretamente inicializados antes de instanciar o widget para aproveitar todos os recursos.
+- Testes: testar comportamento ao alternar temas e idiomas e ao executar sem `gerenciador_botoes` para verificar mensagens de log e fallbacks.
+
+Testes e QA
+- Cenários sugeridos:
+  - Abrir a tela do Método Feynman, criar/excluir conceitos e salvar — garantir que callbacks estejam presentes e funcionem.
+  - Trocar o idioma da aplicação e verificar que os textos e placeholders atualizem sem perda de seleção no `combo_dominio`.
+  - Alternar tema (claro/escuro) e confirmar que campos de texto e lista adotem a paleta adequada.
+  - Remover/invalidar `gerenciador_botoes` para confirmar fallback seguro para `QPushButton`.
+- Logs: verifique registros gerados por `LogManager` para mensagens de erro (camada try/except) e debug de sincronização de paleta.
+
+Changelog Resumido
+- UI: Nova construção modular com `QSplitter` e `QTabWidget`.
+- Acessibilidade: textos com quebra automática, placeholders e instruções.
+- Tema: sincronização dinâmica de paletas e filtro de evento global.
+- i18n: centralização de traduções e preservação de seleção de combo.
+- Robustez: fallbacks para `gerenciador_botoes` e proteção com logging.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.27.0
 Data: 27 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

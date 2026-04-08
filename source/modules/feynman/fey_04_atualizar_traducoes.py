@@ -16,7 +16,7 @@ def atualizar_traducoes(self):
         self.btn_novo.setText(QCoreApplication.translate("App", "➕ Novo"))
         self.btn_deletar.setText(QCoreApplication.translate("App", "🗑️ Deletar"))
 
-        self.label_conceito.setText(QCoreApplication.translate("App", "1️⃣ <b>Conceito:</b>"))
+        self.label_conceito.setText(QCoreApplication.translate("App", "1️⃣ <b>Conceito</b> (ponto de vista sintetizado):"))
 
         self.input_titulo.setPlaceholderText(QCoreApplication.translate("App", "Ex: Tensão de Cisalhamento"))
 
@@ -44,6 +44,16 @@ def atualizar_traducoes(self):
             self.combo_dominio.setCurrentIndex(indice_atual)
 
         self.gerenciador_botoes.set_button_text(self.btn_salvar, QCoreApplication.translate("App", "💾 Salvar Conceito"))
+
+        try:
+            if hasattr(self, 'tab_widget') and self.tab_widget is not None:
+                self.tab_widget.setTabText(0, QCoreApplication.translate("App", "1️⃣ Conceito"))
+                self.tab_widget.setTabText(1, QCoreApplication.translate("App", "2️⃣ Explique"))
+                self.tab_widget.setTabText(2, QCoreApplication.translate("App", "3️⃣ Lacunas"))
+                self.tab_widget.setTabText(3, QCoreApplication.translate("App", "4️⃣ Revisão"))
+
+        except Exception as e:
+            logger.debug(f"Falha ao atualizar textos das abas do MetodoFeynman: {e}", exc_info=True)
 
     except Exception as e:
         logger.error(f"Erro ao atualizar traduções do MetodoFeynman: {str(e)}", exc_info=True)

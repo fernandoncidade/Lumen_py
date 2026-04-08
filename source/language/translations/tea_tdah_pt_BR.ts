@@ -237,8 +237,8 @@
     </message>
 
     <message>
-      <source>1️⃣ &lt;b&gt;Conceito:&lt;/b&gt;</source>
-      <translation>1️⃣ &lt;b&gt;Conceito:&lt;/b&gt;</translation>
+      <source>1️⃣ &lt;b&gt;Conceito&lt;/b&gt; (ponto de vista sintetizado):</source>
+      <translation>1️⃣ &lt;b&gt;Conceito&lt;/b&gt; (ponto de vista sintetizado):</translation>
     </message>
 
     <message>

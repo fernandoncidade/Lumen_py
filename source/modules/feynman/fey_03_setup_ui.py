@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit, QLabel, QComboBox, QListWidget, QSplitter, QFrame
-from PySide6.QtCore import Qt, QObject, QEvent
+from PySide6.QtWidgets import QTabWidget
+from PySide6.QtCore import Qt, QObject, QEvent, QCoreApplication
 from PySide6.QtGui import QIcon, QPalette
 from source.utils.LogManager import LogManager
 from source.utils.IconUtils import get_icon_path
@@ -55,50 +56,95 @@ def setup_ui(self):
 
         self.label_conceito = QLabel()
         self.label_conceito.setWordWrap(True)
-        layout_direito.addWidget(self.label_conceito)
 
         self.input_titulo = QTextEdit()
         self.input_titulo.setObjectName("feynman_user_input")
-        layout_direito.addWidget(self.input_titulo)
 
         self.label_passo1 = QLabel()
         self.label_passo1.setWordWrap(True)
-        layout_direito.addWidget(self.label_passo1)
 
         self.texto_explicacao = QTextEdit()
         self.texto_explicacao.setObjectName("feynman_user_input")
-        layout_direito.addWidget(self.texto_explicacao)
 
         self.label_passo2 = QLabel()
         self.label_passo2.setWordWrap(True)
-        layout_direito.addWidget(self.label_passo2)
 
         self.texto_lacunas = QTextEdit()
         self.texto_lacunas.setObjectName("feynman_user_input")
-        layout_direito.addWidget(self.texto_lacunas)
 
         self.label_passo3 = QLabel()
         self.label_passo3.setWordWrap(True)
-        layout_direito.addWidget(self.label_passo3)
 
         self.texto_revisao = QTextEdit()
         self.texto_revisao.setObjectName("feynman_user_input")
-        layout_direito.addWidget(self.texto_revisao)
 
-        layout_status = QHBoxLayout()
         self.label_nivel = QLabel()
-        layout_status.addWidget(self.label_nivel)
-
         self.combo_dominio = QComboBox()
-        layout_status.addWidget(self.combo_dominio)
-        layout_direito.addLayout(layout_status)
 
-        self.btn_salvar = self.gerenciador_botoes.create_button()
-        self.btn_salvar.setIcon(QIcon(get_icon_path("save")))
-        self.btn_salvar.clicked.connect(self.salvar_conceito_atual)
-        self.btn_salvar.setMaximumWidth(16777215)
-        layout_direito.addWidget(self.btn_salvar)
+        self.btn_salvar = QPushButton()
 
+        self.tab_widget = QTabWidget(self)
+
+        # Aba 1: Conceito
+        tab1 = QWidget()
+        t1_layout = QVBoxLayout()
+        t1_layout.addWidget(self.label_conceito)
+        t1_layout.addWidget(self.input_titulo)
+        tab1.setLayout(t1_layout)
+
+        # Aba 2: Explique com Simplicidade
+        tab2 = QWidget()
+        t2_layout = QVBoxLayout()
+        t2_layout.addWidget(self.label_passo1)
+        t2_layout.addWidget(self.texto_explicacao)
+        tab2.setLayout(t2_layout)
+
+        # Aba 3: Lacunas Identificadas
+        tab3 = QWidget()
+        t3_layout = QVBoxLayout()
+        t3_layout.addWidget(self.label_passo2)
+        t3_layout.addWidget(self.texto_lacunas)
+        tab3.setLayout(t3_layout)
+
+        # Aba 4: Revisão e Simplificação Final
+        tab4 = QWidget()
+        t4_layout = QVBoxLayout()
+        t4_layout.addWidget(self.label_passo3)
+        t4_layout.addWidget(self.texto_revisao)
+
+        tab4.setLayout(t4_layout)
+
+        self.tab_widget.addTab(tab1, QCoreApplication.translate("App", "1️⃣ Conceito"))
+        self.tab_widget.addTab(tab2, QCoreApplication.translate("App", "2️⃣ Explique"))
+        self.tab_widget.addTab(tab3, QCoreApplication.translate("App", "3️⃣ Lacunas"))
+        self.tab_widget.addTab(tab4, QCoreApplication.translate("App", "4️⃣ Revisão"))
+
+        layout_direito.addWidget(self.tab_widget)
+
+        try:
+            self.btn_salvar = self.gerenciador_botoes.create_button()
+
+        except Exception:
+            self.btn_salvar = QPushButton()
+
+        # try:
+        #     self.btn_salvar.setIcon(QIcon(get_icon_path("save")))
+
+        # except Exception:
+        #     pass
+
+        try:
+            self.btn_salvar.clicked.connect(self.salvar_conceito_atual)
+
+        except Exception:
+            pass
+
+        footer_layout = QHBoxLayout()
+        footer_layout.addWidget(self.label_nivel)
+        footer_layout.addWidget(self.combo_dominio)
+        footer_layout.addStretch()
+        footer_layout.addWidget(self.btn_salvar)
+        layout_direito.addLayout(footer_layout)
         painel_direito.setLayout(layout_direito)
 
         splitter.addWidget(painel_esquerdo)

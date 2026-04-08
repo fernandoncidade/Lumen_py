@@ -1,4 +1,25 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.28.0
+Data: 28 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo para usuários
+- A tela do Método Feynman foi reformulada para ficar mais clara e fácil de usar.
+- Agora há um painel para ver a lista de conceitos e outro para editar cada conceito, com abas que guiam as etapas (Conceito → Explique → Lacunas → Revisão).
+- Campos de texto têm instruções e comportamento mais acessível; botões de ação estão mais evidentes.
+- Trocar o idioma atualiza todos os textos sem perder a seleção do nível de domínio.
+- A aparência dos campos e listas se adapta melhor aos temas (claro/escuro), mantendo tudo legível.
+
+O que muda para você
+- Criar, editar, salvar e apagar conceitos ficou mais simples e confiável.
+- Interface mais intuitiva e orientada por etapas, com placeholders que indicam o que escrever.
+- Menos confusão visual ao alternar temas; textos e áreas de edição permanecem fáceis de ler.
+- Ao mudar o idioma, você não perde a opção escolhida no seletor — menos frustração.
+- Em situações em que recursos extras não existam, o app usa controles padrão para continuar funcionando sem travar.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.27.0
 Data: 27 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

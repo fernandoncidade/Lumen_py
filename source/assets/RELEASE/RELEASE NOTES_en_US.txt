@@ -1,3 +1,24 @@
+RELEASE NOTES — Lumen
+Version: 2026.1.28.0
+Date: January 28, 2026
+Author: Fernando Nillsson Cidade
+
+User summary
+- The Feynman Method screen has been redesigned to be clearer and easier to use.
+- There is now a panel to view the list of concepts and another to edit each concept, with tabs guiding the steps (Concept → Explain → Gaps → Review).
+- Text fields include clearer instructions and improved behavior; action buttons are more visible.
+- Changing the language updates all visible text without losing the domain-level selection.
+- Fields and lists adapt better to themes (light/dark), keeping everything readable.
+
+What changes for you
+- Creating, editing, saving, and deleting concepts is simpler and more reliable.
+- A more intuitive, step-guided interface with placeholders that show what to write.
+- Less visual confusion when switching themes; text and editing areas remain easy to read.
+- Changing the language preserves the selected option in the domain selector — less frustration.
+- If extra resources are not available, the app uses standard controls so it continues working without crashing.
+
+_________________________________________________
+
 RELEASE NOTES — Lúmen
 Version: 2026.1.27.0
 Date: January 27, 2026

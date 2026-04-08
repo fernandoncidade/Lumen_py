@@ -1,3 +1,97 @@
+RELEASE NOTES — Lumen
+Version: 2026.1.28.0
+Date: January 28, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+- This release includes improvements and refactorings in the "Feynman Method" module (UI and translations), implemented in the files fey_03_setup_ui.py and fey_04_atualizar_traducoes.py.
+- Goals: improve usability, accessibility, robustness against theme/palette changes, internationalization (i18n) and fault tolerance (fallbacks).
+
+Main Changes
+1) UI Structure and Layout (fey_03_setup_ui.py)
+- New setup_ui(self) function that builds the Feynman Method interface in a modular way:
+  - Layout uses a main QVBoxLayout, a central QFrame and a horizontal QSplitter dividing a left panel (concept list) and a right panel (concept editor).
+  - Left panel contains: section label, a QListWidget for concepts, connections for itemClicked and a context menu (customContextMenuRequested), and "New" / "Delete" buttons.
+  - Right panel contains: labels, QTextEdit fields for title/explanation/gaps/review, a QComboBox for mastery level, a QTabWidget with 4 tabs (Concept / Explain / Gaps / Review), and a Save button.
+  - Text fields use setObjectName("feynman_user_input") to ease styling/selectors and testing.
+  - Accessibility adjustments: setWordWrap(True) on labels, placeholder texts (from translations), and a visual height limit for instructions (setMaximumHeight(60)).
+  - Responsiveness: splitter.setStretchFactor(0, 1) and (1, 3) for proper resizing behavior.
+- Connections and extension points:
+  - Standard connections expect host methods: selecionar_conceito, mostrar_menu_contexto, novo_conceito, deletar_conceito, salvar_conceito_atual.
+  - Uses self.gerenciador_botoes.create_button() with a fallback to QPushButton() if the manager is unavailable — prevents exceptions and improves robustness.
+- Safety and logging:
+  - Broad try/except blocks with LogManager.get_logger() to report errors without crashing the app.
+
+2) Theme / Palette Synchronization (fey_03_setup_ui.py)
+- Implemented a mechanism to harmonize the background of editing widgets with the application's window color:
+  - Function _apply_window_as_base(widget) applies QPalette.Base and AlternateBase using QApplication's QPalette.Window color.
+  - Special handling for QComboBox (apply QPalette.Button) and attempts to adjust viewport()/view() when present (e.g., QListWidget, QTableView).
+- Event filter _PaletteThemeSyncFilter(QObject):
+  - Intercepts palette/theme/style change events (ApplicationPaletteChange, PaletteChange, StyleChange, ThemeChange, and conditional ColorSchemeChange) to re-apply synchronization.
+  - The filter is installed globally on QApplication for dynamic theme changes.
+- Benefit: keeps text fields and lists readable and visually consistent when the user changes themes/skins/colors, especially in dark/light modes or scheme changes.
+
+3) Internationalization and Dynamic Texts (fey_04_atualizar_traducoes.py)
+- Function atualizar_traducoes(self) centralizes all visible UI texts:
+  - Instruction texts, labels, placeholders, tab titles and QComboBox items are set via QCoreApplication.translate("App", ...).
+  - Preserves the current index of combo_dominio when reloading items, avoiding loss of the user's selection when switching languages.
+  - Uses self.gerenciador_botoes.set_button_text(self.btn_salvar, ...) to standardize button text via the manager (if available).
+  - Protected with try/except when updating tab texts to avoid failures in unusual cases.
+- Benefit: simplifies maintaining translations, enables dynamic multi-language support and improves the experience when switching language at runtime.
+
+Robustness and Maintainability Improvements
+- Clear separation between UI construction (setup_ui) and text updates (atualizar_traducoes):
+  - Eases unit testing, maintenance and future extensions (e.g., adding new modes or service integration).
+- Consistent use of LogManager to centralize logs and ease fault tracing.
+- Fallbacks implemented when external resources are missing (e.g., gerenciador_botoes, icons via get_icon_path) — reduces runtime exception risk.
+- Comments and temporarily disabled code blocks (e.g., save button icon setup) remain as reference for future reactivation.
+
+Impact on Functionality
+- User experience:
+  - More organized and guided interface (tabs that map the Feynman steps), instructive placeholders and clearer action buttons.
+  - Better visual compatibility with themes — less confusion in dark/light modes.
+  - Preservation of combo_dominio state when changing language avoids frustration.
+- Integration:
+  - Modules expect the host object (self) to provide specific methods/attributes: gerenciador_botoes, selecionar_conceito, mostrar_menu_contexto, novo_conceito, deletar_conceito, salvar_conceito_atual, atualizar_lista. If these are absent, the module will raise errors or use available fallbacks.
+- Performance:
+  - The global event filter adds negligible overhead; it runs only when palette/theme/style change events occur, not on every paint/frame.
+- Compatibility:
+  - Changes are backward-compatible provided the host supplies the expected integrations; fallbacks improve compatibility with older hosts that lack gerenciador_botoes.
+
+Technical Notes / Dependencies
+- Files changed/created:
+  - fey_03_setup_ui.py — layout implementation, connections, palette synchronization, filter installation.
+  - fey_04_atualizar_traducoes.py — centralization of translations and dynamic texts.
+- Internal dependencies:
+  - source.utils.LogManager (logger)
+  - source.utils.IconUtils.get_icon_path (optional, with fallback)
+  - Presence of self.gerenciador_botoes is expected for better integration; if missing the code uses a default QPushButton.
+- Runtime requirements:
+  - PySide6 (widgets, QtCore, QtGui) must be available in the environment.
+  - A QApplication instance must exist to apply palette synchronization; if the app runs without QApplication.instance(), palette routines are silently ignored.
+
+Known Risks and Recommendations
+- Risk: domain methods (e.g., atualizar_lista, selecionar_conceito) not implemented in the host will cause errors when called. Validate presence of these methods when integrating the module or implement stubs/fallbacks.
+- Recommendation: ensure gerenciador_botoes and LogManager are properly initialized before instantiating the widget to benefit from all features.
+- Testing: test behavior when switching themes and languages and when running without gerenciador_botoes to verify log messages and fallbacks.
+
+Tests and QA
+- Suggested scenarios:
+  - Open the Feynman Method screen, create/delete concepts and save — ensure callbacks are present and work.
+  - Change the application language and verify texts and placeholders update without losing combo_dominio selection.
+  - Switch theme (light/dark) and confirm text fields and lists adopt the appropriate palette.
+  - Remove/invalidate gerenciador_botoes to confirm safe fallback to QPushButton.
+- Logs: check records produced by LogManager for error messages (try/except layers) and palette synchronization debug.
+
+Short Changelog
+- UI: New modular construction with QSplitter and QTabWidget.
+- Accessibility: auto-wrapping texts, placeholders and instructions.
+- Theme: dynamic palette synchronization and global event filter.
+- i18n: centralized translations and preservation of combo selection.
+- Robustness: fallbacks for gerenciador_botoes and protections with logging.
+
+_________________________________________________
+
 RELEASE NOTES — Lúmen
 Version: 2026.1.27.0
 Date: January 27, 2026
