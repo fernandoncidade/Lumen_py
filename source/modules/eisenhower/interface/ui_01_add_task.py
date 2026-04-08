@@ -1,7 +1,8 @@
 from PySide6.QtCore import QCoreApplication, Qt
-from PySide6.QtWidgets import QListWidgetItem, QMessageBox
+from PySide6.QtWidgets import QListWidgetItem
 from PySide6.QtGui import QFont
 from uuid import uuid4
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -13,7 +14,7 @@ def add_task(app):
         task_text = app.task_input.text().strip()
 
         if not task_text:
-            QMessageBox.warning(app, get_text("Erro"), get_text("A tarefa não pode estar vazia."))
+            MessageBox.eisen_warn_empty_task(app)
             return None
 
         selected_quadrant = app.quadrant_selector.currentIndex()
@@ -85,14 +86,7 @@ def add_task(app):
             dragged_path = getattr(app, "_dragged_file_path", None)
 
             if dragged_path:
-                reply = QMessageBox.question(
-                    app,
-                    get_text("Vincular Arquivo"),
-                    get_text("Deseja vincular o arquivo a esta tarefa?"),
-                    QMessageBox.Yes | QMessageBox.No
-                )
-
-                if reply == QMessageBox.Yes:
+                if MessageBox.eisen_confirm_attach_file(app):
                     try:
                         data = task_item.data(Qt.UserRole) or {}
                         data["file_path"] = dragged_path

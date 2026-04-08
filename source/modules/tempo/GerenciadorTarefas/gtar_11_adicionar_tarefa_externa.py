@@ -1,6 +1,6 @@
 from source.utils.LogManager import LogManager
 from source.modules.tempo.tmp_01_Tarefa import Tarefa
-from source.utils.task_identity import tasks_match
+from source.utils.TaskIdentity import tasks_match
 logger = LogManager.get_logger()
 
 def adicionar_tarefa_externa(self, titulo: str, prioridade: str = "Importante e Urgente", description: str = None, file_path: str = None, date: str = None, time: str = None, task_id: str = None) -> None:

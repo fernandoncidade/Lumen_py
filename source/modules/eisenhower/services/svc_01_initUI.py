@@ -8,6 +8,7 @@ from .svc_12_DragDropTaskList import DragDropTaskList
 from .svc_13_FileDropLineEdit import FileDropLineEdit
 from .svc_14_palette_theme_sync import install_palette_theme_sync
 from source.utils.IconUtils import get_icon_path
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -18,6 +19,7 @@ def _compute_widget_height(app, widget, name: str | None = None) -> int:
     try:
         if hasattr(app, "widget_heights") and isinstance(app.widget_heights, dict) and name in app.widget_heights:
             v = int(app.widget_heights.get(name) or 0)
+
             if v > 0:
                 return v
 
@@ -67,9 +69,11 @@ def init_ui(app):
 
     def _apply_locale_to_date_input():
         locale = QLocale.system()
+
         try:
             if hasattr(app, "gerenciador_traducao"):
                 idioma = app.gerenciador_traducao.obter_idioma_atual()
+
                 if idioma and idioma.startswith("pt"):
                     locale = QLocale(QLocale.Portuguese, QLocale.Brazil)
 
@@ -147,6 +151,7 @@ def init_ui(app):
         try:
             app.time_checkbox.setEnabled(checked)
             app.time_input.setEnabled(checked and app.time_checkbox.isChecked())
+
             if not checked:
                 app.time_checkbox.setChecked(False)
 
@@ -184,6 +189,7 @@ def init_ui(app):
 
     app.add_button = QPushButton(get_text("Adicionar Tarefa"))
     add_icon_path = get_icon_path("organizador.png")
+
     if add_icon_path:
         app.add_button.setIcon(QIcon(add_icon_path))
 
@@ -192,6 +198,7 @@ def init_ui(app):
 
     app.calendar_button = QPushButton(get_text("Calendário"))
     add_icon_path = get_icon_path("calendar.png")
+
     if add_icon_path:
         app.calendar_button.setIcon(QIcon(add_icon_path))
 
@@ -446,8 +453,7 @@ def init_ui(app):
                         pass
 
             else:
-                from PySide6.QtWidgets import QMessageBox
-                QMessageBox.warning(app, get_text("Erro"), get_text("Arquivo não encontrado."))
+                MessageBox.warning_file_not_found(app)
 
         except Exception as e:
             logger.error(f"Erro ao abrir arquivo vinculado: {e}", exc_info=True)

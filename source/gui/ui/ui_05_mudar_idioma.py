@@ -1,5 +1,4 @@
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtCore import QCoreApplication
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -24,11 +23,7 @@ def mudar_idioma(self, codigo_idioma):
             self.atualizar_interface(codigo_idioma)
             self.atualizar_modulos()
 
-            QMessageBox.information(
-                self,
-                QCoreApplication.translate("App", "✅ Idioma Alterado"),
-                QCoreApplication.translate("App", "O idioma foi alterado com sucesso!")
-            )
+            MessageBox.app_language_changed_success(self)
 
         else:
             try:
@@ -38,11 +33,7 @@ def mudar_idioma(self, codigo_idioma):
             except Exception:
                 pass
 
-            QMessageBox.warning(
-                self,
-                QCoreApplication.translate("App", "⚠️ Erro"),
-                QCoreApplication.translate("App", "Não foi possível alterar o idioma.")
-            )
+            MessageBox.app_language_change_error(self)
 
     except Exception as e:
         logger.error(f"Erro ao mudar idioma: {str(e)}", exc_info=True)

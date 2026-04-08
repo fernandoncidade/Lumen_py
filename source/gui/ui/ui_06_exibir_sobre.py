@@ -1,7 +1,5 @@
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtCore import QCoreApplication
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def exibir_sobre(self):
@@ -12,4 +10,4 @@ def exibir_sobre(self):
 
     except Exception as e:
         logger.error(f"Erro ao exibir diálogo Sobre (app): {e}", exc_info=True)
-        QMessageBox.critical(self, QCoreApplication.translate("App", "Erro"), f"{QCoreApplication.translate('App','Erro')}: {e}")
+        MessageBox.critical_exception(self, e)

@@ -1,5 +1,5 @@
-from PySide6.QtWidgets import QMessageBox
 from PySide6.QtCore import Qt
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -9,13 +9,7 @@ def remover_todas_por_data(self, date_iso: str) -> int:
             return 0
 
         try:
-            resp = QMessageBox.question(
-                self.app,
-                self.get_text("Remover Tarefas") or "Remover Tarefas",
-                self.get_text("Deseja remover todas as tarefas do dia selecionado?") or "Deseja remover todas as tarefas do dia selecionado?",
-                QMessageBox.Yes | QMessageBox.No,
-            )
-            if resp != QMessageBox.Yes:
+            if not MessageBox.eisen_confirm_remove_tasks_by_day(self.app):
                 return 0
 
         except Exception:
@@ -39,10 +33,12 @@ def remover_todas_por_data(self, date_iso: str) -> int:
 
             for i in range(lst.count() - 1, -1, -1):
                 it = lst.item(i)
+
                 if not it or not (it.flags() & Qt.ItemIsSelectable):
                     continue
 
                 data = it.data(Qt.UserRole) or {}
+
                 if (data.get("date") or "") == date_iso:
                     try:
                         lst.takeItem(i)
@@ -79,6 +75,13 @@ def remover_todas_por_data(self, date_iso: str) -> int:
 
         except Exception:
             pass
+
+        if removed > 0:
+            try:
+                MessageBox.eisen_remove_tasks_success(self.app, removed)
+
+            except Exception:
+                pass
 
         return removed
 

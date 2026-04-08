@@ -1,5 +1,6 @@
 from PySide6.QtCore import Qt, QCoreApplication, QUrl
 from PySide6.QtGui import QDesktopServices
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -13,6 +14,7 @@ def _open_linked_file(self, item):
 
         data = item.data(Qt.UserRole) or {}
         path = data.get("file_path")
+
         if not path:
             return
 
@@ -43,8 +45,7 @@ def _open_linked_file(self, item):
             logger.error(f"Falha ao abrir arquivo vinculado via fallback: {e}", exc_info=True)
 
         try:
-            from PySide6.QtWidgets import QMessageBox
-            QMessageBox.warning(self, get_text("Erro"), get_text("Arquivo não encontrado."))
+            MessageBox.warning_file_not_found(self)
 
         except Exception:
             pass

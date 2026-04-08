@@ -295,7 +295,7 @@ class _UiBridge(QObject):
                 logger.warning("Documento vazio ou não pôde ser lido")
                 return
 
-            self._owner.limpar_mapa()
+            self._owner.limpar_mapa(emitir_mensagem=False)
             self._owner._hierarquia_parent = {}
             self._owner._hierarquia_children = {}
             self._owner._modo_navegacao_hierarquia = False

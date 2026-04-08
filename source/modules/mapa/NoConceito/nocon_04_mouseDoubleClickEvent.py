@@ -1,7 +1,8 @@
-from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QDialog, QTextEdit, QDialogButtonBox, QPushButton, QMessageBox, QFileDialog
+from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QDialog, QTextEdit, QDialogButtonBox, QPushButton, QFileDialog
 from PySide6.QtCore import QCoreApplication, QTimer, Qt, QUrl
 from PySide6.QtGui import QDesktopServices
 from source.utils.LogManager import LogManager
+from source.utils.MessageBox import MessageBox
 from source.utils.GerenciadorBotoesUI import GerenciadorBotoesUI
 logger = LogManager.get_logger()
 
@@ -10,6 +11,7 @@ def mouseDoubleClickEvent(self, event):
         try:
             if event.button() == Qt.LeftButton and event.modifiers() == Qt.ControlModifier:
                 caminho = getattr(self, "arquivo_vinculado", None)
+
                 if caminho:
                     event.accept()
                     QDesktopServices.openUrl(QUrl.fromLocalFile(caminho))
@@ -22,6 +24,7 @@ def mouseDoubleClickEvent(self, event):
 
         try:
             scene = self.scene()
+
             if scene and scene.views():
                 parent = scene.views()[0]
 
@@ -200,19 +203,11 @@ def mouseDoubleClickEvent(self, event):
                 notas_texto = input_notas.toPlainText().strip()
 
                 if not titulo:
-                    QMessageBox.warning(
-                        dialogo,
-                        QCoreApplication.translate("App", "Atenção"),
-                        QCoreApplication.translate("App", "Por favor, digite o título do conceito!")
-                    )
+                    MessageBox.mapa_feynman_warn_missing_title(dialogo)
                     return
 
                 if not notas_texto:
-                    QMessageBox.warning(
-                        dialogo,
-                        QCoreApplication.translate("App", "Atenção"),
-                        QCoreApplication.translate("App", "Por favor, escreva suas notas antes de integrar ao Método Feynman!")
-                    )
+                    MessageBox.mapa_feynman_warn_missing_notes(dialogo)
                     return
 
                 dados = {
@@ -233,19 +228,11 @@ def mouseDoubleClickEvent(self, event):
                 logger.info(f"Conceito '{titulo}' integrado ao Método Feynman via botão específico")
 
                 QCoreApplication.processEvents()
-                QTimer.singleShot(50, lambda: QMessageBox.information(
-                    dialogo,
-                    QCoreApplication.translate("App", "✅ Integrado"),
-                    QCoreApplication.translate("App", "Conceito '{titulo}' integrado ao Método Feynman com sucesso!").format(titulo=titulo)
-                ))
+                QTimer.singleShot(50, lambda: MessageBox.mapa_feynman_integrated_success(dialogo, titulo))
 
             except Exception as e:
                 logger.error(f"Erro ao integrar conceito ao Método Feynman: {str(e)}", exc_info=True)
-                QMessageBox.critical(
-                    dialogo,
-                    QCoreApplication.translate("App", "Erro"),
-                    QCoreApplication.translate("App", "Erro ao integrar ao Método Feynman: {erro}").format(erro=str(e))
-                )
+                MessageBox.mapa_feynman_integrate_error(dialogo, str(e))
 
         btn_integrar_feynman.clicked.connect(integrar_ao_feynman)
 

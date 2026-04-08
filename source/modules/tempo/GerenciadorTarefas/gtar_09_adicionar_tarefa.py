@@ -1,11 +1,7 @@
 import os
-from PySide6.QtCore import QCoreApplication
-from PySide6.QtWidgets import QMessageBox
 from source.utils.LogManager import LogManager
+from source.utils.MessageBox import MessageBox
 logger = LogManager.get_logger()
-
-def get_text(text: str) -> str:
-    return QCoreApplication.translate("App", text)
 
 def adicionar_tarefa(self):
     try:
@@ -27,22 +23,15 @@ def adicionar_tarefa(self):
             "Não Importante, mas Urgente",
             "Não Importante e Não Urgente",
         ]
-        prioridade = prioridades[idx] if 0 <= idx < len(prioridades) else "Importante e Urgente"
 
+        prioridade = prioridades[idx] if 0 <= idx < len(prioridades) else "Importante e Urgente"
         file_path = None
         dragged_path = getattr(self, "_dragged_file_path", None)
 
         if dragged_path:
             try:
                 nome = os.path.basename(dragged_path)
-                resp = QMessageBox.question(
-                    self,
-                    get_text("Vincular arquivo"),
-                    get_text("Deseja vincular o arquivo a esta tarefa?\n\n{nome}").format(nome=nome),
-                    QMessageBox.Yes | QMessageBox.No,
-                    QMessageBox.Yes,
-                )
-                if resp == QMessageBox.Yes:
+                if MessageBox.tempo_confirm_attach_file(self, nome):
                     file_path = dragged_path
 
             except Exception as e:

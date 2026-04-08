@@ -2716,5 +2716,65 @@ Do you want to continue?</translation>
       <translation>Choose file</translation>
     </message>
 
+    <message>
+      <source>Conceito excluído com sucesso!</source>
+      <translation>Concept deleted successfully!</translation>
+    </message>
+
+    <message>
+      <source>Erro ao excluir conceito!</source>
+      <translation>Error deleting concept!</translation>
+    </message>
+
+    <message>
+      <source>Mapa Mental limpo com sucesso!</source>
+      <translation>Mind Map cleared successfully!</translation>
+    </message>
+
+    <message>
+      <source>Erro ao limpar Mapa Mental!</source>
+      <translation>Error clearing Mind Map!</translation>
+    </message>
+
+    <message>
+      <source>Deseja realmente excluir '{no_conexao}'?</source>
+      <translation>Do you really want to delete '{no_conexao}'?</translation>
+    </message>
+
+    <message>
+      <source>Deseja realmente excluir os '{no_conexao}' nós selecionados?</source>
+      <translation>Do you really want to delete the selected nodes '{no_conexao}'?</translation>
+    </message>
+
+    <message>
+      <source>Deseja realmente limpar o Mapa Mental?</source>
+      <translation>Do you really want to clear the Mind Map?</translation>
+    </message>
+
+    <message>
+      <source>Nó(s) excluído(s) com sucesso!</source>
+      <translation>Node(s) deleted successfully!</translation>
+    </message>
+
+    <message>
+      <source>Erro ao excluir Nó(s)!</source>
+      <translation>Error deleting node(s)!</translation>
+    </message>
+
+    <message>
+      <source>Excluir Nó(s) e Conexão(ões) 🪢</source>
+      <translation>Delete Node(s) and Connection(s) 🪢</translation>
+    </message>
+
+    <message>
+      <source>1 tarefa removida com sucesso!</source>
+      <translation>1 task removed successfully!</translation>
+    </message>
+
+    <message>
+      <source>{n} tarefas removidas com sucesso!</source>
+      <translation>{n} tasks removed successfully!</translation>
+    </message>
+
   </context>
 </TS>

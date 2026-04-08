@@ -1,5 +1,4 @@
 from PySide6.QtCore import QCoreApplication, Qt, QEvent
-from PySide6.QtWidgets import QMessageBox
 from source.modules.public import (SobreDialog, SITE_LICENSES, 
                                    LICENSE_TEXT_PT_BR, LICENSE_TEXT_EN_US, 
                                    NOTICE_TEXT_PT_BR, NOTICE_TEXT_EN_US, 
@@ -8,10 +7,12 @@ from source.modules.public import (SobreDialog, SITE_LICENSES,
                                    History_APP_pt_BR, History_APP_en_US, 
                                    RELEASE_NOTES_pt_BR, RELEASE_NOTES_en_US,)
 from source.utils.LogManager import LogManager
+from source.utils.MessageBox import MessageBox
 logger = LogManager.get_logger()
 
 def _tr_multi(key: str) -> str:
     val = QCoreApplication.translate("App", key)
+
     if val and val != key:
         return val
 
@@ -21,6 +22,7 @@ def _tr_multi(key: str) -> str:
 def exibir_sobre(app):
     try:
         existing = getattr(app, "_sobre_dialog", None)
+
         if existing is not None:
             try:
                 if existing.isVisible():
@@ -61,98 +63,120 @@ def exibir_sobre(app):
             texto_release_notes = release_notes_texts.get(idioma_local, release_notes_texts["en_US"])
 
             show_history = _tr_multi("show_history")
+
             if show_history == "show_history":
                 show_history = _lbl("Histórico", "History", idioma_local)
 
             hide_history = _tr_multi("hide_history")
+
             if hide_history == "hide_history":
                 hide_history = _lbl("Ocultar histórico", "Hide history", idioma_local)
 
             show_details = _tr_multi("show_details")
+
             if show_details == "show_details":
                 show_details = _lbl("Detalhes", "Details", idioma_local)
 
             hide_details = _tr_multi("hide_details")
+
             if hide_details == "hide_details":
                 hide_details = _lbl("Ocultar detalhes", "Hide details", idioma_local)
 
             show_licenses = _tr_multi("show_licenses")
+
             if show_licenses == "show_licenses":
                 show_licenses = _lbl("Licenças", "Licenses", idioma_local)
 
             hide_licenses = _tr_multi("hide_licenses")
+
             if hide_licenses == "hide_licenses":
                 hide_licenses = _lbl("Ocultar licenças", "Hide licenses", idioma_local)
 
             show_notices = _tr_multi("show_notices")
+
             if show_notices == "show_notices":
                 show_notices = _lbl("Avisos", "Notices", idioma_local)
 
             hide_notices = _tr_multi("hide_notices")
+
             if hide_notices == "hide_notices":
                 hide_notices = _lbl("Ocultar avisos", "Hide notices", idioma_local)
 
             show_privacy_policy = _tr_multi("show_privacy_policy")
+
             if show_privacy_policy == "show_privacy_policy":
                 show_privacy_policy = _lbl("Política de privacidade", "Privacy Policy", idioma_local)
 
             hide_privacy_policy = _tr_multi("hide_privacy_policy")
+
             if hide_privacy_policy == "hide_privacy_policy":
                 hide_privacy_policy = _lbl("Ocultar política de privacidade", "Hide privacy policy", idioma_local)
 
             show_release_notes = _tr_multi("show_release_notes")
+
             if show_release_notes == "show_release_notes":
                 show_release_notes = _lbl("Notas de versão", "Release Notes", idioma_local)
 
             hide_release_notes = _tr_multi("hide_release_notes")
+
             if hide_release_notes == "hide_release_notes":
                 hide_release_notes = _lbl("Ocultar notas de versão", "Hide release notes", idioma_local)
 
             titulo_tr = _tr_multi("Sobre - Lúmen")
+
             if titulo_tr == "Sobre - Lúmen":
                 sobre_txt = _tr_multi("Sobre")
+
                 if sobre_txt == "Sobre":
                     sobre_txt = _lbl("Sobre", "About", idioma_local)
 
                 titulo_tr = f"{sobre_txt} - Lúmen"
 
             version_label = _tr_multi("version")
+
             if version_label == "version":
                 version_label = _lbl("Versão", "Version", idioma_local)
 
             authors_label = _tr_multi("authors:")
+
             if authors_label == "authors:":
                 authors_label = _lbl("Autores:", "Authors:", idioma_local)
 
             description_label = _tr_multi("description:")
+
             if description_label == "description:":
                 description_label = _lbl("Descrição:", "Description:", idioma_local)
 
             description_text = _tr_multi("description_text")
+
             if description_text == "description_text":
                 description_text = _lbl("", "", idioma_local)
 
             app_title_key = "Lúmen"
             app_title = _tr_multi(app_title_key)
+
             if app_title == app_title_key:
                 app_title = "Lúmen" if idioma_local == "en_US" else app_title_key
 
             texto_fixo = (
                 f"<span style='font-size:16px;font-weight:bold'>{app_title}</span><br/><br/>"
-                f"<span><b>{version_label}</b> 2026.2.19.0</span><br/><br/>"
+                f"<span><b>{version_label}</b> 2026.2.20.0</span><br/><br/>"
                 f"<span><b>{authors_label}</b> Fernando Nillsson Cidade</span><br/><br/>"
                 f"<span><b>{description_label}</b> {description_text}</span><br/>"
             )
 
             ok_text = _tr_multi("OK")
+
             if ok_text == "OK":
                 ok_text = _lbl("OK", "OK", idioma_local)
 
             site_oficial_text = _tr_multi("site_oficial")
+
             if site_oficial_text == "site_oficial":
                 site_oficial_text = _lbl("Site oficial", "Official site", idioma_local)
 
             info_not_available_text = _tr_multi("information_not_available")
+
             if info_not_available_text == "information_not_available":
                 info_not_available_text = _lbl("Informação não disponível", "Information not available", idioma_local)
 
@@ -217,6 +241,7 @@ def exibir_sobre(app):
         class SobreDialogRuntime(SobreDialog):
             def changeEvent(self, event) -> None:
                 super().changeEvent(event)
+
                 if event.type() == QEvent.Type.LanguageChange:
                     try:
                         refresh_sobre()
@@ -289,11 +314,7 @@ def exibir_sobre(app):
 
     except Exception as e:
         logger.error(f"Erro ao exibir diálogo Sobre: {e}", exc_info=True)
-        QMessageBox.critical(
-            app,
-            _tr_multi("Erro") if _tr_multi("Erro") != "Erro" else "Erro",
-            f"{_tr_multi('Erro') if _tr_multi('Erro') != 'Erro' else 'Erro'}: {e}",
-        )
+        MessageBox.critical_error_exception(app, e, tr_func=_tr_multi)
 
 def exibir_manual(app):
     try:
@@ -302,8 +323,4 @@ def exibir_manual(app):
 
     except Exception as e:
         logger.error(f"Erro ao abrir Manual: {e}", exc_info=True)
-        QMessageBox.critical(
-            app,
-            _tr_multi("Erro") if _tr_multi("Erro") != "Erro" else "Erro",
-            f"{_tr_multi('Erro') if _tr_multi('Erro') != 'Erro' else 'Erro'}: {e}",
-        )
+        MessageBox.critical_error_exception(app, e, tr_func=_tr_multi)

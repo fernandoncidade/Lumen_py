@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtCore import Qt, QCoreApplication
+from PySide6.QtCore import Qt
 from source.utils.LogManager import LogManager
+from source.utils.MessageBox import MessageBox
 from source.modules.tempo.tmp_01_Tarefa import Tarefa
 logger = LogManager.get_logger()
 
@@ -28,26 +28,21 @@ def remover_tarefa_por_item(self, item):
         prioridade_item = prioridade_map.get(emoji_prefix, None)
 
         try:
-            resp = QMessageBox.question(
-                self,
-                QCoreApplication.translate("App", "Confirmar Exclusão"),
-                QCoreApplication.translate("App", "Deseja remover a tarefa selecionada?\n\n{titulo}").format(titulo=titulo_item),
-                QMessageBox.Yes | QMessageBox.No,
-                QMessageBox.No,
-            )
-            if resp != QMessageBox.Yes:
+            if not MessageBox.tempo_confirm_delete_task(self, titulo_item):
                 return
 
         except Exception:
             pass
 
         total_antes = len(getattr(self, 'tarefas', []))
+
         if tarefa_id:
             self.tarefas = [t for t in self.tarefas if getattr(t, 'id', None) != tarefa_id]
 
         else:
             prioridade_norm = Tarefa.normalizar_prioridade(prioridade_item) if prioridade_item else None
             novas = []
+
             for t in self.tarefas:
                 if t.titulo != titulo_item:
                     novas.append(t)
@@ -67,19 +62,12 @@ def remover_tarefa_por_item(self, item):
 
         try:
             total_depois = len(getattr(self, 'tarefas', []))
+
             if total_depois < total_antes:
-                QMessageBox.information(
-                    self,
-                    QCoreApplication.translate("App", "Sucesso"),
-                    QCoreApplication.translate("App", "Tarefa removida com sucesso!")
-                )
+                MessageBox.tempo_delete_task_success(self)
 
             else:
-                QMessageBox.warning(
-                    self,
-                    QCoreApplication.translate("App", "Falha"),
-                    QCoreApplication.translate("App", "Não foi possível remover a tarefa selecionada.")
-                )
+                MessageBox.tempo_delete_task_failure(self)
 
         except Exception:
             pass
@@ -87,11 +75,7 @@ def remover_tarefa_por_item(self, item):
     except Exception as e:
         logger.error(f"Erro ao remover tarefa pelo menu de contexto: {str(e)}", exc_info=True)
         try:
-            QMessageBox.warning(
-                self,
-                QCoreApplication.translate("App", "Falha"),
-                QCoreApplication.translate("App", "Ocorreu um erro ao remover a tarefa.")
-            )
+            MessageBox.tempo_delete_task_error(self)
 
         except Exception:
             pass

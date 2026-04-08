@@ -1,8 +1,9 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QToolButton, QLabel, QSizePolicy, QApplication, QMenu, QMessageBox
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QGridLayout, QToolButton, QLabel, QSizePolicy, QApplication, QMenu
 from PySide6.QtCore import Signal, QDate, QCoreApplication, Qt, QLocale, QEvent, QObject
 from PySide6.QtGui import QAction
 from source.modules.eisenhower.services.svc_06_EisenhowerContextMenuService import editar_tarefa_por_dados, remover_tarefa_por_dados
 from source.modules.eisenhower.services.svc_09_prioridade_para_texto import prioridade_para_texto
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -262,14 +263,7 @@ class YearCalendarWidget(QWidget):
             if app is None:
                 return 0
 
-            resp = QMessageBox.question(
-                app,
-                get_text("Remover Tarefas") or "Remover Tarefas",
-                get_text("Deseja remover todas as tarefas do mês selecionado?") or "Deseja remover todas as tarefas do mês selecionado?",
-                QMessageBox.Yes | QMessageBox.No,
-            )
-
-            if resp != QMessageBox.Yes:
+            if not MessageBox.eisen_confirm_remove_tasks_by_month(app):
                 return 0
 
             removed = 0
@@ -344,6 +338,13 @@ class YearCalendarWidget(QWidget):
 
             except Exception:
                 pass
+
+            if removed > 0:
+                try:
+                    MessageBox.eisen_remove_tasks_success(app, removed)
+
+                except Exception:
+                    pass
 
             return int(removed)
 

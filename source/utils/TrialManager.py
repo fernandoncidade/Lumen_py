@@ -2,20 +2,12 @@ import os
 import json
 import time
 import winreg
-from PySide6.QtCore import Qt, QCoreApplication
-from PySide6.QtGui import QIcon
-from PySide6.QtWidgets import QMessageBox
 from utils.CaminhoPersistenteUtils import obter_caminho_persistente
 from utils.IconUtils import get_icon_path
+from utils.MessageBox import MessageBox
 from utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
-def get_text(text):
-    try:
-        return QCoreApplication.translate("App", text)
-
-    except Exception:
-        return text
 
 class TrialManager:
     CONFIG_FILE = "trial_info.json"
@@ -48,6 +40,7 @@ class TrialManager:
                 try:
                     with winreg.OpenKey(winreg.HKEY_CURRENT_USER, cls.REG_PATH, 0, access) as key:
                         value, val_type = winreg.QueryValueEx(key, cls.REG_KEY)
+
                         if isinstance(value, int):
                             return int(value)
 
@@ -135,6 +128,7 @@ class TrialManager:
 
             if not removed:
                 logger.warning("Timestamp não encontrado no registro em nenhuma visualização; tentando remover chave inteira se existir.")
+
                 try:
                     if hasattr(winreg, "DeleteKeyEx"):
                         try:
@@ -177,6 +171,7 @@ class TrialManager:
                 try:
                     with open(path, "r") as f:
                         info = json.load(f)
+
                         if first_run is not None:
                             info["first_run"] = first_run
 
@@ -190,6 +185,7 @@ class TrialManager:
 
             timestamp = first_run if first_run is not None else int(time.time())
             info = {"first_run": timestamp}
+
             if path:
                 try:
                     with open(path, "w") as f:
@@ -213,6 +209,7 @@ class TrialManager:
             info = cls.get_trial_info()
             first_run = info.get("first_run", int(time.time()))
             now = int(time.time())
+
             if cls.DEFAULT_TRIAL == "minutes":
                 trial_seconds = cls.DEFAULT_TRIAL_VALUE * 60
 
@@ -235,20 +232,8 @@ class TrialManager:
                 return
 
             if cls.is_trial_expired():
-                msg = QMessageBox(parent)
                 icon_file = get_icon_path("autismo.ico")
-                msg.setWindowIcon(QIcon(icon_file))
-                msg.setIcon(QMessageBox.Critical)
-                msg.setWindowTitle(get_text("trial_expired_title"))
-                msg.setTextFormat(Qt.TextFormat.RichText)
-                msg.setText(
-                    f"{get_text('trial_expired_message')}<br>"
-                    f"{get_text('trial_buy_message')}<br><br>"
-                    f"{get_text('trial_uninstall_message')}<br><br>"
-                    f'<a href="{cls.PAID_VERSION_URL}">{get_text('trial_paid_link')}</a>'
-                )
-                msg.setStandardButtons(QMessageBox.Ok)
-                msg.exec()
+                MessageBox.trial_expired(parent, cls.PAID_VERSION_URL, icon_file)
                 os._exit(0)
 
         except Exception as e:

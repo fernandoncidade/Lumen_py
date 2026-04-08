@@ -107,9 +107,9 @@ class MapaMental(QWidget):
         from source.modules.mapa.MapaMental.mm_19_exportar_imagem import exportar_imagem as _impl
         return _impl(self)
 
-    def limpar_mapa(self):
+    def limpar_mapa(self, emitir_mensagem: bool = True):
         from source.modules.mapa.MapaMental.mm_20_limpar_mapa import limpar_mapa as _impl
-        return _impl(self)
+        return _impl(self, emitir_mensagem=emitir_mensagem)
 
     def atualizar_tema(self):
         from source.modules.mapa.MapaMental.mm_21_atualizar_tema import atualizar_tema as _impl

@@ -1,9 +1,10 @@
 import os
-from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QMessageBox, QDialogButtonBox
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QDialogButtonBox
 from PySide6.QtCore import QCoreApplication, QPointF
-from source.utils.LogManager import LogManager
 from source.modules.mapa.mp_01_NoConceito import NoConceito
 from source.modules.mapa.mp_03_MapaMental import MapaScene
+from source.utils.MessageBox import MessageBox
+from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
 
@@ -90,18 +91,11 @@ class _AdicionarNoDialog(QDialog):
     def _on_file_dropped(self, path: str):
         try:
             titulo = os.path.splitext(os.path.basename(path))[0]
+
             if titulo:
                 self.input_texto.setText(titulo)
 
-            resp = QMessageBox.question(
-                self,
-                QCoreApplication.translate("App", "Vincular arquivo"),
-                QCoreApplication.translate("App", "Deseja vincular este arquivo ao nó que será criado?"),
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.Yes,
-            )
-
-            if resp == QMessageBox.StandardButton.Yes:
+            if MessageBox.mapa_confirm_link_file_new_node(self):
                 self._linked_path = path
                 self.drop_info.setText(QCoreApplication.translate("App", "Arquivo vinculado:") + f" {os.path.basename(path)}")
 
@@ -121,10 +115,12 @@ class _AdicionarNoDialog(QDialog):
 def adicionar_no(self):
     try:
         dialogo = _AdicionarNoDialog(self)
+
         if dialogo.exec() != QDialog.Accepted:
             return
 
         texto = dialogo.get_texto()
+
         if texto:
             if self.nos:
                 ultimo = self.nos[-1]
@@ -135,12 +131,14 @@ def adicionar_no(self):
                 x, y = 0, 0
 
             no = NoConceito(x, y, texto)
+
             if isinstance(self.scene, MapaScene):
                 pos = self.scene.snap(QPointF(x, y))
                 no.setPos(pos)
 
             try:
                 caminho = dialogo.get_linked_path()
+
                 if caminho:
                     no.set_arquivo_vinculado(caminho)
 
@@ -157,11 +155,10 @@ def adicionar_no(self):
                     children_map = getattr(self, "_hierarquia_children", None) or {}
 
                     parent = None
+
                     try:
-                        selecionados = [
-                            item for item in self.scene.selectedItems()
-                            if isinstance(item, NoConceito) and item is not no
-                        ]
+                        selecionados = [item for item in self.scene.selectedItems() if isinstance(item, NoConceito) and item is not no]
+
                         if selecionados:
                             parent = selecionados[0]
 
@@ -179,6 +176,7 @@ def adicionar_no(self):
                     else:
                         parent_map[no] = parent
                         filhos = children_map.setdefault(parent, [])
+
                         if no not in filhos:
                             filhos.append(no)
 

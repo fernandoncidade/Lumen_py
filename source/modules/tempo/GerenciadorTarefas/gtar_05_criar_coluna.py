@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import QVBoxLayout, QListWidget, QGroupBox, QAbstractItemView
-from PySide6.QtCore import Qt, QCoreApplication
+from PySide6.QtCore import Qt
 from source.modules.tempo.tmp_04_KanbanListWidget import _KanbanListWidget
 from source.utils.LogManager import LogManager
+from source.utils.MessageBox import MessageBox
 logger = LogManager.get_logger()
 
 def criar_coluna(self, status):
@@ -57,7 +58,6 @@ def criar_coluna(self, status):
                     return
 
                 import os, subprocess
-                from PySide6.QtWidgets import QMessageBox
 
                 if os.path.exists(path):
                     try:
@@ -77,11 +77,7 @@ def criar_coluna(self, status):
                             logger.error(f"Erro ao abrir arquivo vinculado (Gestão de Tempo): {str(e2)}", exc_info=True)
 
                 else:
-                    QMessageBox.warning(
-                        self,
-                        QCoreApplication.translate("App", "Erro"),
-                        QCoreApplication.translate("App", "Arquivo não encontrado."),
-                    )
+                    MessageBox.warning_file_not_found(self)
 
             except Exception as e:
                 logger.error(f"Erro ao abrir arquivo vinculado (Gestão de Tempo): {str(e)}", exc_info=True)
@@ -110,6 +106,7 @@ def criar_coluna(self, status):
             try:
                 self._update_rounded_mask(grupo.lista, max(0, radius - 2))
                 vp = getattr(grupo.lista, "viewport", None)
+
                 if callable(vp):
                     self._update_rounded_mask(grupo.lista.viewport(), max(0, radius - 2))
 

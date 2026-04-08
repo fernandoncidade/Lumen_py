@@ -1,20 +1,17 @@
-from PySide6.QtWidgets import QMessageBox
 from PySide6.QtCore import QCoreApplication
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
 def show_help(self):
     try:
         title = QCoreApplication.translate("App", "Lúmen - Atalhos")
-
         atalhos = []
+
         try:
             if hasattr(self, "tabs"):
                 for i in range(min(5, self.tabs.count())):
-                    atalhos.append((
-                        QCoreApplication.translate("App", f"Ctrl+{i + 1}"),
-                        self.tabs.tabText(i)
-                    ))
+                    atalhos.append((QCoreApplication.translate("App", f"Ctrl+{i + 1}"), self.tabs.tabText(i)))
 
         except Exception:
             pass
@@ -52,7 +49,7 @@ def show_help(self):
             f"<ul>{regua_html}</ul>"
         )
 
-        QMessageBox.information(self, QCoreApplication.translate("App", "Ajuda - Atalhos"), help_html)
+        MessageBox.app_help_shortcuts(self, help_html)
 
     except Exception as e:
         logger.critical(f"Erro crítico ao exibir ajuda: {str(e)}", exc_info=True)

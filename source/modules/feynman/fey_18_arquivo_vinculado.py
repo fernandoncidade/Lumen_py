@@ -3,7 +3,8 @@ import subprocess
 import sys
 from PySide6.QtCore import Qt, QCoreApplication, QUrl, QPoint, QObject, QEvent
 from PySide6.QtGui import QDesktopServices
-from PySide6.QtWidgets import QApplication, QMessageBox, QFrame, QVBoxLayout, QLabel
+from PySide6.QtWidgets import QApplication, QFrame, QVBoxLayout, QLabel
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -23,6 +24,7 @@ class _FeynmanTooltipArquivoVinculado(QFrame):
         while self._layout.count():
             child = self._layout.takeAt(0)
             widget = child.widget()
+
             if widget is not None:
                 widget.deleteLater()
 
@@ -51,6 +53,7 @@ class _FeynmanTooltipArquivoVinculado(QFrame):
             titulo = secao.get("titulo")
             conteudo = secao.get("conteudo")
             negrito = secao.get("negrito", False)
+
             if not conteudo:
                 continue
 
@@ -72,11 +75,13 @@ class _ListaConceitosHoverFilter(QObject):
     def eventFilter(self, obj, event):
         try:
             et = event.type()
+
             if et in (QEvent.Leave, QEvent.FocusOut, QEvent.Hide, QEvent.Wheel, QEvent.Resize):
                 self._owner.ocultar_tooltip_arquivo_vinculado()
 
             if et == QEvent.MouseMove:
                 item = self._owner.lista_conceitos.itemAt(event.pos())
+
                 if item is None:
                     self._owner.ocultar_tooltip_arquivo_vinculado()
 
@@ -93,6 +98,7 @@ def _obter_conceito_do_item(self, item):
 
         try:
             conceito = item.data(Qt.UserRole)
+
             if isinstance(conceito, dict):
                 return conceito
 
@@ -108,19 +114,17 @@ def _obter_conceito_do_item(self, item):
 def abrir_arquivo_conceito(self, item):
     try:
         conceito = _obter_conceito_do_item(self, item)
+
         if not conceito:
             return
 
         caminho = (conceito.get('arquivo_vinculado') or '').strip()
+
         if not caminho:
             return
 
         if not os.path.exists(caminho):
-            QMessageBox.warning(
-                self,
-                QCoreApplication.translate("App", "Arquivo não encontrado"),
-                QCoreApplication.translate("App", "O arquivo vinculado não foi encontrado:\n{caminho}").format(caminho=caminho)
-            )
+            MessageBox.feynman_linked_file_not_found(self, caminho)
             return
 
         try:
@@ -143,11 +147,7 @@ def abrir_arquivo_conceito(self, item):
 
         except Exception as e:
             logger.error(f"Erro ao abrir arquivo vinculado no Método Feynman: {e}", exc_info=True)
-            QMessageBox.warning(
-                self,
-                QCoreApplication.translate("App", "Erro"),
-                QCoreApplication.translate("App", "Não foi possível abrir o arquivo vinculado.")
-            )
+            MessageBox.feynman_linked_file_open_error(self)
 
     except Exception as e:
         logger.error(f"Erro ao abrir arquivo do conceito no Método Feynman: {e}", exc_info=True)
@@ -168,6 +168,7 @@ def mostrar_tooltip_arquivo_vinculado(self, item):
             return
 
         preview = item.data(PREVIEW_ROLE)
+
         if not isinstance(preview, dict):
             self.ocultar_tooltip_arquivo_vinculado()
             return
@@ -204,6 +205,7 @@ def mostrar_tooltip_arquivo_vinculado(self, item):
         pos = QApplication.instance().cursor().pos() + QPoint(14, 18)
 
         screen = QApplication.screenAt(pos) or QApplication.primaryScreen()
+
         if screen is not None:
             geo = screen.availableGeometry()
             w = self._feynman_tooltip_widget.width()
@@ -224,6 +226,7 @@ def mostrar_tooltip_arquivo_vinculado(self, item):
 def ocultar_tooltip_arquivo_vinculado(self):
     try:
         tooltip = getattr(self, "_feynman_tooltip_widget", None)
+
         if tooltip is not None:
             tooltip.hide()
 

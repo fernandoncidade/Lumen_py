@@ -1,24 +1,11 @@
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtCore import QCoreApplication
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
 def limpar_painel(self):
     try:
         try:
-            msg_titulo = QCoreApplication.translate("App", "Limpar conteúdo")
-            msg_texto = QCoreApplication.translate(
-                "App",
-                "Esta ação irá limpar o conteúdo das abas \"Texto\" e \"PDF\".\n\nDeseja continuar?"
-            )
-            resp = QMessageBox.warning(
-                self,
-                msg_titulo,
-                msg_texto,
-                QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
-                QMessageBox.StandardButton.No,
-            )
-            if resp != QMessageBox.StandardButton.Yes:
+            if not MessageBox.leitor_confirm_clear_panel(self):
                 return
 
         except Exception:

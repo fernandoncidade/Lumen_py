@@ -1,9 +1,10 @@
 import json
 import os
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QFileDialog, QListWidgetItem, QMessageBox
+from PySide6.QtWidgets import QFileDialog, QListWidgetItem
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
-from source.utils.task_identity import ensure_task_id
+from source.utils.TaskIdentity import ensure_task_id
 logger = LogManager.get_logger()
 
 _QUADRANT_KEYS = (
@@ -183,7 +184,7 @@ def abrir_arquivo(self, app=None):
 
         except Exception as e:
             logger.error(f"openpyxl não está disponível: {e}", exc_info=True)
-            QMessageBox.critical(app, self.get_text("Erro"), self.get_text("openpyxl não está disponível."))
+            MessageBox.eisen_open_dependency_missing_openpyxl(app)
             return
 
         try:
@@ -235,11 +236,11 @@ def abrir_arquivo(self, app=None):
             except Exception as e:
                 logger.error(f"Erro ao atualizar lista de tarefas no calendário: {e}", exc_info=True)
 
-            QMessageBox.information(app, self.get_text("Abrir"), self.get_text("Arquivo importado com sucesso."))
+            MessageBox.eisen_open_import_success(app)
 
         except Exception as e:
             logger.error(f"Erro ao importar arquivo XLSX: {e}", exc_info=True)
-            QMessageBox.critical(app, self.get_text("Erro"), f"{self.get_text('Erro') or 'Erro'}: {e}")
+            MessageBox.critical_exception(app, e, MessageBox.title_error())
 
     elif ext == ".pdf":
         try:
@@ -247,7 +248,7 @@ def abrir_arquivo(self, app=None):
 
         except Exception as e:
             logger.error(f"PyPDF2 não está disponível: {e}", exc_info=True)
-            QMessageBox.critical(app, self.get_text("Erro"), self.get_text("PyPDF2 não está disponível para ler PDF."))
+            MessageBox.eisen_open_dependency_missing_pypdf2(app)
             return
 
         try:
@@ -262,7 +263,7 @@ def abrir_arquivo(self, app=None):
             end_idx = text.find(_PDF_SENTINEL_END)
 
             if begin_idx == -1 or end_idx == -1 or end_idx <= begin_idx:
-                QMessageBox.warning(app, self.get_text("Abrir"), self.get_text("PDF não está no formato compatível."))
+                MessageBox.eisen_open_pdf_incompatible(app)
                 return
 
             payload_json = text[begin_idx + len(_PDF_SENTINEL_BEGIN):end_idx].strip()
@@ -280,11 +281,11 @@ def abrir_arquivo(self, app=None):
             except Exception as e:
                 logger.error(f"Erro ao atualizar lista de tarefas no calendário (PDF): {e}", exc_info=True)
 
-            QMessageBox.information(app, self.get_text("Abrir"), self.get_text("PDF importado com sucesso."))
+            MessageBox.eisen_open_pdf_import_success(app)
 
         except Exception as e:
             logger.error(f"Erro ao importar arquivo PDF: {e}", exc_info=True)
-            QMessageBox.critical(app, self.get_text("Erro"), f"{self.get_text('Erro') or 'Erro'}: {e}")
+            MessageBox.critical_exception(app, e, MessageBox.title_error())
 
     elif ext == ".json":
         try:
@@ -302,11 +303,11 @@ def abrir_arquivo(self, app=None):
             except Exception as e:
                 logger.error(f"Erro ao atualizar lista de tarefas no calendário (JSON): {e}", exc_info=True)
 
-            QMessageBox.information(app, self.get_text("Abrir"), self.get_text("Arquivo importado com sucesso."))
+            MessageBox.eisen_open_import_success(app)
 
         except Exception as e:
             logger.error(f"Erro ao importar arquivo JSON: {e}", exc_info=True)
-            QMessageBox.critical(app, self.get_text("Erro"), f"{self.get_text('Erro') or 'Erro'}: {e}")
+            MessageBox.critical_exception(app, e, MessageBox.title_error())
 
     else:
-        QMessageBox.warning(app, self.get_text("Abrir"), self.get_text("Formato de arquivo não suportado."))
+        MessageBox.eisen_open_unsupported_format(app)

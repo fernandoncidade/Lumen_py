@@ -20,12 +20,16 @@ def setup_statusbar(self):
 
         def _active_tab_key():
             try:
-                idx = self.tabs.currentIndex()
+                tabs = getattr(self, "tabs", None)
+                if not _is_qt_alive(tabs):
+                    return None
+
+                idx = tabs.currentIndex()
 
                 if idx < 0:
                     return None
 
-                return self.tabs.tabBar().tabData(idx)
+                return tabs.tabBar().tabData(idx)
 
             except Exception:
                 return None
@@ -43,14 +47,18 @@ def setup_statusbar(self):
 
         def _render_status():
             try:
-                idx = self.tabs.currentIndex() if hasattr(self, "tabs") else -1
+                tabs = getattr(self, "tabs", None)
+                if not _is_qt_alive(tabs):
+                    return
+
+                idx = tabs.currentIndex()
 
                 if idx < 0:
                     self.status_module_label.setText(QCoreApplication.translate("App", "Pronto"))
                     self.status_selection_label.setText("")
                     return
 
-                tab_name = self.tabs.tabText(idx)
+                tab_name = tabs.tabText(idx)
                 self.status_module_label.setText(QCoreApplication.translate("App", "Módulo ativo: {tab_name}").format(tab_name=tab_name))
 
                 current_key = _active_tab_key()

@@ -1,4 +1,67 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.20.0
+Date: February 20, 2026
+Author: Fernando Nillsson Cidade
+
+General Summary
+This update improves how the app communicates with you: confirmation, warning, success, and error messages are now clearer, more consistent, and more predictable. We also fixed important deletion and cleanup flows to avoid confusing behavior.
+
+Main Improvements
+
+1. Clearer messages throughout the app
+- Warnings and confirmations now follow the same visual and language pattern.
+- Success and error messages are now more objective, making it easier to understand the result of each action.
+- More consistent experience when switching language during use.
+
+2. Feynman Method
+- When deleting concepts, there is now confirmation and clear success or error feedback.
+- Concept saving now provides more direct feedback.
+- Better handling when dealing with linked files (e.g., file not found).
+
+3. Mind Maps
+- Clearing the map now asks for confirmation and shows the final result.
+- New option to delete node(s) and connection(s) with confirmation before the action.
+- Important deletion fix: nodes and connections are now removed correctly, including in multiple selection.
+
+4. Time Management and Pomodoro
+- Task removal actions (single or batch) are now safer, with clear confirmations.
+- Success, failure, and error feedback has been standardized.
+- “No tasks” messages are now clearer.
+
+5. Accessible Reader
+- Pause alerts, reading errors, and focus ruler activation messages are now more informative.
+- Clear-content and file-save flows are now more consistent and easier to understand.
+
+6. Eisenhower Matrix and Calendar
+- Removing tasks by day and by month now asks for confirmation before executing.
+- After deletion in the calendar, the app reports the result more clearly.
+- Better consistency in messages for creating, clearing, opening, and saving.
+
+7. Overall Stability
+- Improvements in message window behavior across different screens and usage contexts.
+- Lower risk of message windows failing to open in specific actions.
+
+Applied Fixes
+
+1. Confirmation action failure fix
+- Resolved an issue that could prevent some confirmation windows from opening correctly.
+
+2. Mind Map node deletion fix
+- Adjusted behavior to avoid partial deletion (connections only) and visual inconsistencies.
+
+3. Calendar feedback fix
+- After removing tasks by period, the app now shows confirmation that the action was completed.
+
+Recommended Validation (Quick)
+1. Delete 1 concept and multiple concepts in Feynman and confirm the confirmation and result messages.
+2. Clear the Mind Map and delete 1 node and multiple nodes to validate confirmation and correct removal.
+3. In the calendar, remove tasks by day and by month and verify confirmation before and notice after completion.
+4. In Accessible Reader, test clearing content and saving a file to validate the new messages.
+5. In Task Manager, remove single and batch tasks to check return messages.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.19.0
 Date: February 19, 2026
 Author: Fernando Nillsson Cidade

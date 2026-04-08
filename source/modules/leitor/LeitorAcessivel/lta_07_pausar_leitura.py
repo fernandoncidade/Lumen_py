@@ -1,6 +1,5 @@
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtCore import QCoreApplication
 from PySide6.QtMultimedia import QMediaPlayer
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -8,6 +7,7 @@ def pausar_leitura(self):
     try:
         if self.usar_edge_tts:
             estado = self.player.playbackState()
+
             if estado == QMediaPlayer.PlayingState:
                 self.player.pause()
                 self._is_paused = True
@@ -26,11 +26,7 @@ def pausar_leitura(self):
                 pass
 
         else:
-            QMessageBox.information(
-                self,
-                QCoreApplication.translate("App", "Pausar"),
-                QCoreApplication.translate("App", "Pausar/continuar está disponível apenas com as vozes neurais (Edge TTS).")
-            )
+            MessageBox.leitor_pause_requires_edge_tts(self)
 
     except Exception as e:
         logger.error(f"Erro ao alternar pausa/continuação: {str(e)}", exc_info=True)

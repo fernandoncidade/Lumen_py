@@ -1,8 +1,9 @@
-from PySide6.QtWidgets import QMenu, QMessageBox, QApplication
+from PySide6.QtWidgets import QMenu, QApplication
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
-from source.utils.task_identity import task_identity_signature
+from source.utils.TaskIdentity import task_identity_signature
 logger = LogManager.get_logger()
 
 def mostrar_menu_contexto(self, point, list_widget):
@@ -44,6 +45,7 @@ def mostrar_menu_contexto(self, point, list_widget):
 
         def _resolved_selection():
             resolved = []
+
             for it in _selected_items():
                 src_list, src_item = _resolve_source(it)
 
@@ -129,13 +131,7 @@ def mostrar_menu_contexto(self, point, list_widget):
 
                     if enviados:
                         try:
-                            if enviados == 1:
-                                msg = self.get_text("Tarefa enviada com sucesso para ⏱️ Gestão de Tempo - Pomodoro!⏱️")
-
-                            else:
-                                msg = self.get_text("{n} tarefas enviadas com sucesso para ⏱️ Gestão de Tempo - Pomodoro!⏱️").replace("{n}", str(enviados))
-
-                            QMessageBox.information(self.app, self.get_text("Sucesso") or "Sucesso", msg)
+                            MessageBox.eisen_share_pomodoro_success(self.app, enviados)
 
                         except Exception:
                             pass
@@ -220,20 +216,13 @@ def mostrar_menu_contexto(self, point, list_widget):
                     return
 
                 try:
-                    msg = QMessageBox(self.app)
-                    msg.setWindowTitle(self.get_text("Remover Tarefa"))
-
                     if len(items) == 1:
-                        msg.setText(self.get_text("Deseja remover a tarefa '{item}'?").replace("{item}", items[0].text()))
+                        ok = MessageBox.eisen_confirm_remove_single_task(self.app, items[0].text())
 
                     else:
-                        msg.setText(self.get_text("Deseja remover {n} tarefas selecionadas?").replace("{n}", str(len(items))))
+                        ok = MessageBox.eisen_confirm_remove_multiple_tasks(self.app, len(items))
 
-                    btn_yes = msg.addButton(self.get_text("Yes"), QMessageBox.YesRole)
-                    msg.addButton(self.get_text("No"), QMessageBox.NoRole)
-                    msg.exec()
-
-                    if msg.clickedButton() != btn_yes:
+                    if not ok:
                         return
 
                 except Exception:
@@ -267,18 +256,13 @@ def mostrar_menu_contexto(self, point, list_widget):
 
                 if removed_count > 0:
                     try:
-                        msg_ok = QMessageBox(self.app)
-                        msg_ok.setWindowTitle(self.get_text("Sucesso") or "Sucesso")
-                        msg_ok.setText(self.get_text("Tarefa removida com sucesso!") or "Tarefa removida com sucesso!")
-                        msg_ok.addButton(self.get_text("Ok") or "Ok", QMessageBox.AcceptRole)
-
                         try:
                             QApplication.beep()
 
                         except Exception:
                             pass
 
-                        msg_ok.exec()
+                        MessageBox.eisen_remove_task_success(self.app)
 
                     except Exception:
                         pass

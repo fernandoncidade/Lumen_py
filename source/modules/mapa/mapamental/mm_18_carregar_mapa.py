@@ -1,8 +1,8 @@
+import os
+import json
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QCoreApplication, Qt
 from PySide6.QtGui import QColor, QTransform, QPen
-import os
-import json
 from source.utils.LogManager import LogManager
 from source.modules.mapa.mp_01_NoConceito import NoConceito
 from source.modules.mapa.mp_02_LinhaConexao import LinhaConexao
@@ -22,12 +22,13 @@ def _carregar_mapa_de_arquivo(self, arquivo: str, silencioso: bool = False) -> b
         except Exception:
             pass
 
-        self.limpar_mapa()
+        self.limpar_mapa(emitir_mensagem=False)
 
         for no_data in dados['nos']:
             no = NoConceito(no_data['x'], no_data['y'], no_data['texto'], QColor(no_data['cor']))
             no.notas = no_data.get('notas', '')
             no.info_associada = list(no_data.get('info_associada', []) or [])
+
             if no_data.get('arquivo_vinculado'):
                 try:
                     no.set_arquivo_vinculado(no_data.get('arquivo_vinculado'))

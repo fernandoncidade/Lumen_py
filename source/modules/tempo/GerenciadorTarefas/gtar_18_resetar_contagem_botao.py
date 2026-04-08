@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import QMessageBox, QInputDialog
+from PySide6.QtWidgets import QInputDialog
 from PySide6.QtCore import QCoreApplication
 from source.utils.LogManager import LogManager
+from source.utils.MessageBox import MessageBox
 logger = LogManager.get_logger()
 
 def resetar_contagem_botao(self):
@@ -19,6 +20,7 @@ def resetar_contagem_botao(self):
             0,
             False
         )
+
         if not ok or not escopo:
             return
 
@@ -43,6 +45,7 @@ def resetar_contagem_botao(self):
                 0,
                 False
             )
+
             if not ok or not coluna_exibida:
                 return
 
@@ -50,11 +53,7 @@ def resetar_contagem_botao(self):
             tarefas_coluna = [t for t in self.tarefas if getattr(t, 'status', '') == status_coluna]
 
             if not tarefas_coluna:
-                QMessageBox.information(
-                    self,
-                    QCoreApplication.translate("App", "Nenhuma tarefa"),
-                    QCoreApplication.translate("App", "Não há tarefas nesta coluna.")
-                )
+                MessageBox.tempo_no_tasks_in_column(self)
                 return
 
             titulos = [t.titulo for t in tarefas_coluna]
@@ -66,6 +65,7 @@ def resetar_contagem_botao(self):
                 0,
                 False
             )
+
             if not ok or not titulo_escolhido:
                 return
 
@@ -83,6 +83,7 @@ def resetar_contagem_botao(self):
                 0,
                 False
             )
+
             if not ok or not coluna_exibida:
                 return
 
@@ -90,11 +91,7 @@ def resetar_contagem_botao(self):
             tarefas_coluna = [t for t in self.tarefas if getattr(t, 'status', '') == status_coluna]
 
             if not tarefas_coluna:
-                QMessageBox.information(
-                    self,
-                    QCoreApplication.translate("App", "Nenhuma tarefa"),
-                    QCoreApplication.translate("App", "Não há tarefas nesta coluna.")
-                )
+                MessageBox.tempo_no_tasks_in_column(self)
                 return
 
             for t in tarefas_coluna:
@@ -102,11 +99,7 @@ def resetar_contagem_botao(self):
 
         else:
             if not self.tarefas:
-                QMessageBox.information(
-                    self,
-                    QCoreApplication.translate("App", "Nenhuma tarefa"),
-                    QCoreApplication.translate("App", "Não há tarefas em nenhuma coluna.")
-                )
+                MessageBox.tempo_no_tasks_anywhere(self)
                 return
 
             for t in self.tarefas:

@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from source.utils.LogManager import LogManager
 from uuid import uuid4
-from source.utils.task_identity import tasks_match
+from source.utils.TaskIdentity import tasks_match
 logger = LogManager.get_logger()
 
 def _adicionar_tarefa_integrada_do_tempo(self, titulo: str, prioridade: str, date: str = None, time: str = None, description: str = None, file_path: str = None, task_id: str = None):

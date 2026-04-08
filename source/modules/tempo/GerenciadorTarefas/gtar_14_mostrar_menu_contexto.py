@@ -3,7 +3,8 @@ from PySide6.QtCore import QCoreApplication, Qt, QDate, QTime, QUrl, QLocale
 from PySide6.QtGui import QAction, QDesktopServices
 from source.modules.eisenhower.services.svc_01_initUI import FileDropLineEdit
 from source.utils.LogManager import LogManager
-from source.utils.task_identity import task_identity_signature
+from source.utils.MessageBox import MessageBox
+from source.utils.TaskIdentity import task_identity_signature
 logger = LogManager.get_logger()
 
 def mostrar_menu_contexto(self, pos, lista):
@@ -137,6 +138,7 @@ def mostrar_menu_contexto(self, pos, lista):
                         def _choose():
                             try:
                                 path, _ = QFileDialog.getOpenFileName(self, QCoreApplication.translate("App", "Escolher arquivo"), "", "*")
+
                                 if path:
                                     self.file_field.setText(path.split("\\")[-1])
                                     self.file_field.setToolTip(path)
@@ -479,7 +481,6 @@ def mostrar_menu_contexto(self, pos, lista):
                     from uuid import uuid4
                     from source.utils.EventBus import get_event_bus
                     from source.modules.tempo.tmp_01_Tarefa import Tarefa
-                    from PySide6.QtWidgets import QMessageBox
 
                     def _resolve_tarefa(it):
                         tarefa_id = it.data(Qt.UserRole)
@@ -553,12 +554,7 @@ def mostrar_menu_contexto(self, pos, lista):
 
                     if enviados > 0:
                         try:
-                            msg = QCoreApplication.translate('App', 'Tarefa enviada com sucesso para 🗂️ Matriz Eisenhower! 🗂️')
-
-                            if enviados > 1:
-                                msg = QCoreApplication.translate('App', '{n} tarefas enviadas com sucesso para 🗂️ Matriz Eisenhower! 🗂️').format(n=enviados)
-
-                            QMessageBox.information(self, QCoreApplication.translate('App', 'Sucesso') or 'Sucesso', msg)
+                            MessageBox.tempo_share_eisenhower_success(self, enviados)
 
                         except Exception:
                             pass

@@ -2716,5 +2716,65 @@ Deseja continuar?</translation>
       <translation>Escolher arquivo</translation>
     </message>
 
+    <message>
+      <source>Conceito excluído com sucesso!</source>
+      <translation>Conceito excluído com sucesso!</translation>
+    </message>
+
+    <message>
+      <source>Erro ao excluir conceito!</source>
+      <translation>Erro ao excluir conceito!</translation>
+    </message>
+
+    <message>
+      <source>Mapa Mental limpo com sucesso!</source>
+      <translation>Mapa Mental limpo com sucesso!</translation>
+    </message>
+
+    <message>
+      <source>Erro ao limpar Mapa Mental!</source>
+      <translation>Erro ao limpar Mapa Mental!</translation>
+    </message>
+
+    <message>
+      <source>Deseja realmente excluir '{no_conexao}'?</source>
+      <translation>Deseja realmente excluir '{no_conexao}'?</translation>
+    </message>
+
+    <message>
+      <source>Deseja realmente excluir os '{no_conexao}' nós selecionados?</source>
+      <translation>Deseja realmente excluir os '{no_conexao}' nós selecionados?</translation>
+    </message>
+
+    <message>
+      <source>Deseja realmente limpar o Mapa Mental?</source>
+      <translation>Deseja realmente limpar o Mapa Mental?</translation>
+    </message>
+
+    <message>
+      <source>Nó(s) excluído(s) com sucesso!</source>
+      <translation>Nó(s) excluído(s) com sucesso!</translation>
+    </message>
+
+    <message>
+      <source>Erro ao excluir Nó(s)!</source>
+      <translation>Erro ao excluir Nó(s)!</translation>
+    </message>
+
+    <message>
+      <source>Excluir Nó(s) e Conexão(ões) 🪢</source>
+      <translation>Excluir Nó(s) e Conexão(ões) 🪢</translation>
+    </message>
+
+    <message>
+      <source>1 tarefa removida com sucesso!</source>
+      <translation>1 tarefa removida com sucesso!</translation>
+    </message>
+
+    <message>
+      <source>{n} tarefas removidas com sucesso!</source>
+      <translation>{n} tarefas removidas com sucesso!</translation>
+    </message>
+
   </context>
 </TS>

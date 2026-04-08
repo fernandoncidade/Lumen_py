@@ -1,11 +1,13 @@
 from PySide6.QtCore import QCoreApplication, Qt, QEvent
 from PySide6.QtGui import QTextCharFormat, QFont, QTextCursor, QFontMetrics
-from PySide6.QtWidgets import QMessageBox, QDialog, QVBoxLayout, QPushButton, QHBoxLayout, QListWidget, QTextBrowser
+from PySide6.QtWidgets import QDialog, QVBoxLayout, QPushButton, QHBoxLayout, QListWidget, QTextBrowser
 from source.utils.LogManager import LogManager
+from source.utils.MessageBox import MessageBox
 logger = LogManager.get_logger()
 
 def _tr_multi(key: str) -> str:
     val = QCoreApplication.translate("App", key)
+
     if val and val != key:
         return val
 
@@ -47,6 +49,7 @@ def exibir_manual(app):
         class ManualDialog(QDialog):
             def changeEvent(self, event) -> None:
                 super().changeEvent(event)
+
                 if event.type() == QEvent.Type.LanguageChange:
                     try:
                         refresh_manual()
@@ -78,6 +81,7 @@ def exibir_manual(app):
         dlg.destroyed.connect(_clear_manual_dialog)
 
         qt_app = QCoreApplication.instance()
+
         if qt_app is not None:
             qt_app.aboutToQuit.connect(dlg.close)
 
@@ -117,11 +121,11 @@ def exibir_manual(app):
 
         def _apply_close_label() -> None:
             close_text = _tr_multi("Fechar")
+
             if close_text == "Fechar":
                 close_text = "Fechar" if _get_idioma_atual() == "pt_BR" else "Close"
 
             btn_close.setText(close_text)
-
             fm = QFontMetrics(btn_close.font())
             text_w = fm.horizontalAdvance(btn_close.text())
             btn_close.setFixedWidth(text_w + 24)
@@ -137,15 +141,16 @@ def exibir_manual(app):
 
             lst.blockSignals(True)
             lst.clear()
+
             for sid in dlg._manual_row_to_id:
                 lst.addItem(dlg._manual_id_to_title.get(sid, sid))
 
             lst.blockSignals(False)
-
             viewer.clear()
 
             base_font = viewer.font()
             base_size = base_font.pointSize()
+
             if base_size is None or base_size <= 0:
                 base_size = 10
 
@@ -236,6 +241,7 @@ def exibir_manual(app):
         def go_to_section_id(section_id: str) -> None:
             try:
                 pos = getattr(dlg, "_manual_positions", {}).get(section_id)
+
                 if pos is None:
                     return
 
@@ -249,6 +255,7 @@ def exibir_manual(app):
 
         def go_to_section(row: int) -> None:
             ids = getattr(dlg, "_manual_row_to_id", [])
+
             if row < 0 or row >= len(ids):
                 return
 
@@ -256,6 +263,7 @@ def exibir_manual(app):
 
         def on_anchor_clicked(url) -> None:
             sid = url.toString().strip()
+
             if not sid:
                 return
 
@@ -290,8 +298,4 @@ def exibir_manual(app):
 
     except Exception as e:
         logger.error(f"Erro ao abrir Manual: {e}", exc_info=True)
-        QMessageBox.critical(
-            app,
-            _tr_multi("Erro") if _tr_multi("Erro") != "Erro" else "Erro",
-            f"{_tr_multi('Erro') if _tr_multi('Erro') != 'Erro' else 'Erro'}: {e}",
-        )
+        MessageBox.critical_error_exception(app, e, tr_func=_tr_multi)

@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMessageBox
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -22,4 +22,4 @@ def novo(self, app=None):
     except Exception as e:
         logger.error(f"Erro ao iniciar nova sessão: {e}", exc_info=True)
 
-    QMessageBox.information(app, self.get_text("Novo"), self.get_text("Nova sessão iniciada.") or "Nova sessão iniciada.")
+    MessageBox.eisen_new_session_started(app)

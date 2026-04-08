@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, QCoreApplication
 from PySide6.QtGui import QColor, QPen, QBrush, QFont
 from source.utils.LogManager import LogManager
 from source.utils.EventBus import get_event_bus
-from source.modules.mapa.NoConceito import itemChange, mousePressEvent, mouseReleaseEvent, mouseDoubleClickEvent
+from source.modules.mapa.NoConceito import itemChange, mousePressEvent, mouseReleaseEvent, mouseDoubleClickEvent, contextMenuEvent
 
 
 class NoConceito(QGraphicsEllipseItem):
@@ -59,6 +59,9 @@ class NoConceito(QGraphicsEllipseItem):
 
     def mouseDoubleClickEvent(self, event):
         return mouseDoubleClickEvent(self, event)
+
+    def contextMenuEvent(self, event):
+        return contextMenuEvent(self, event)
 
     def set_arquivo_vinculado(self, caminho: str | None):
         self.arquivo_vinculado = caminho

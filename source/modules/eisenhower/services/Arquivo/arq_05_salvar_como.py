@@ -1,9 +1,10 @@
 import json
 import os
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QFileDialog, QMessageBox
+from PySide6.QtWidgets import QFileDialog
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
-from source.utils.task_identity import ensure_task_id
+from source.utils.TaskIdentity import ensure_task_id
 logger = LogManager.get_logger()
 
 _QUADRANT_KEYS = (
@@ -126,7 +127,7 @@ def salvar_como(self, app=None):
 
         except Exception as e:
             logger.error(f"openpyxl não está disponível para salvar XLSX: {e}", exc_info=True)
-            QMessageBox.critical(app, self.get_text("Erro"), self.get_text("openpyxl não está disponível para salvar XLSX."))
+            MessageBox.eisen_save_dependency_missing_openpyxl(app)
             return
 
         try:
@@ -153,11 +154,11 @@ def salvar_como(self, app=None):
                     row_index += 1
 
             wb.save(path)
-            QMessageBox.information(app, self.get_text("Salvar"), self.get_text("Arquivo salvo com sucesso."))
+            MessageBox.eisen_save_success(app)
 
         except Exception as e:
             logger.error(f"Erro ao salvar arquivo XLSX: {e}", exc_info=True)
-            QMessageBox.critical(app, self.get_text("Erro"), f"{self.get_text('Erro') or 'Erro'}: {e}")
+            MessageBox.critical_exception(app, e, MessageBox.title_error())
 
     elif ext == ".pdf":
         try:
@@ -166,7 +167,7 @@ def salvar_como(self, app=None):
 
         except Exception as e:
             logger.error(f"reportlab não está disponível para salvar PDF: {e}", exc_info=True)
-            QMessageBox.critical(app, self.get_text("Erro"), self.get_text("reportlab não está disponível para salvar PDF."))
+            MessageBox.eisen_save_dependency_missing_reportlab(app)
             return
 
         try:
@@ -198,22 +199,22 @@ def salvar_como(self, app=None):
                 y -= 9
 
             c.save()
-            QMessageBox.information(app, self.get_text("Salvar"), self.get_text("PDF salvo com sucesso."))
+            MessageBox.eisen_save_pdf_success(app)
 
         except Exception as e:
             logger.error(f"Erro ao salvar arquivo PDF: {e}", exc_info=True)
-            QMessageBox.critical(app, self.get_text("Erro"), f"{self.get_text('Erro') or 'Erro'}: {e}")
+            MessageBox.critical_exception(app, e, MessageBox.title_error())
 
     elif ext == ".json":
         try:
             with open(path, "w", encoding="utf-8") as f:
                 json.dump(tasks, f, ensure_ascii=False, indent=2)
 
-            QMessageBox.information(app, self.get_text("Salvar"), self.get_text("Arquivo salvo com sucesso."))
+            MessageBox.eisen_save_success(app)
 
         except Exception as e:
             logger.error(f"Erro ao salvar arquivo JSON: {e}", exc_info=True)
-            QMessageBox.critical(app, self.get_text("Erro"), f"{self.get_text('Erro') or 'Erro'}: {e}")
+            MessageBox.critical_exception(app, e, MessageBox.title_error())
 
     else:
-        QMessageBox.warning(app, self.get_text("Salvar"), self.get_text("Extensão não suportada."))
+        MessageBox.eisen_save_unsupported_extension(app)

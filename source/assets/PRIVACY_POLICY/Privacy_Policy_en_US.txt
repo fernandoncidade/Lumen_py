@@ -1,6 +1,6 @@
 Privacy Policy — Lúmen
-Last updated: February 19, 2026
-Version: 2026.2.19.0
+Last updated: February 20, 2026
+Version: 2026.2.20.0
 
 Summary
 This Policy describes how the application "Lúmen" handles, stores, and protects user data. The application is designed to operate locally and, by default, does not send telemetry or user data to external servers.

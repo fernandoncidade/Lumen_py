@@ -1,5 +1,6 @@
-from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QToolBar, QFrame, QMessageBox
+from PySide6.QtWidgets import QVBoxLayout, QPushButton, QLabel, QToolBar, QFrame
 from PySide6.QtCore import QCoreApplication, QPointF
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -38,7 +39,7 @@ def setup_ui(self):
         self.toolbar.addWidget(self.btn_exportar)
 
         self.btn_limpar = QPushButton()
-        self.btn_limpar.clicked.connect(self.limpar_mapa)
+        self.btn_limpar.clicked.connect(lambda _checked=False: self.limpar_mapa())
         self.toolbar.addWidget(self.btn_limpar)
 
         self.toolbar.addSeparator()
@@ -60,15 +61,11 @@ def setup_ui(self):
                 setattr(self, flag_attr, True)
 
                 aviso = QCoreApplication.translate("App", AVISO_IA_ALPHA_KEY)
+
                 if aviso == AVISO_IA_ALPHA_KEY:
                     aviso = AVISO_IA_ALPHA_FALLBACK_PT
 
-                QMessageBox.warning(
-                    self,
-                    QCoreApplication.translate("App", "Lúmen"),
-                    aviso,
-                    QMessageBox.Ok
-                )
+                MessageBox.mapa_ai_alpha_notice(self, aviso)
 
             except Exception as e:
                 logger.error(f"Erro ao exibir aviso IA alfa: {e}", exc_info=True)
@@ -97,12 +94,13 @@ def setup_ui(self):
         def _restaurar_layout_original():
             try:
                 snap = getattr(self, "_lumen_layout_original_snapshot", None) or {}
+
                 if not snap:
                     return False
 
                 nos = (getattr(self, "nos", []) or [])
-
                 vis_map = snap.get("visible", {}) or {}
+
                 for no in nos:
                     try:
                         if no in vis_map:
@@ -115,11 +113,13 @@ def setup_ui(self):
                         pass
 
                 pos_map = snap.get("positions", {}) or {}
+
                 for no in nos:
                     if no in pos_map:
                         no.setPos(pos_map[no])
 
                 sc = getattr(self, "scene", None)
+
                 if sc is not None and hasattr(sc, "snap"):
                     for no in nos:
                         try:
@@ -151,10 +151,12 @@ def setup_ui(self):
                 try:
                     if getattr(self, "scene", None) is not None and hasattr(self.scene, "itemsBoundingRect"):
                         br = self.scene.itemsBoundingRect()
+
                         if not br.isNull() and not br.isEmpty():
                             padding = 1400
                             alvo = br.adjusted(-padding, -padding, padding, padding)
                             atual = self.scene.sceneRect()
+
                             if atual.isNull() or atual.isEmpty():
                                 self.scene.setSceneRect(alvo)
 
@@ -173,10 +175,12 @@ def setup_ui(self):
         def _aplicar_layout_horizontal_por_rotacao():
             try:
                 nos = getattr(self, "nos", []) or []
+
                 if not nos:
                     return False
 
                 hier = getattr(self, "_lumen_last_hierarquia", None)
+
                 if isinstance(hier, dict) and "raiz" in hier and "filhos" in hier and "niveis" in hier:
                     self._aplicar_layout_arvore(hier, orientacao="horizontal")
 
@@ -193,6 +197,7 @@ def setup_ui(self):
                 cy_antes = sum(p.y() for p in pts_antes) / len(pts_antes)
 
                 novos = {}
+
                 for no in nos:
                     p = no.pos()
                     novos[no] = QPointF(p.y(), p.x())

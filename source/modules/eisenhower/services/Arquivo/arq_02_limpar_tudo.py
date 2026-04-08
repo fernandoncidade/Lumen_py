@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMessageBox
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -22,4 +22,4 @@ def limpar_tudo(self, app=None):
     except Exception as e:
         logger.error(f"Erro ao limpar tudo: {e}", exc_info=True)
 
-    QMessageBox.information(app, self.get_text("Limpar"), self.get_text("Todos os dados foram removidos.") or "Todos os dados foram removidos.")
+    MessageBox.eisen_all_data_removed(app)

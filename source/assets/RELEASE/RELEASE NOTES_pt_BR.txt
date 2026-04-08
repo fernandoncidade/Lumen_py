@@ -1,4 +1,67 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.20.0
+Data: 20 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo geral
+Esta atualização melhora a forma como o app conversa com você: mensagens de confirmação, aviso, sucesso e erro ficaram mais claras, consistentes e previsíveis. Também corrigimos fluxos importantes de exclusão e limpeza para evitar comportamentos confusos.
+
+Principais melhorias
+
+1. Mensagens mais claras em todo o app
+- Avisos e confirmações agora seguem o mesmo padrão visual e de linguagem.
+- Mensagens de sucesso e erro ficaram mais objetivas, facilitando entender o resultado de cada ação.
+- Experiência mais consistente ao trocar idioma durante o uso.
+
+2. Método Feynman
+- Ao excluir conceitos, agora há confirmação e retorno claro de sucesso ou erro.
+- Salvamento de conceito com feedback mais direto.
+- Melhor tratamento ao lidar com arquivos vinculados (ex.: arquivo não encontrado).
+
+3. Mapas Mentais
+- Limpeza do mapa agora pede confirmação e mostra resultado final.
+- Nova opção para excluir nó(s) e conexão(ões) com confirmação antes da ação.
+- Correção importante na exclusão: nós e conexões são removidos corretamente, inclusive em seleção múltipla.
+
+4. Gestão de Tempo e Pomodoro
+- Ações de remover tarefa (individual ou em lote) ficaram mais seguras, com confirmações claras.
+- Feedback de sucesso, falha ou erro foi padronizado.
+- Mensagens de “nenhuma tarefa” ficaram mais claras.
+
+5. Leitor Acessível
+- Alertas de pausa, erro de leitura e ativação da régua de foco ficaram mais informativos.
+- Fluxos de limpar conteúdo e salvar arquivos ficaram mais consistentes e fáceis de entender.
+
+6. Matriz Eisenhower e Calendário
+- Remoção de tarefas por dia e por mês agora confirma antes de executar.
+- Após a exclusão no calendário, o app informa o resultado com mais clareza.
+- Melhor consistência nas mensagens de criar, limpar, abrir e salvar.
+
+7. Estabilidade geral
+- Melhorias no comportamento de janelas de mensagem em diferentes telas e contextos de uso.
+- Menos risco de mensagens abrirem com falha em ações específicas.
+
+Correções aplicadas
+
+1. Correção de falha em confirmação de ações
+- Resolvido problema que podia impedir a abertura correta de algumas janelas de confirmação.
+
+2. Correção na exclusão de nós no Mapa Mental
+- Ajustado comportamento para evitar exclusão parcial (somente conexões) e inconsistências visuais.
+
+3. Correção de feedback no calendário
+- Após remover tarefas por período, o app agora exibe confirmação de conclusão da ação.
+
+Validação recomendada (rápida)
+1. Excluir 1 conceito e vários conceitos no Feynman e confirmar os avisos de confirmação e resultado.
+2. Limpar o Mapa Mental e excluir 1 nó e vários nós para validar confirmação e remoção correta.
+3. No calendário, remover tarefas do dia e do mês e verificar a confirmação antes e o aviso ao final.
+4. No Leitor Acessível, testar limpar conteúdo e salvar arquivo para validar os novos avisos.
+5. No Gerenciador de Tarefas, remover tarefa individual e em lote para conferir mensagens de retorno.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.19.0
 Data: 19 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

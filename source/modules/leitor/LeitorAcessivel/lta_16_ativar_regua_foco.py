@@ -1,5 +1,6 @@
-from PySide6.QtWidgets import QMessageBox, QApplication
+from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QCoreApplication
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -10,8 +11,8 @@ def ativar_regua_foco(self):
             self.regua = ReguaFoco()
 
             anchor_global = self.texto_area.mapToGlobal(self.texto_area.viewport().rect().topLeft())
-
             tela = QApplication.screenAt(anchor_global)
+
             if tela is None:
                 telas = QApplication.screens()
                 tela = telas[0] if telas else None
@@ -23,6 +24,7 @@ def ativar_regua_foco(self):
                 geo = tela.geometry()
 
                 x = anchor_global.x()
+
                 if x + largura_inicial > geo.right() - 10:
                     x = geo.right() - largura_inicial - 10
 
@@ -30,6 +32,7 @@ def ativar_regua_foco(self):
                     x = geo.x() + 10
 
                 y = anchor_global.y() + 5
+
                 if y < geo.y() + 10:
                     y = geo.y() + 10
 
@@ -43,17 +46,7 @@ def ativar_regua_foco(self):
 
             self.gerenciador_botoes.set_button_text(self.btn_regua, QCoreApplication.translate("App", "📏 Desativar Régua de Foco"))
             self.btn_regua.setStyleSheet("background-color: #28a745; color: white; font-weight: bold;")
-
-            msg_titulo = QCoreApplication.translate("App", "Régua de Foco Ativada")
-            msg_corpo = QCoreApplication.translate("App",
-                "✅ Régua de foco ativada!\n\n"
-                "📌 Como usar:\n"
-                "• Clique e arraste no centro para mover\n"
-                "• Clique nas bordas/cantos para redimensionar\n"
-                "• Use setas ↑↓←→ para ajuste fino\n"
-                "• Pressione ESC para fechar"
-            )
-            QMessageBox.information(self, msg_titulo, msg_corpo)
+            MessageBox.leitor_focus_ruler_activated(self)
 
     except Exception as e:
         logger.error(f"Erro ao ativar régua de foco: {str(e)}", exc_info=True)

@@ -1,5 +1,4 @@
-from PySide6.QtWidgets import QMessageBox
-from PySide6.QtCore import QCoreApplication
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -8,11 +7,7 @@ def salvar_conceito_atual(self):
         titulo = self.input_titulo.toPlainText().strip()
 
         if not titulo:
-            QMessageBox.warning(
-                self, 
-                QCoreApplication.translate("App", "Atenção"), 
-                QCoreApplication.translate("App", "Por favor, digite o título do conceito!")
-            )
+            MessageBox.feynman_warn_missing_title(self)
             return
 
         arquivo_vinculado = None
@@ -49,11 +44,7 @@ def salvar_conceito_atual(self):
         self.salvar_conceitos()
         self.atualizar_lista()
 
-        QMessageBox.information(
-            self, 
-            QCoreApplication.translate("App", "✅ Salvo"), 
-            QCoreApplication.translate("App", "Conceito '{titulo}' salvo com sucesso!").format(titulo=titulo)
-        )
+        MessageBox.feynman_save_success(self, titulo)
 
     except Exception as e:
         logger.error(f"Erro ao salvar conceito atual: {str(e)}", exc_info=True)

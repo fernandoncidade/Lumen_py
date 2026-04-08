@@ -1,6 +1,7 @@
-from PySide6.QtWidgets import QMessageBox, QApplication
+from PySide6.QtWidgets import QApplication
 from PySide6.QtCore import QCoreApplication, Qt
 from source.modules.tempo.tmp_01_Tarefa import Tarefa
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -87,14 +88,7 @@ def remove_task(app, item, list_widget, confirm: bool = True, show_success: bool
             return False
 
         if confirm:
-            msg = QMessageBox(app)
-            msg.setWindowTitle(get_text("Remover Tarefa"))
-            msg.setText(get_text("Deseja remover a tarefa '{item}'?").replace("{item}", item.text()))
-            btn_yes = msg.addButton(get_text("Yes"), QMessageBox.YesRole)
-            btn_no = msg.addButton(get_text("No"), QMessageBox.NoRole)
-            msg.exec()
-
-            if msg.clickedButton() != btn_yes:
+            if not MessageBox.eisen_confirm_remove_single_task(app, item.text()):
                 return False
 
         data = item.data(Qt.UserRole) or {}
@@ -188,18 +182,13 @@ def remove_task(app, item, list_widget, confirm: bool = True, show_success: bool
 
         if show_success:
             try:
-                msg_ok = QMessageBox(app)
-                msg_ok.setWindowTitle(get_text("Sucesso") or "Sucesso")
-                msg_ok.setText(get_text("Tarefa removida com sucesso!") or "Tarefa removida com sucesso!")
-                msg_ok.addButton(get_text("Ok") or "Ok", QMessageBox.AcceptRole)
-
                 try:
                     QApplication.beep()
 
                 except Exception:
                     pass
 
-                msg_ok.exec()
+                MessageBox.eisen_remove_task_success(app)
 
             except Exception:
                 pass

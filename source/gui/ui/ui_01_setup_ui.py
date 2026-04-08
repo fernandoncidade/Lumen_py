@@ -2,8 +2,9 @@ import json
 import os
 from pathlib import Path
 from typing import Optional, List
-from PySide6.QtWidgets import QTabWidget, QMessageBox, QWidget, QVBoxLayout, QLabel
+from PySide6.QtWidgets import QTabWidget, QWidget, QVBoxLayout, QLabel
 from PySide6.QtCore import QCoreApplication
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 from source.utils.CaminhoPersistenteUtils import obter_caminho_persistente
 logger = LogManager.get_logger()
@@ -180,10 +181,7 @@ def setup_ui(self) -> None:
 
         except Exception as e:
             logger.critical(f"Erro crítico ao lazy-load da aba {index}: {e}", exc_info=True)
-            titulo = QCoreApplication.translate("App", "Erro ao Carregar Módulo")
-            msg_topo = QCoreApplication.translate("App", "Ocorreu um erro ao carregar o módulo:")
-            msg_rodape = QCoreApplication.translate("App", "Verifique se todas as dependências estão instaladas.")
-            QMessageBox.critical(self, titulo, f"{msg_topo}\n\n{str(e)}\n\n{msg_rodape}")
+            MessageBox.app_lazy_load_module_error(self, str(e))
             raise
 
     def _factory_leitor():
@@ -224,6 +222,7 @@ def setup_ui(self) -> None:
 
     for key in _load_tab_order():
         spec = tab_specs.get(key)
+
         if not spec:
             continue
 

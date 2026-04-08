@@ -1,8 +1,9 @@
-from PySide6.QtWidgets import QFileDialog, QMessageBox
+import os
+from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtGui import QTextCursor, QTextBlockFormat
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
-import os
 logger = LogManager.get_logger()
 
 _BULLET_SYMBOLS = ["•", "◦", "‣", "∙", "▪", "▫", "✅", "☑️", "🔹", "🔸"]
@@ -10,8 +11,10 @@ _BULLET_SYMBOLS = ["•", "◦", "‣", "∙", "▪", "▫", "✅", "☑️", "�
 def _get_selected_bullet_symbol(self) -> str:
     try:
         cb = getattr(self, "combo_bullet_style", None)
+
         if cb is not None:
             s = (cb.currentText() or "").strip()
+
             if s in _BULLET_SYMBOLS:
                 return s
 
@@ -22,8 +25,10 @@ def _get_selected_bullet_symbol(self) -> str:
 
 def _strip_bullet_prefix(line: str) -> str:
     s = line or ""
+
     for sym in _BULLET_SYMBOLS:
         pref = sym + " "
+
         if s.startswith(pref):
             return s[len(pref):]
 
@@ -31,6 +36,7 @@ def _strip_bullet_prefix(line: str) -> str:
 
 def _has_any_bullet_prefix(line: str) -> bool:
     s = line or ""
+
     for sym in _BULLET_SYMBOLS:
         if s.startswith(sym + " "):
             return True
@@ -49,20 +55,14 @@ def criar_texto(self, confirmar=True):
         try:
             cur_text = self.texto_area.toPlainText()
             if confirmar and cur_text and cur_text.strip():
-                from PySide6.QtWidgets import QMessageBox
-                msg = QMessageBox(self)
-                msg.setWindowTitle(QCoreApplication.translate("App", "Criar Texto"))
-                msg.setText(QCoreApplication.translate("App", "Deseja criar um novo texto? O conteúdo atual será descartado."))
-                btn_yes = msg.addButton(QCoreApplication.translate("App", "Yes"), QMessageBox.YesRole)
-                btn_no = msg.addButton(QCoreApplication.translate("App", "No"), QMessageBox.NoRole)
-                msg.exec()
-                if msg.clickedButton() != btn_yes:
+                if not MessageBox.leitor_confirm_create_new_text(self):
                     return
 
         except Exception as e:
             logger.debug(f"Erro ao confirmar criação de novo texto: {e}", exc_info=True)
 
         self.texto_area.clear()
+
         try:
             from source.utils.FontManager import FontManager
             self.texto_area.document().setDefaultFont(FontManager.get_font())
@@ -75,8 +75,9 @@ def criar_texto(self, confirmar=True):
 
     except Exception as e:
         logger.error(f"Erro ao criar texto: {e}", exc_info=True)
+
         try:
-            QMessageBox.critical(self, QCoreApplication.translate("App", "Erro"), str(e))
+            MessageBox.critical_error(self, str(e))
 
         except Exception as e:
             logger.debug(f"Erro ao mostrar mensagem de erro: {e}", exc_info=True)
@@ -85,6 +86,7 @@ def salvar_como(self):
     try:
         filtro = (QCoreApplication.translate("App", "Arquivos de texto (*.txt);;Arquivos PDF (*.pdf);;Documento do Word (*.docx)"))
         path, selfilter = QFileDialog.getSaveFileName(self, QCoreApplication.translate("App", "Salvar Como"), "", filtro)
+
         if not path:
             return
 
@@ -96,21 +98,22 @@ def salvar_como(self):
             with open(path, "w", encoding="utf-8") as f:
                 f.write(text)
 
-            QMessageBox.information(self, QCoreApplication.translate("App", "Salvo"), QCoreApplication.translate("App", "Arquivo TXT salvo com sucesso."))
+            MessageBox.leitor_saved_txt(self)
 
         elif ext == ".docx":
             try:
                 from docx import Document
                 doc = Document()
+
                 for p in text.split("\n\n"):
                     doc.add_paragraph(p.replace("\n", " "))
 
                 doc.save(path)
-                QMessageBox.information(self, QCoreApplication.translate("App", "Salvo"), QCoreApplication.translate("App", "Arquivo DOCX salvo com sucesso."))
+                MessageBox.leitor_saved_docx(self)
 
             except Exception as e:
                 logger.error(f"Erro ao salvar DOCX: {e}", exc_info=True)
-                QMessageBox.warning(self, QCoreApplication.translate("App", "Aviso"), QCoreApplication.translate("App", "Não foi possível salvar DOCX. Verifique se 'python-docx' está instalado."))
+                MessageBox.leitor_warn_docx_dependency(self)
 
         elif ext == ".pdf":
             try:
@@ -121,9 +124,11 @@ def salvar_como(self):
                 margin = 40
                 y = height - margin
                 lines = text.splitlines()
+
                 for line in lines:
                     if not line:
                         y -= 12
+
                         if y < margin:
                             c.showPage()
                             y = height - margin
@@ -131,11 +136,14 @@ def salvar_como(self):
                         continue
 
                     chunks = []
+
                     while line:
                         maxchars = 95
                         chunk = line[:maxchars]
+
                         if len(line) > maxchars:
                             last_space = chunk.rfind(" ")
+
                             if last_space > 10:
                                 chunk = line[:last_space]
                                 line = line[last_space+1:]
@@ -151,31 +159,36 @@ def salvar_como(self):
                     for ch in chunks:
                         c.drawString(margin, y, ch)
                         y -= 12
+
                         if y < margin:
                             c.showPage()
                             y = height - margin
 
                 c.save()
-                QMessageBox.information(self, QCoreApplication.translate("App", "Salvo"), QCoreApplication.translate("App", "Arquivo PDF salvo com sucesso."))
+                MessageBox.leitor_saved_pdf(self)
 
             except Exception as e:
                 logger.debug(f"reportlab indisponível ou falha ao gerar PDF: {e}", exc_info=True)
+
                 try:
                     tmp_docx = os.path.splitext(path)[0] + "_tmp_docx_for_pdf.docx"
                     from docx import Document
                     doc = Document()
+
                     for p in text.split("\n\n"):
                         doc.add_paragraph(p.replace("\n", " "))
 
                     doc.save(tmp_docx)
+
                     try:
                         import docx2pdf
                         docx2pdf.convert(tmp_docx, path)
                         os.remove(tmp_docx)
-                        QMessageBox.information(self, QCoreApplication.translate("App", "Salvo"), QCoreApplication.translate("App", "Arquivo PDF salvo com sucesso."))
+                        MessageBox.leitor_saved_pdf(self)
 
                     except Exception as e2:
                         logger.debug(f"docx2pdf falhou: {e2}", exc_info=True)
+
                         if os.path.exists(tmp_docx):
                             os.remove(tmp_docx)
 
@@ -183,23 +196,24 @@ def salvar_como(self):
 
                 except Exception as e3:
                     logger.error(f"Erro ao gerar PDF: {e3}", exc_info=True)
-                    QMessageBox.warning(self, QCoreApplication.translate("App", "Erro"), QCoreApplication.translate("App", "Não foi possível gerar PDF. Instale 'reportlab' ou 'docx2pdf'."))
+                    MessageBox.leitor_warn_pdf_dependencies(self)
 
         else:
             try:
                 with open(path, "w", encoding="utf-8") as f:
                     f.write(text)
 
-                QMessageBox.information(self, QCoreApplication.translate("App", "Salvo"), QCoreApplication.translate("App", "Arquivo salvo (tratado como TXT)."))
+                MessageBox.leitor_saved_txt_fallback(self)
 
             except Exception as e:
                 logger.error(f"Erro ao salvar arquivo sem extensão: {e}", exc_info=True)
-                QMessageBox.warning(self, QCoreApplication.translate("App", "Erro"), QCoreApplication.translate("App", "Não foi possível salvar o arquivo."))
+                MessageBox.leitor_warn_save_failed(self)
 
     except Exception as e:
         logger.error(f"Erro em salvar_como: {e}", exc_info=True)
+
         try:
-            QMessageBox.critical(self, QCoreApplication.translate("App", "Erro"), str(e))
+            MessageBox.critical_error(self, str(e))
 
         except Exception as e:
             logger.debug(f"Erro ao mostrar mensagem de erro: {e}", exc_info=True)
@@ -207,6 +221,7 @@ def salvar_como(self):
 def toggle_bullets(self):
     try:
         cursor = self.texto_area.textCursor()
+
         if cursor is None:
             return
 
@@ -236,8 +251,10 @@ def toggle_bullets(self):
             end_block = cursor.blockNumber()
 
         all_have_bullets = True
+
         for bn in range(start_block, end_block + 1):
             block = doc.findBlockByNumber(bn)
+
             if not block.isValid():
                 continue
 
@@ -246,19 +263,21 @@ def toggle_bullets(self):
                 break
 
         cursor.beginEditBlock()
+
         try:
             for bn in range(start_block, end_block + 1):
                 block = doc.findBlockByNumber(bn)
+
                 if not block.isValid():
                     continue
 
                 bc = QTextCursor(block)
                 bc.movePosition(QTextCursor.MoveOperation.StartOfBlock)
-
                 text = block.text() or ""
 
                 if all_have_bullets:
                     new_text = _strip_bullet_prefix(text)
+
                     if new_text != text:
                         bc.movePosition(QTextCursor.MoveOperation.EndOfBlock, QTextCursor.MoveMode.KeepAnchor)
                         bc.insertText(new_text)
@@ -286,6 +305,7 @@ def set_line_spacing(self, spacing: float):
         block_fmt.setLineHeight(height_value, height_type)
 
         block = doc.firstBlock()
+
         while block.isValid():
             try:
                 bc = QTextCursor(block)

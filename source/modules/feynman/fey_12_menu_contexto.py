@@ -1,7 +1,8 @@
 import os
-from PySide6.QtWidgets import QMenu, QFileDialog, QMessageBox
+from PySide6.QtWidgets import QMenu, QFileDialog
 from PySide6.QtCore import QCoreApplication, Qt
 from PySide6.QtGui import QAction
+from source.utils.MessageBox import MessageBox
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -62,11 +63,13 @@ def _texto_acao_com_caminho(label, caminho):
 def mostrar_menu_contexto(self, position):
     try:
         item = self.lista_conceitos.itemAt(position)
+
         if not item:
             return
 
         conceito = _obter_conceito_do_item_menu(self, item)
         caminho_vinculado = ''
+
         if isinstance(conceito, dict):
             caminho_vinculado = (conceito.get('arquivo_vinculado') or '').strip()
 
@@ -236,11 +239,7 @@ def remover_arquivo_vinculado(self, item):
         self.salvar_conceitos()
         self.atualizar_lista()
 
-        QMessageBox.information(
-            self,
-            QCoreApplication.translate("App", "Arquivo desvinculado"),
-            QCoreApplication.translate("App", "O arquivo vinculado foi removido do conceito.")
-        )
+        MessageBox.feynman_unlinked_file_removed(self)
 
     except Exception as e:
         logger.error(f"Erro ao remover arquivo vinculado: {str(e)}", exc_info=True)

@@ -1,4 +1,167 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.20.0
+Data: 20 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em padronização técnica da camada de mensagens da UI, com migração progressiva de chamadas diretas de QMessageBox para o módulo reutilizável source/utils/MessageBox.py, consolidação de textos traduzíveis em um único ponto de manutenção e correções de fluxos críticos de exclusão (Feynman, Mapas Mentais e Calendário da Matriz Eisenhower).
+
+Melhorias principais
+
+1. Camada de mensagens centralizada (MessageBox) com catálogo por domínio
+- Arquivo-base: source/utils/MessageBox.py
+- Evolução da arquitetura:
+  - Consolidação dos títulos padrão (Erro, Aviso, Sucesso, Salvo) e textos recorrentes em métodos dedicados.
+  - Encapsulamento de diálogos de informação, aviso, erro crítico e confirmação com tratamento uniforme de exceções e fallback seguro.
+  - Inclusão de métodos de alto nível por contexto funcional (app, trial, Feynman, Mapa Mental, Leitor, Tempo, Eisenhower), reduzindo duplicação de strings e variação de comportamento entre módulos.
+- Robustez de parent Qt:
+  - create(parent) passou a resolver parent válido com _resolve_parent_widget(), cobrindo QWidget e cenários de QGraphicsItem/QGraphicsScene.
+  - Correção para evitar TypeError em inicialização de QMessageBox com parent não compatível (ex.: nós do Mapa Mental).
+
+2. Migração técnica de mensagens no núcleo da aplicação (GUI)
+- Arquivos: source/gui/ui/ui_01_setup_ui.py, source/gui/ui/ui_05_mudar_idioma.py, source/gui/ui/ui_06_exibir_sobre.py, source/gui/ui/ui_19_show_help.py
+- Ajustes aplicados:
+  - ui_01_setup_ui: erro de lazy-load de aba migrou para MessageBox.app_lazy_load_module_error().
+  - ui_05_mudar_idioma: feedback de sucesso/erro da troca de idioma migrou para métodos dedicados (app_language_changed_success / app_language_change_error).
+  - ui_19_show_help: abertura do painel de ajuda migrou para app_help_shortcuts(), mantendo HTML e tradução centralizada.
+  - ui_06_exibir_sobre: manutenção do fluxo de exceção crítica via helper unificado.
+
+3. Método Feynman com feedback completo de exclusão e persistência
+- Arquivos: source/modules/feynman/fey_07_salvar_conceito_atual.py, source/modules/feynman/fey_09_deletar_conceito.py, source/modules/feynman/fey_12_menu_contexto.py, source/modules/feynman/fey_18_arquivo_vinculado.py
+- Melhorias:
+  - Exclusão de conceito:
+    - Confirmação centralizada com variação singular/plural.
+    - Feedback explícito de sucesso e erro após tentativa de remoção.
+  - Salvamento:
+    - Validação de título e mensagem de conceito salvo com sucesso via MessageBox.
+  - Arquivo vinculado:
+    - Mensagens específicas para arquivo não encontrado, falha ao abrir e desvinculação concluída.
+
+4. Mapas Mentais: confirmação/resultado de limpeza e correção da exclusão de nós
+- Arquivos: source/modules/mapa/NoConceito/nocon_05_contextMenuEvent.py, source/modules/mapa/NoConceito/nocon_04_mouseDoubleClickEvent.py, source/modules/mapa/mp_01_NoConceito.py, source/modules/mapa/mp_03_MapaMental.py, source/modules/mapa/MapaMental/mm_11_setup_ui.py, source/modules/mapa/MapaMental/mm_12_atualizar_traducoes.py, source/modules/mapa/MapaMental/mm_13_adicionar_no.py, source/modules/mapa/MapaMental/mm_18_carregar_mapa.py, source/modules/mapa/MapaMental/mm_20_limpar_mapa.py, source/modules/mapa/MapaMental/mm_23_importar_documento_ia.py
+- Melhorias funcionais:
+  - Limpeza do mapa:
+    - Inclusão de confirmação prévia para limpar o mapa.
+    - Inclusão de aviso pós-operação (sucesso/erro).
+  - Exclusão de nó(s) por menu de contexto:
+    - Nova ação "Excluir Nó(s) e Conexão(ões) 🪢".
+    - Confirmação contextual para 1 nó ou múltiplos nós.
+    - Feedback final de sucesso/erro.
+- Correção crítica de regressão de exclusão:
+  - Ajustado fluxo para remover efetivamente nó(s) e conexões associadas, sem deixar “nós órfãos invisíveis” na cena.
+  - Sincronização da estrutura interna (owner.nos, hierarquia pai/filhos, raiz e expandido) após remoção.
+  - Atualização explícita de scene/viewport para estabilizar renderização pós-operação.
+
+5. Gestão de Tempo e Pomodoro com mensagens padronizadas
+- Arquivos: source/modules/tempo/PomodoroTimer/pomo_07_executar_alerta.py, source/modules/tempo/GerenciadorTarefas/gtar_05_criar_coluna.py, source/modules/tempo/GerenciadorTarefas/gtar_09_adicionar_tarefa.py, source/modules/tempo/GerenciadorTarefas/gtar_14_mostrar_menu_contexto.py, source/modules/tempo/GerenciadorTarefas/gtar_16_remover_tarefa_por_item.py, source/modules/tempo/GerenciadorTarefas/gtar_17_remover_tarefas_marcadas.py, source/modules/tempo/GerenciadorTarefas/gtar_18_resetar_contagem_botao.py
+- Melhorias:
+  - Confirmações de vínculo de arquivo e remoção de tarefas (unitária e em lote) migradas para MessageBox.
+  - Feedbacks de sucesso/falha/erro para remoção de tarefas padronizados por helper.
+  - Mensagens de “nenhuma tarefa” por coluna/global centralizadas.
+  - Fluxos de compartilhamento entre módulos (Tempo ↔ Eisenhower) com feedback consistente.
+
+6. Leitor Acessível com alertas e confirmações unificados
+- Arquivos: source/modules/leitor/LeitorAcessivel/lta_07_pausar_leitura.py, source/modules/leitor/LeitorAcessivel/lta_11_on_tts_error.py, source/modules/leitor/LeitorAcessivel/lta_16_ativar_regua_foco.py, source/modules/leitor/LeitorAcessivel/lta_24_text_tools.py, source/modules/leitor/LeitorAcessivel/lta_36_limpeza_painel.py
+- Melhorias:
+  - Mensagem de pausa restrita a Edge TTS centralizada.
+  - Tratamento de erro TTS padronizado.
+  - Mensagem instrucional da régua de foco centralizada.
+  - Confirmações de limpeza/criação de texto e retorno de salvamento (TXT/DOCX/PDF) unificados.
+  - Mensagens de dependência ausente e falha de salvamento consolidada.
+
+7. Matriz Eisenhower e Calendário com confirmação + feedback pós-exclusão
+- Arquivos: source/modules/eisenhower/services/svc_01_initUI.py, source/modules/eisenhower/services/EisenhowerContextMenuService/ecms_13_remover_todas_por_data.py, source/modules/eisenhower/services/EisenhowerContextMenuService/ecms_18_mostrar_menu_contexto.py, source/modules/eisenhower/services/Arquivo/arq_01_novo.py, source/modules/eisenhower/services/Arquivo/arq_02_limpar_tudo.py, source/modules/eisenhower/services/Arquivo/arq_04_abrir_arquivo.py, source/modules/eisenhower/services/Arquivo/arq_05_salvar_como.py, source/modules/eisenhower/interface/ui_01_add_task.py, source/modules/eisenhower/interface/ui_04_remove_task.py, source/modules/eisenhower/interface/ui_13_YearCalendarWidget.py, source/modules/eisenhower/interface/CalendarDialog/caldial_02_open_linked_file.py
+- Melhorias:
+  - Validações e mensagens de arquivo/tarefa vazia centralizadas.
+  - Importação/exportação com mensagens de dependência, sucesso e formato não suportado via helpers.
+  - Remoção via calendário:
+    - Confirmação ao remover tarefas por dia e por mês.
+    - Novo aviso de sucesso após remoção efetiva em lote (contagem de tarefas removidas).
+  - Fluxos de nova sessão/limpeza geral com feedback padronizado.
+
+8. TrialManager integrado ao MessageBox
+- Arquivo: source/utils/TrialManager.py
+- Alteração estrutural:
+  - Diálogo de trial expirado removido do código local e migrado para MessageBox.trial_expired().
+  - Redução de acoplamento entre regra de negócio e UI de notificação.
+  - Preservação de rich text, ícone da aplicação e link para versão paga no fluxo centralizado.
+
+9. Internacionalização e governança de textos de UI
+- Textos completos de diálogo (título + corpo + rótulos de ação) foram trazidos para MessageBox, reduzindo dispersão de QCoreApplication.translate em múltiplos módulos.
+- O padrão favorece manutenção contínua de i18n e reduz risco de divergência entre módulos em cenários de troca de idioma em runtime.
+
+Correções de bugs
+
+1. Correção de erro de tipo em diálogo de confirmação (Qt parent inválido)
+- Sintoma: QMessageBox.__init__(NoConceito) com assinatura inválida.
+- Correção: resolução defensiva de parent Qt no MessageBox com fallback seguro para QWidget/view válido.
+
+2. Correção da exclusão parcial de nós no Mapa Mental
+- Sintoma: remoção apenas de conexões, com nós permanecendo em estado inconsistente/invisível.
+- Correção: rotina de remoção passou a eliminar nós e linhas de forma atômica, atualizar hierarquia interna e limpar seleção/renderização.
+
+3. Correção de inconsistência de feedback em exclusões por calendário
+- Sintoma: havia confirmação, mas faltava aviso explícito pós-exclusão em fluxos por dia/mês.
+- Correção: adicionado feedback de sucesso centralizado com contagem de itens removidos.
+
+Arquivos principais impactados nesta entrega
+- source/utils/MessageBox.py
+- source/utils/TrialManager.py
+- source/gui/ui/ui_01_setup_ui.py
+- source/gui/ui/ui_05_mudar_idioma.py
+- source/gui/ui/ui_06_exibir_sobre.py
+- source/gui/ui/ui_19_show_help.py
+- source/modules/mod_07_exibir_public.py
+- source/modules/mod_08_exibir_manual.py
+- source/modules/feynman/fey_07_salvar_conceito_atual.py
+- source/modules/feynman/fey_09_deletar_conceito.py
+- source/modules/feynman/fey_12_menu_contexto.py
+- source/modules/feynman/fey_18_arquivo_vinculado.py
+- source/modules/mapa/NoConceito/nocon_05_contextMenuEvent.py
+- source/modules/mapa/NoConceito/nocon_04_mouseDoubleClickEvent.py
+- source/modules/mapa/mp_01_NoConceito.py
+- source/modules/mapa/mp_03_MapaMental.py
+- source/modules/mapa/MapaMental/mm_11_setup_ui.py
+- source/modules/mapa/MapaMental/mm_12_atualizar_traducoes.py
+- source/modules/mapa/MapaMental/mm_13_adicionar_no.py
+- source/modules/mapa/MapaMental/mm_18_carregar_mapa.py
+- source/modules/mapa/MapaMental/mm_20_limpar_mapa.py
+- source/modules/mapa/MapaMental/mm_23_importar_documento_ia.py
+- source/modules/leitor/LeitorAcessivel/lta_07_pausar_leitura.py
+- source/modules/leitor/LeitorAcessivel/lta_11_on_tts_error.py
+- source/modules/leitor/LeitorAcessivel/lta_16_ativar_regua_foco.py
+- source/modules/leitor/LeitorAcessivel/lta_24_text_tools.py
+- source/modules/leitor/LeitorAcessivel/lta_36_limpeza_painel.py
+- source/modules/tempo/PomodoroTimer/pomo_07_executar_alerta.py
+- source/modules/tempo/GerenciadorTarefas/gtar_05_criar_coluna.py
+- source/modules/tempo/GerenciadorTarefas/gtar_09_adicionar_tarefa.py
+- source/modules/tempo/GerenciadorTarefas/gtar_14_mostrar_menu_contexto.py
+- source/modules/tempo/GerenciadorTarefas/gtar_16_remover_tarefa_por_item.py
+- source/modules/tempo/GerenciadorTarefas/gtar_17_remover_tarefas_marcadas.py
+- source/modules/tempo/GerenciadorTarefas/gtar_18_resetar_contagem_botao.py
+- source/modules/eisenhower/services/svc_01_initUI.py
+- source/modules/eisenhower/services/EisenhowerContextMenuService/ecms_13_remover_todas_por_data.py
+- source/modules/eisenhower/services/EisenhowerContextMenuService/ecms_18_mostrar_menu_contexto.py
+- source/modules/eisenhower/services/Arquivo/arq_01_novo.py
+- source/modules/eisenhower/services/Arquivo/arq_02_limpar_tudo.py
+- source/modules/eisenhower/services/Arquivo/arq_04_abrir_arquivo.py
+- source/modules/eisenhower/services/Arquivo/arq_05_salvar_como.py
+- source/modules/eisenhower/interface/ui_01_add_task.py
+- source/modules/eisenhower/interface/ui_04_remove_task.py
+- source/modules/eisenhower/interface/ui_13_YearCalendarWidget.py
+- source/modules/eisenhower/interface/CalendarDialog/caldial_02_open_linked_file.py
+
+Validação recomendada (rápida)
+1. Feynman: excluir 1 conceito e múltiplos conceitos; validar confirmação e popup final (sucesso/erro).
+2. Mapa Mental: limpar mapa com confirmação; excluir 1 nó e múltiplos nós via menu de contexto, validando remoção de nós + conexões.
+3. Eisenhower Calendário: remover todas as tarefas por dia e por mês; validar confirmação e aviso final com contagem.
+4. Leitor Acessível: testar pausar leitura, erro de TTS, limpar painel e salvar em TXT/DOCX/PDF.
+5. Gestão de Tempo: remover tarefa unitária e em lote, e validar mensagens de falta de tarefas.
+6. Trial: simular expiração e confirmar abertura do diálogo unificado com link de upgrade.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.19.0
 Data: 19 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade
