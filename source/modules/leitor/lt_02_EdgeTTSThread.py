@@ -2,12 +2,7 @@ from PySide6.QtCore import QThread, Signal
 from source.utils.LogManager import LogManager
 import os
 from source.utils.CaminhoPersistenteUtils import obter_caminho_persistente
-from source.modules.leitor.EdgeTTSThread import (
-    stop,
-    _split_text,
-    _normalize_voice,
-    run,
-)
+from source.modules.leitor.EdgeTTSThread import stop, _split_text, _normalize_voice, run
 
 
 class EdgeTTSThread(QThread):

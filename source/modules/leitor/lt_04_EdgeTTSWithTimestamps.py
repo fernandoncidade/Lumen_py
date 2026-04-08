@@ -2,14 +2,7 @@ from PySide6.QtCore import QThread, Signal
 from source.utils.LogManager import LogManager
 import os
 from source.utils.CaminhoPersistenteUtils import obter_caminho_persistente
-from source.modules.leitor.EdgeTTSWithTimestamps import (
-    stop,
-    _split_text,
-    _normalize_voice,
-    _calculate_text_offset,
-    _find_word_in_full_text,
-    run,
-)
+from source.modules.leitor.EdgeTTSWithTimestamps import stop, _split_text, _normalize_voice, _calculate_text_offset, _find_word_in_full_text, run
 
 
 class EdgeTTSWithTimestamps(QThread):

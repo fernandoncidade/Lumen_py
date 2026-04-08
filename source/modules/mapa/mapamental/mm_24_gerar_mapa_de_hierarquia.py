@@ -4,7 +4,6 @@ from typing import Dict, List, Callable
 from source.utils.LogManager import LogManager
 from source.modules.mapa.mp_01_NoConceito import NoConceito
 from source.modules.mapa.mp_02_LinhaConexao import LinhaConexao
-
 logger = LogManager.get_logger()
 
 def _montar_info_associadas(tr: Callable[[str, str], str], hierarquia: Dict, nivel: int, tipo_no: str) -> List[str]:
@@ -311,26 +310,49 @@ def _gerar_mapa_de_hierarquia(self, hierarquia: Dict, x=0, y=0, nivel=0, pai=Non
         if filhos:
             import math
 
-            raio_base = 250
-            raio = raio_base + (nivel * 60)
+            num_filhos = len(filhos)
 
-            if pai:
-                angulo_pai = math.atan2(y - pai.scenePos().y(), x - pai.scenePos().x())
-                offset_angular = math.degrees(angulo_pai)
+            filhos_infos = []
+            for filho in filhos:
+                nivel_filho = nivel + 1
+                escala_filho = max(1.2 - (nivel_filho * 0.15), 0.5)
+                base_w, base_h = 120.0, 80.0
+                diametro_filho = max(base_w, base_h) * escala_filho
+                filhos_infos.append((filho, escala_filho, diametro_filho))
+
+            max_d = max((d for (_, _, d) in filhos_infos), default=120.0)
+
+            if num_filhos == 1:
+                r = max(max_d * 1.5, 200)
+                angulos = [-90.0]
 
             else:
-                offset_angular = -90
+                try:
+                    r_needed = max_d / math.sin(math.pi / max(2, num_filhos))
 
-            abertura = 120 if nivel == 0 else 90
-            angulo_inicio = offset_angular - (abertura / 2)
-            angulo_step = abertura / max(len(filhos), 1)
+                except Exception:
+                    r_needed = max_d * num_filhos / (2 * math.pi)
 
-            for i, filho in enumerate(filhos):
-                angulo = angulo_inicio + (i * angulo_step)
-                x_filho = x + raio * math.cos(math.radians(angulo))
-                y_filho = y + raio * math.sin(math.radians(angulo))
+                r = max(r_needed, max_d * 1.5, 200)
 
-                self._gerar_mapa_de_hierarquia(filho, x_filho, y_filho, nivel + 1, pai=no_principal)
+                angulos = [i * (360.0 / num_filhos) for i in range(num_filhos)]
+
+            for (filho, escala_filho, diametro_filho), ang in zip(filhos_infos, angulos):
+                ang_rad = math.radians(ang)
+                x_filho = x + r * math.cos(ang_rad)
+                y_filho = y + r * math.sin(ang_rad)
+
+                no_filho = self._gerar_mapa_de_hierarquia(filho, x_filho, y_filho, nivel + 1, pai=no_principal)
+
+                try:
+                    if no_filho is not None:
+                        no_filho.setScale(escala_filho)
+                        rect = no_filho.texto_item.boundingRect()
+                        no_filho.texto_item.setPos(-rect.width()/2, -rect.height()/2)
+                        self._expandir_area_se_necessario(no_filho)
+
+                except Exception:
+                    pass
 
         return no_principal
 

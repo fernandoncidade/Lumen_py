@@ -732,6 +732,11 @@ Vamos para o próximo ciclo de foco! 💪</translation>
     </message>
 
     <message>
+      <source>🤖 Restaurar com IA</source>
+      <translation>🤖 Restaurar com IA</translation>
+    </message>
+
+    <message>
       <source>Importar Documento</source>
       <translation>Importar Documento</translation>
     </message>

@@ -732,6 +732,11 @@ Let's go to the next focus cycle! 💪</translation>
     </message>
 
     <message>
+      <source>🤖 Restaurar com IA</source>
+      <translation>🤖 Restore with AI</translation>
+    </message>
+
+    <message>
       <source>Importar Documento</source>
       <translation>Import Document</translation>
     </message>

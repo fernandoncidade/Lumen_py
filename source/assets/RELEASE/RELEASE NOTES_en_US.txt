@@ -1,3 +1,37 @@
+RELEASE NOTES — Lúmen
+Version: 2026.1.29.0
+Date: January 29, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+- Improvements to the Mind Maps feature: faster and more stable import, automatic node organization, layout preservation and more reliable interactions. Text normalization fixes were also applied.
+- Addendum: increased robustness of the import pipeline (worker in thread, progress signals and cooperative cancellation), integration with ProcessadorIA for extraction/NLP and safe fallbacks when AI resources are unavailable.
+
+What's new for you
+- Toolbar reorganized with clear buttons: add, connect, color, save, load, export, clear, import document (AI) and reorganize/restore.
+- Document import with visible progress and an option to cancel without freezing the app; UI feedback during AI model loading.
+- Automatic generation of hierarchical maps with improved visual placement (including radial option) and level-based organization.
+- Ability to save a layout "snapshot" and restore the original view whenever desired.
+- Auxiliary nodes to highlight main ideas, with visual links and importance indicators.
+- More stable interactions: dragging, clicking and connecting nodes work better and preserve positions when moved.
+- Texts detected in documents undergo normalization and automatic correction of common PT/EN terms.
+- Addendum: Feynman Method improvements — dynamic translations, preservation of the domain combo selection, robust tooltip generation and consistent use of the button manager with fallbacks.
+
+Daily usage improvements
+- Reorganizing maps with AI is more predictable; you can revert to the previous state easily (snapshot/restore).
+- Large imports are less likely to hang and show progress; cancellation properly cleans up threads.
+- Map visualization is cleaner and more readable, even with many nodes; radial placement with overlap detection reduces collisions.
+- Less loss of position data when rearranging items; click and drag behavior is more consistent.
+- Addendum: texts and labels adapt to the runtime language without losing state; more detailed logs ease diagnostics.
+
+Quick recommendations
+- When using AI import, monitor progress and cancel if necessary.
+- Test theme/language reactions to confirm texts and placeholders.
+- If you encounter unexpected behavior, ensure you're on the latest version.
+- Addendum: validate worker cancellation at different stages and check logs in source/utils/LogManager for useful evidence when reporting bugs.
+
+_________________________________________________
+
 RELEASE NOTES — Lumen
 Version: 2026.1.28.0
 Date: January 28, 2026

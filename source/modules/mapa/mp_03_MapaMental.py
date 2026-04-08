@@ -140,6 +140,14 @@ class MapaMental(QWidget):
         except Exception as e:
             self.logger.error(f"Erro ao iniciar reorganização com IA: {e}", exc_info=True)
 
+    def restaurar_com_ia(self):
+        from source.modules.mapa.MapaMental.mm_35_restaurar_com_ia import restaurar_com_ia as _impl
+        try:
+            return _impl(self)
+
+        except Exception as e:
+            self.logger.error(f"Erro ao executar restaurar_com_ia: {e}", exc_info=True)
+
     def _obter_conexoes_existentes(self):
         from source.modules.mapa.MapaMental.mm_27_obter_conexoes_existentes import _obter_conexoes_existentes as _impl
         return _impl(self)

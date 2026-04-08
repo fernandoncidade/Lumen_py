@@ -3,12 +3,7 @@ from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor, QPen, QBrush, QFont
 from source.utils.LogManager import LogManager
 from source.utils.EventBus import get_event_bus
-from source.modules.mapa.NoConceito import (
-    itemChange,
-    mousePressEvent,
-    mouseReleaseEvent,
-    mouseDoubleClickEvent,
-)
+from source.modules.mapa.NoConceito import itemChange, mousePressEvent, mouseReleaseEvent, mouseDoubleClickEvent
 
 
 class NoConceito(QGraphicsEllipseItem):

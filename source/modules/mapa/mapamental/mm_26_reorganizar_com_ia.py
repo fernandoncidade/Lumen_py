@@ -8,99 +8,63 @@ def reorganizar_com_ia(self):
             logger.warning("Nenhum conceito para reorganizar")
             return
 
-        self._lumen_layout_freeze_on_click = True
-        self._lumen_layout_orientation = "vertical"
+        try:
+            self._lumen_layout_freeze_on_click = True
 
-        def _pos_processar_layout():
+        except Exception:
+            pass
+
+        raiz_no = getattr(self, "_hierarquia_root", None) or (self.nos[0] if self.nos else None)
+
+        try:
             try:
-                from source.modules.mapa.MapaMental.mm_34_layout_hierarquia_navegacao import _resolver_sobreposicoes_global
-                _resolver_sobreposicoes_global(self, nos=getattr(self, "nos", []) or [], apenas_visiveis=False, push_direcao="down")
+                self._lumen_layout_orientation = "radial"
 
             except Exception:
                 pass
 
-            try:
-                self._atualizar_visibilidade_linhas()
+            if hasattr(self, "_habilitar_navegacao_hierarquia"):
+                try:
+                    self._habilitar_navegacao_hierarquia(raiz_no)
 
-            except Exception:
-                pass
+                except Exception:
+                    for no in self.nos:
+                        try:
+                            no.setVisible(no is raiz_no)
 
-        visiveis_idx = {i for i, no in enumerate(self.nos) if getattr(no, "isVisible", lambda: True)()}
+                        except Exception:
+                            pass
 
-        if self._hierarquia_root is not None and isinstance(self._hierarquia_children, dict) and self._hierarquia_children:
-            idx_por_no = {no: i for i, no in enumerate(self.nos)}
-            raiz_idx = idx_por_no.get(self._hierarquia_root, 0)
+                    self._nos_expandidos = set()
+                    self._hierarquia_root = raiz_no
 
-            filhos_idx = {i: [] for i in range(len(self.nos))}
-            for pai_no, lista_filhos in self._hierarquia_children.items():
-                pai_i = idx_por_no.get(pai_no)
-                if pai_i is None:
-                    continue
+                    try:
+                        self._instalar_handlers_nos()
 
-                for filho_no in (lista_filhos or []):
-                    fi = idx_por_no.get(filho_no)
-                    if fi is None:
-                        continue
+                    except Exception:
+                        pass
 
-                    filhos_idx[pai_i].append(fi)
+            else:
+                for no in self.nos:
+                    try:
+                        no.setVisible(no is raiz_no)
 
-            niveis = {raiz_idx: 0}
-            fila = [raiz_idx]
-            visitados = {raiz_idx}
-            while fila:
-                atual = fila.pop(0)
-                for viz in filhos_idx.get(atual, []):
-                    if viz in visitados:
-                        continue
+                    except Exception:
+                        pass
 
-                    visitados.add(viz)
-                    niveis[viz] = niveis[atual] + 1
-                    fila.append(viz)
+                self._nos_expandidos = set()
+                self._hierarquia_root = raiz_no
 
-            for i in range(len(self.nos)):
-                if i not in visitados:
-                    filhos_idx.setdefault(raiz_idx, []).append(i)
-                    niveis[i] = 1
+                try:
+                    self._instalar_handlers_nos()
 
-            hierarquia_existente = {
-                "raiz": raiz_idx,
-                "filhos": filhos_idx,
-                "niveis": niveis,
-                "pais": {}
-            }
+                except Exception:
+                    pass
 
-            self._lumen_last_hierarquia = hierarquia_existente
-            self._aplicar_layout_arvore(hierarquia_existente, orientacao="vertical", espacamento_vertical=120, espacamento_horizontal_base=140, visiveis=visiveis_idx)
+            logger.info("Mapa restaurado para estado inicial: apenas nó pai visível")
 
-            if hasattr(self.view, "animate_focus_on") and self._hierarquia_root is not None:
-                self.view.animate_focus_on(self._hierarquia_root)
-
-            logger.info("Mapa reorganizado preservando a hierarquia existente (PDF)")
-            return
-
-        if self.processador_ia is None:
-            self.processador_ia = ProcessadorIA()
-
-        textos = [no.texto for no in self.nos]
-        texto_completo = ". ".join(textos)
-
-        doc = self.processador_ia.nlp(texto_completo)
-        conceitos = self.processador_ia._extrair_conceitos_tfidf(doc, texto_completo)
-        relacoes = self.processador_ia._identificar_relacoes_avancadas(doc, conceitos)
-        conexoes_existentes = self._obter_conexoes_existentes()
-        hierarquia = self._construir_hierarquia(conexoes_existentes)
-
-        self._lumen_last_hierarquia = hierarquia
-        self._aplicar_layout_arvore(hierarquia, orientacao="vertical", espacamento_vertical=120, espacamento_horizontal_base=140, visiveis=visiveis_idx)
-        self._criar_relacoes_ia(relacoes)
-        self._configurar_hierarquia_por_indices(hierarquia)
-
-        _pos_processar_layout()
-
-        if self.nos and hasattr(self.view, "animate_focus_on"):
-            self.view.animate_focus_on(self.nos[hierarquia.get("raiz", 0)] if hierarquia else self.nos[0])
-
-        logger.info("Mapa reorganizado em formato de árvore com sucesso")
+        except Exception as e:
+            logger.error(f"Erro ao restaurar estado inicial: {str(e)}", exc_info=True)
 
     except Exception as e:
         logger.error(f"Erro ao reorganizar com IA: {str(e)}", exc_info=True)

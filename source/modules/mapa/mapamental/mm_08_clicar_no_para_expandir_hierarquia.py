@@ -1,5 +1,4 @@
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def _clicar_no_para_expandir_hierarquia(self, no):
@@ -17,7 +16,30 @@ def _clicar_no_para_expandir_hierarquia(self, no):
         else:
             self._nos_expandidos.add(no)
 
-        self._aplicar_visibilidade_por_foco(no, abrir_foco=False)
+        try:
+            old_pos = no.pos()
+
+        except Exception:
+            old_pos = None
+
+        self._aplicar_visibilidade_por_foco(no, abrir_foco=True)
+
+        try:
+            if old_pos is not None:
+                no.setPos(old_pos)
+
+                try:
+                    snap = getattr(self, "_lumen_layout_original_snapshot", None)
+                    if snap and isinstance(snap, dict):
+                        pos_map = snap.get("positions") or {}
+                        pos_map[no] = no.pos()
+                        snap["positions"] = pos_map
+
+                except Exception:
+                    pass
+
+        except Exception:
+            pass
 
     except Exception as e:
         logger.error(f"Erro ao expandir/recolher hierarquia: {e}", exc_info=True)

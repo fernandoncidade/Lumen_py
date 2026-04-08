@@ -20,6 +20,10 @@ def _corrigir_palavras_conhecidas(self, linha: str) -> str:
             r'\bART\s+(I{1,3}|IV|V|VI{0,3}|IX|X|[0-9]+)\b': r'PART \1',
             r'\bhapter\s+(I{1,3}|IV|V|VI{0,3}|IX|X|[0-9]+|\d+)\b': r'Chapter \1',
             r'\bHAPTER\s+(I{1,3}|IV|V|VI{0,3}|IX|X|[0-9]+|\d+)\b': r'CHAPTER \1',
+            r'\bTYLE\b': 'STYLE',
+            r'\btyle\b': 'style',
+            r'\bSection\b': 'Section',
+            r'\bECTION\b': 'SECTION',
         }
 
         linha_corrigida = linha

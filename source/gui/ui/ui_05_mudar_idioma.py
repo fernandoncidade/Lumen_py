@@ -1,7 +1,6 @@
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtCore import QCoreApplication
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def mudar_idioma(self, codigo_idioma):
@@ -9,6 +8,13 @@ def mudar_idioma(self, codigo_idioma):
         idioma_anterior = self.tradutor.obter_idioma_atual()
 
         if codigo_idioma == idioma_anterior:
+            try:
+                self.action_pt_br.setChecked(idioma_anterior == "pt_BR")
+                self.action_en_us.setChecked(idioma_anterior == "en_US")
+
+            except Exception:
+                pass
+
             return
 
         if self.tradutor.definir_idioma(codigo_idioma):
@@ -25,6 +31,13 @@ def mudar_idioma(self, codigo_idioma):
             )
 
         else:
+            try:
+                self.action_pt_br.setChecked(idioma_anterior == "pt_BR")
+                self.action_en_us.setChecked(idioma_anterior == "en_US")
+
+            except Exception:
+                pass
+
             QMessageBox.warning(
                 self,
                 QCoreApplication.translate("App", "⚠️ Erro"),

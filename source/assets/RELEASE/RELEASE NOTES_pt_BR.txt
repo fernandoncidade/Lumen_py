@@ -1,4 +1,38 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.29.0
+Data: 29 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+- Melhorias no recurso de Mapas Mentais: importação mais rápida e estável, organização automática de nós, preservação do layout e interações mais confiáveis. Também foram aplicadas correções na normalização de textos.
+- Complemento: reforço na robustez do pipeline de importação (worker em thread, sinais de progresso e cancelamento cooperativo), integração com ProcessadorIA para extração/NLP e fallbacks seguros quando recursos IA não estiverem disponíveis.
+
+Principais novidades para você
+- Barra de ferramentas reorganizada com botões claros: adicionar, conectar, cor, salvar, carregar, exportar, limpar, importar documento (IA) e reorganizar/restaurar.
+- Importação de documentos com progresso visível e opção de cancelar sem travar o app; feedback de UI durante carregamento de modelos IA.
+- Geração automática de mapas hierárquicos com melhor posicionamento visual (inclui opção radial) e organização por níveis.
+- Possibilidade de salvar o “snapshot” do layout atual e restaurar a visualização original quando desejar.
+- Nós auxiliares para destacar ideias principais, com vínculos visuais e indicação de importância.
+- Interações mais estáveis: arrastar, clicar e conectar nós funcionam melhor e preservam posições quando movidos.
+- Textos detectados em documentos passam por normalização e correção automática de termos comuns em PT/EN.
+- Complemento: melhorias no Método Feynman — traduções dinâmicas, preservação de seleção do combo de domínio, geração robusta de tooltips e uso consistente do gerenciador de botões com fallbacks.
+
+O que melhora no uso diário
+- Reorganizar mapas com IA fica mais previsível; você pode voltar ao estado anterior facilmente (snapshot/restore).
+- Importações grandes ficam menos propensas a travar e mostram progresso; cancelamento limpa threads corretamente.
+- Visualização do mapa mais limpa e legível, mesmo com muitos nós; posicionamento radial com detecção de sobreposição reduz colisões.
+- Menos perda de dados de posição ao rearrastar itens; comportamento de cliques e drags é mais consistente.
+- Complemento: textos e labels adaptam-se ao idioma em runtime sem perder estado; logs mais detalhados facilitam diagnóstico.
+
+Recomendações rápidas
+- Ao usar importação com IA, acompanhe o progresso e cancele se necessário.
+- Teste reações de tema/idioma para confirmar textos e placeholders.
+- Em caso de comportamentos inesperados, verifique se atualizou para a versão mais recente.
+- Complemento: valide cancelamento do worker em diferentes estágios e cheque logs em source/utils/LogManager para evidências úteis ao reportar bugs.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.28.0
 Data: 28 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

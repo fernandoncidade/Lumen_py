@@ -1,3 +1,129 @@
+RELEASE NOTES — Lúmen
+Version: 2026.1.29.0
+Date: January 29, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+- Delivery focused on robustness, modularity and improvements to the Mind Map subsystem and its integration with the ProcessadorIA. Added asynchronous document import routines, layout snapshot saving, improved radial/hierarchical layouts and more defensive interaction handlers. Syntactic fixes and text normalizations were also applied in the known-words processor.
+- UI and i18n improvements included for the Feynman Method module: dynamic translations, preservation of combo state, robust tooltip generation in the concept list, and consistent use of the button manager.
+
+Key Changes
+1) Mind Map UI setup and tools (mm_11_setup_ui.py)
+- Toolbar reorganized into modular buttons: Add, Connect (toggle), Color, Save, Load, Export, Clear, Import Document (AI), Reorganize/Restore with AI.
+- "AI alpha" warning shown once per AI action, with fallback to PT text when translation is unavailable.
+- Original layout snapshot implemented (_snapshot_layout_original_se_necessario) and restoration (_restaurar_layout_original) to preserve positions, visibility, hierarchy and layout parameters prior to AI-driven reorganization.
+- Utility functions to apply horizontal layout by rotation and switches between reorganization states (state 0/1).
+
+2) Asynchronous document import with progress (mm_23_importar_documento_ia.py)
+- Asynchronous worker (_ImportWorker) moved to QThread, with signals: progress_text, progress_value, progress_busy, finished, error.
+- Import flow: load AI model, extract text, detect language, detect sections, build hierarchical tree, process nodes via NLP, apply global TF-IDF and identify semantic relations.
+- Cooperative cancellation via requestInterruption / cancel method and a UI bridge (_UiBridge) that updates QProgressDialog, handles cancellation and performs safe thread/worker cleanup.
+- Defensive use of nlp.pipe / n_process for batch processing when available; safe sequential fallback.
+- On completion, the bridge injects processador_ia into the UI, clears the previous map and generates the mind map via _gerar_mapa_de_hierarquia.
+
+3) Hierarchy generation and visualization (mm_24_gerar_mapa_de_hierarquia.py)
+- Implemented function _gerar_mapa_de_hierarquia that creates nodes (NoConceito) with a palette categorized by hierarchical level, automatic scaling, badges and info_associada (summary, key concepts, main ideas, statistics, sub-sections).
+- Idea leaves (ideias_principais) can now be created as auxiliary nodes with visual linking (lines and dash style), a processing limit for items and detailed creation logs.
+- Radial algorithm for child positioning with radius adjustment, overlap detection and iterative expansion attempts to avoid collisions; fallback to a simple calculation when trigonometry fails.
+- Multiple defensive treatments for bounding rects, scaling and snapping to the scene.
+
+4) Hierarchical navigation, handlers and interaction (mm_06, mm_07, mm_08, mm_34, mm_35, mm_26)
+- Node handlers installed while preserving original methods (mousePressEvent / mouseReleaseEvent) and logic to:
+  - detect move vs click (small displacement ignored),
+  - save position into snapshot when movement occurs,
+  - support connect mode (click to connect) and hierarchical navigation mode (expand/collapse).
+- _aplicar_visibilidade_por_foco implements incremental visibility by focus, temporary focus opening, conditional layouts:
+  - vertical/horizontal orientations use _layout_hierarquia_navegacao with an incremental layout option preserving the base,
+  - radial orientation applies adaptive angular distribution, avoiding overlaps with iterations that increase radius.
+- restaurar_com_ia (mm_35) restores the map to initial state (only parent node visible) and regenerates a snapshot of positions/visibility/layout state.
+- reorganizar_com_ia (mm_26) prepares the environment for reorganization (freeze_on_click, radial orientation) with fallbacks when navigation methods are not present.
+
+5) Internationalization and dynamic texts (mm_12_atualizar_traducoes.py, mm_33_...)
+- Buttons, labels and instructional text updated via QCoreApplication.translate. Preservation of states (e.g., connect button active).
+- Calls to hierarchical atualizar_traducoes are connected when available to keep language coherence at runtime.
+
+6) AI Processor and NLP flow (integration mp_04_ProcessadorIA)
+- ImportWorker uses ProcessadorIA to: extract text, detect language, detect advanced sections, build hierarchical tree, extract concepts and ideas, generate contextual summaries, apply global TF‑IDF and identify semantic relations.
+- Local protections when NLP steps fail: logs and empty fillers instead of propagating exceptions.
+
+7) Known-words correction and normalization (pia_05_corrigir_palavras_conhecidas.py)
+- Corrections dictionary expanded for Portuguese and English terms (Part/Parte, Chapter/Capítulo, Section/Seção, Style/Estilo), using regex with re.IGNORECASE.
+- Fallbacks and initial capitalization applied when matches detected, plus error logging.
+- Note: some older entries contained variations with possible typos; the module now uses case-insensitive substitutions to reduce false positives and keeps capitalization consistency where applicable.
+
+8) Feynman Method — UI, translations and list update (fey_03_setup_ui.py, fey_04_atualizar_traducoes.py, fey_10_atualizar_lista.py)
+- Dynamic translations and placeholders:
+  - Instructional texts, labels and placeholders (Concept, Explain, Gaps, Review, Mastery Level, buttons) centralized via QCoreApplication.translate to support language switching at runtime.
+  - Use of gerenciador_botoes.set_button_text to resize the save button correctly when its text is translated.
+  - Safe tab updates (tab_widget.setTabText) inside try/except blocks to avoid crashes if tab_widget is missing.
+- State preservation:
+  - Selected index of combo_dominio is preserved when reloading translated items (save/restore currentIndex).
+- Robust concept list update:
+  - atualizar_lista builds QListWidgetItems with emoji prefix by mastery level (🔴/🟡/🟢) and main label.
+  - Tooltips enriched from the first lines of fields (title, explanation, gaps, review) via utility _first_n_lines (limits to N lines and discards empty lines).
+  - Titles and sections in tooltips are translated (e.g., "1️⃣ Concept", "2️⃣ Explain") using QCoreApplication.translate.
+  - Try/except protections around the whole routine to log failures with LogManager and prevent exceptions from breaking the UI.
+- Robustness and fallbacks:
+  - Defensive use of getattr/hasattr before calls (e.g., atualizar_lista, tab_widget, gerenciador_botoes) to operate even when the host doesn't provide all attributes.
+  - Normalization of missing fields ('' by default) when composing displays and tooltips.
+
+Robustness and Observability Improvements
+- Systematic use of LogManager.get_logger() to report exceptions with exc_info at critical points.
+- Broad and localized try/except blocks to avoid crashes due to missing external attributes (e.g., processador_ia, scene.snap, button manager).
+- Fallbacks for layout / AI operations to run without a worker (synchronously) when threads are not available.
+
+Technical Notes / Dependencies
+- Main files changed/created:
+  - source/modules/mapa/MapaMental/mm_11_setup_ui.py
+  - source/modules/mapa/MapaMental/mm_23_importar_documento_ia.py
+  - source/modules/mapa/MapaMental/mm_24_gerar_mapa_de_hierarquia.py
+  - source/modules/mapa/MapaMental/mm_26_reorganizar_com_ia.py
+  - source/modules/mapa/MapaMental/mm_35_restaurar_com_ia.py
+  - source/modules/mapa/MapaMental/mm_06_instalar_handlers_nos.py
+  - source/modules/mapa/MapaMental/mm_07_aplicar_visibilidade_por_foco.py
+  - source/modules/mapa/MapaMental/mm_08_clicar_no_para_expandir_hierarquia.py
+  - source/modules/mapa/ProcessadorIA/pia_05_corrigir_palavras_conhecidas.py
+  - source/modules/feynman/fey_03_setup_ui.py
+  - source/modules/feynman/fey_04_atualizar_traducoes.py
+  - source/modules/feynman/fey_10_atualizar_lista.py
+- Dependencies:
+  - PySide6 (QtWidgets, QtCore, QtGui)
+  - ProcessadorIA (mp_04_ProcessadorIA) for NLP/AI functionality
+  - QThread / QObject patterns for asynchronous worker
+- Requirements:
+  - QApplication instantiated for installing eventFilter and possible palette synchronization.
+  - NLP resources (models/loading via ProcessadorIA) present in the environment.
+
+Known Risks and Recommendations
+- Risk: absence or failure of ProcessadorIA reduces the accuracy of the import pipeline; code protects itself but results will be simplified.
+- Risk: if scene.snap or expected methods do not exist, position snapping may fail — there are fallbacks, but validating MapaScene/SmoothGraphicsView classes is recommended.
+- Additional risk: if gerenciador_botoes is not present on the host, the Feynman Method module uses fallbacks to QPushButton; ensure the button manager is initialized for optimal behavior.
+- It is recommended to test in environments with dark/light themes and language toggling to validate placeholders, contrast and selection preservation.
+- Validate worker cancellation behavior and application shutdown handling (app.aboutToQuit).
+
+Suggested Tests and QA
+- Import different document types (PDF/DOCX/TXT), cancel the import at various stages and verify proper thread cleanup.
+- Create/reorganize nodes, toggle between reorganizar_com_ia and restaurar_com_ia, confirm snapshot/restoration of position and visibility.
+- Test radial vs hierarchical layouts with various node counts (1..>20) and check for no significant overlaps.
+- Switch language at runtime and verify translation of buttons and instructions; ensure the AI warning displays PT fallback when the key is untranslated.
+- Test node handlers: single click, double-click (edit), drag (save position to snapshot) and connect mode.
+- Check logs produced by LogManager for diagnostics (errors, warnings and debug).
+- Feynman Method:
+  - Switch language and confirm texts/placeholders/tabs update without losing combo_dominio selection.
+  - Create concepts with empty fields and verify atualizar_lista generates coherent tooltips (first lines) and emojis by domain.
+  - Test application without gerenciador_botoes to validate button fallbacks.
+
+Summary Changelog
+- UI: Toolbar reorganized, AI alpha warnings and layout snapshot/restore.
+- AI / Import: Asynchronous worker with progress and cancellation; integration with ProcessadorIA for extraction/analytics.
+- Hierarchy: advanced visual hierarchical generation, idea leaves, level-based colors and adaptive radial positioning.
+- Interaction: node handlers preserving original events, movement detection and navigation/expansion behavior.
+- Robustness: expanded try/except, use of LogManager, fallbacks for missing components.
+- Text normalization: expanded and adjusted regex for known-term corrections.
+- Feynman Method: dynamic translations, preservation of combo state, buttons managed via button manager and robust tooltip generation for concept list.
+
+_________________________________________________
+
 RELEASE NOTES — Lumen
 Version: 2026.1.28.0
 Date: January 28, 2026

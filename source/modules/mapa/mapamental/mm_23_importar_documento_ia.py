@@ -3,7 +3,6 @@ from typing import Dict, Iterator, List, Tuple
 from PySide6.QtWidgets import QFileDialog, QProgressDialog
 from PySide6.QtCore import Qt, QCoreApplication, QThread, QObject, Signal, Slot, QMetaObject
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 
@@ -297,14 +296,12 @@ class _UiBridge(QObject):
                 return
 
             self._owner.limpar_mapa()
-
             self._owner._hierarquia_parent = {}
             self._owner._hierarquia_children = {}
             self._owner._modo_navegacao_hierarquia = False
             self._owner._hierarquia_root = None
-
             self._owner._lumen_layout_freeze_on_click = False
-            self._owner._lumen_layout_orientation = "vertical"
+            self._owner._lumen_layout_orientation = "radial"
 
             raiz_no = self._owner._gerar_mapa_de_hierarquia(arvore)
             if raiz_no:

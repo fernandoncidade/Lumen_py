@@ -55,5 +55,12 @@ def atualizar_traducoes(self):
         except Exception as e:
             logger.debug(f"Falha ao atualizar textos das abas do MetodoFeynman: {e}", exc_info=True)
 
+        try:
+            if hasattr(self, 'atualizar_lista'):
+                self.atualizar_lista()
+
+        except Exception:
+            pass
+
     except Exception as e:
         logger.error(f"Erro ao atualizar traduções do MetodoFeynman: {str(e)}", exc_info=True)

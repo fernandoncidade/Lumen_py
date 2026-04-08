@@ -32,6 +32,7 @@ from .mm_31_posicionar_no_arvore import _posicionar_no_arvore
 from .mm_32_expandir_area_se_necessario import _expandir_area_se_necessario
 from .mm_33_atualizar_traducoes_hierarquia import _atualizar_traducoes_hierarquia
 from .mm_34_layout_hierarquia_navegacao import _layout_hierarquia_navegacao
+from .mm_35_restaurar_com_ia import restaurar_com_ia
 
 __all__ = [
     "drawBackground",
@@ -68,4 +69,5 @@ __all__ = [
     "_expandir_area_se_necessario",
     "_atualizar_traducoes_hierarquia",
     "_layout_hierarquia_navegacao",
+    "restaurar_com_ia",
 ]

@@ -73,9 +73,9 @@ def setup_ui(self):
             except Exception as e:
                 logger.error(f"Erro ao exibir aviso IA alfa: {e}", exc_info=True)
 
-        def _snapshot_layout_original_se_necessario():
+        def _snapshot_layout_original_se_necessario(force: bool = False):
             try:
-                if getattr(self, "_lumen_layout_original_snapshot", None):
+                if getattr(self, "_lumen_layout_original_snapshot", None) and not force:
                     return
 
                 nos = (getattr(self, "nos", []) or [])
@@ -249,25 +249,22 @@ def setup_ui(self):
                 estado = int(getattr(self, "_lumen_reorg_layout_state", 0) or 0)
 
                 if estado == 0:
-                    _snapshot_layout_original_se_necessario()
+                    _snapshot_layout_original_se_necessario(force=True)
                     self.reorganizar_com_ia()
 
-                    self._lumen_layout_orientation = "vertical"
+                    try:
+                        self._lumen_layout_orientation = "radial"
+
+                    except Exception:
+                        pass
+
                     self._lumen_reorg_layout_state = 1
                     return
 
                 if estado == 1:
-                    if _aplicar_layout_horizontal_por_rotacao():
-                        self._lumen_layout_orientation = "horizontal"
-                        self._lumen_reorg_layout_state = 2
-
+                    _restaurar_layout_original()
+                    self._lumen_reorg_layout_state = 0
                     return
-
-                if _restaurar_layout_original():
-                    self._lumen_reorg_layout_state = 0
-
-                else:
-                    self._lumen_reorg_layout_state = 0
 
             except Exception as e:
                 logger.error(f"Erro no toggle de reorganização: {e}", exc_info=True)
@@ -279,6 +276,26 @@ def setup_ui(self):
         self.btn_reorganizar = QPushButton()
         self.btn_reorganizar.clicked.connect(_on_reorganizar_com_ia_toggle)
         self.toolbar.addWidget(self.btn_reorganizar)
+
+        def _on_restaurar_com_ia():
+            _mostrar_aviso_ia_alpha_uma_vez("_lumen_aviso_ia_alpha_exibido_restaurar")
+
+            try:
+                if not (getattr(self, "nos", []) or []):
+                    return
+
+                try:
+                    self.restaurar_com_ia()
+
+                except Exception as e:
+                    logger.error(f"Erro ao restaurar com IA: {e}", exc_info=True)
+
+            except Exception as e:
+                logger.error(f"Erro ao iniciar restaurar com IA: {e}", exc_info=True)
+
+        self.btn_restaurar = QPushButton()
+        self.btn_restaurar.clicked.connect(_on_restaurar_com_ia)
+        self.toolbar.addWidget(self.btn_restaurar)
 
         layout.addWidget(self.toolbar)
 
