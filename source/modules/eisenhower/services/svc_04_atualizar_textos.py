@@ -35,6 +35,7 @@ def atualizar_textos(app):
             get_text("🟡 Não Importante, mas Urgente"),
             get_text("🟢 Não Importante e Não Urgente")
         ])
+        app.quadrant_selector_label.setText(get_text("Prioridade"))
         app.quadrant1_label.setText(get_text("🔴 Importante e Urgente"))
         app.quadrant2_label.setText(get_text("🟠 Importante, mas Não Urgente"))
         app.quadrant3_label.setText(get_text("🟡 Não Importante, mas Urgente"))

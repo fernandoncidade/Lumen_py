@@ -1,4 +1,94 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.8.0
+Date: February 8, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Release focused on UI flexibility for the application's main workflow: allows the user to reorder the main tabs (📖 Accessible Reader, ⏱️ Time Management, 🧠 Mind Maps, 🎓 Feynman Method, 🗂️ Eisenhower Matrix), persists the chosen order between runs and adds a mechanism to restore the default order. It also includes compatibility fixes for PySide6 (use of tabBar().tabData), robustness in key-based navigation, and small fixes to indentation/logging in the action execution module.
+
+Main improvements
+1. Interactive tab reordering
+   - Enabled QTabWidget.setMovable(True) so users can drag and drop tabs.
+   - Moving tabs automatically triggers persistence of the new order.
+
+2. Persistence of tab order
+   - Implemented saving of the order to a JSON file: ordem_abas.json in the app configuration directory (obter_caminho_persistente()).
+   - File structure: {"order": ["leitor","gerenciador","mapa","feynman","eisenhower"]}.
+   - When the UI loads, the persisted order is read and applied; unknown entries are ignored and missing items are appended at the end in the default order.
+
+3. Restore default order
+   - Added a "↩️ Restore tab order" menu action under Settings that recreates the default order and forces persistence.
+   - API available: resetar_ordem_abas() exposed on the window object for unit/automation bindings.
+
+4. Keys and module navigation decoupled from position
+   - Each tab now stores a key (e.g. "leitor", "gerenciador") via tabBar().setTabData / tabBar().tabData to resolve modules regardless of index.
+   - Introduced _switch_to_tab_key() to navigate by key; using it in commands/shortcuts ensures actions always open the correct module even after reordering.
+
+5. PySide6 compatibility and robustness
+   - Fixed incorrect usage of setTabData/tabData on QTabWidget (nonexistent) by switching to self.tabs.tabBar().setTabData / tabBar().tabData.
+   - Improved error handling and logging for persistence and lazy-load operations.
+
+6. Dynamic update of titles and shortcuts
+   - atualizar_interface() now resolves titles based on keys stored in tabBar().tabData and applies translations.
+   - Help / shortcuts dialog (F1) obtains the current tab names dynamically, reflecting the user's customized order.
+
+7. Lazy-loading and placeholders preserved
+   - Lazy-loading of modules preserved: temporary placeholders are replaced by the real widget while keeping the tab key.
+   - Rebuilding tabs (when necessary) preserves already-loaded widgets and remaps them by key.
+
+8. Indentation fixes and minor bug fixes
+   - Adjusted indentation in the action execution module (ui_04_executar_acao_modulo.py) to resolve static analyzer (Pylance) warnings.
+   - Ensured exception blocks log exc_info for easier diagnosis.
+
+Main files changed
+- source/gui/ui/ui_01_setup_ui.py
+  - Implemented persistence (ordem_abas.json), use of tabBar().setTabData/tabData, tab rebuild/reorder, and exposures: _switch_to_tab_key, resetar_ordem_abas.
+- source/gui/ui/ui_03_setup_menubar.py
+  - Added the "↩️ Restore tab order" action in Settings and connected it to resetar_ordem_abas.
+- source/gui/ui/ui_04_executar_acao_modulo.py
+  - Preferential use of _switch_to_tab_key(key) for navigation, indentation fixes and more robust try/except blocks.
+- source/gui/ui/ui_07_atualizar_interface.py
+  - Title resolution via tabBar().tabData and updated calls to keep translated texts in line with the current order.
+- source/gui/ui/ui_08_atualizar_menu.py
+  - Reset action text and availability synchronized with translations.
+- source/gui/ui/ui_16_setup_statusbar.py / ui_19_show_help.py
+  - Status bar and help dialog update messages and shortcuts reflecting the current tab order.
+- source/gui/ui/ui_02_sincronizar_regua_menu.py and other integration points
+  - Minor adjustments to keep controls (e.g., focus ruler) working after tab reordering.
+
+Recommended tests and verification
+- Reordering and persistence:
+  - Open the app, drag tabs to a new order, close and reopen; verify the order is restored as saved in ordem_abas.json.
+  - Confirm placeholders are correctly replaced after reorder and lazy-load.
+- Restore to default:
+  - Trigger "↩️ Restore tab order" and confirm all tabs return to ["leitor","gerenciador","mapa","feynman","eisenhower"].
+  - Verify ordem_abas.json was updated.
+- Command/shortcut navigation:
+  - Use menus/shortcuts that call executar_acao_modulo(...) and confirm each action opens the correct module regardless of tab position.
+- Internationalization:
+  - Switch language (pt_BR / en_US) and confirm tab titles, menus and help dialog show translated texts according to the current order.
+- Robustness:
+  - Simulate read/write errors on the persistence file (permissions/corrupted file) and check logs; the UI should fall back to the default order without crashing.
+- Static analysis:
+  - Confirm no indentation warnings (Pylance) remain in the adjusted files.
+
+Fixes and technical notes
+- Adoption of tabBar().setTabData/tabBar().tabData is required for compatibility with PySide6 QTabWidget; avoid direct calls on self.tabs.
+- The persistence strategy tolerates unknown keys and ensures new/omitted modules are included using the default fallback.
+- _rebuild_tabs preserves loaded instances by key, avoids unnecessary recreation and reduces visual flicker.
+- Connected signals: tabs.tabBar().tabMoved → automatically saves the order after movement.
+- Log messages (LogManager) expanded to capture exc_info in critical operations: persistence, lazy-load, and action execution.
+
+Final notes
+- This release significantly improves usability by allowing each user to adapt tab order to their workflow and keep that preference between sessions. Decoupling module keys from tab indices strengthens system robustness against reordering and enables future extensions (e.g., layout profiles, import/export of configuration).
+- Suggested next steps:
+  1) Support multiple tab-order profiles (per user/profile).
+  2) Add optional confirmation before restoring default order.
+  3) Provide a UI to edit order via a dialog (drag+drop list) and an undo option.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.7.0
 Date: February 7, 2026
 Author: Fernando Nillsson Cidade

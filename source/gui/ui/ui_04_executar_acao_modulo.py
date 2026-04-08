@@ -1,17 +1,27 @@
 from PySide6.QtCore import QCoreApplication, QTimer
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def executar_acao_modulo(self, modulo, acao):
     try:
+        def _go_to_tab(key: str, fallback_index: int) -> None:
+            try:
+                if hasattr(self, "_switch_to_tab_key"):
+                    self._switch_to_tab_key(key)
+                    return
+
+            except Exception:
+                pass
+
+            self.tabs.setCurrentIndex(fallback_index)
+
         if modulo == 'leitor' and hasattr(self, 'leitor'):
             if acao == 'carregar_pdf':
-                self.tabs.setCurrentIndex(0)
+                _go_to_tab("leitor", 0)
                 self.leitor.carregar_pdf()
 
             elif acao == 'iniciar_leitura':
-                    self.tabs.setCurrentIndex(0)
+                    _go_to_tab("leitor", 0)
                     self.leitor.iniciar_leitura()
                     try:
                         if hasattr(self, 'action_pausar_leitura'):
@@ -21,7 +31,7 @@ def executar_acao_modulo(self, modulo, acao):
                         pass
 
             elif acao == 'pausar_leitura':
-                self.tabs.setCurrentIndex(0)
+                _go_to_tab("leitor", 0)
                 try:
                     self.leitor.pausar_leitura()
                     try:
@@ -39,7 +49,7 @@ def executar_acao_modulo(self, modulo, acao):
                     logger.error(f"Erro ao executar ação de pausa via menu: {e}", exc_info=True)
 
             elif acao == 'parar_leitura':
-                self.tabs.setCurrentIndex(0)
+                _go_to_tab("leitor", 0)
                 try:
                     self.leitor.parar_leitura()
                     try:
@@ -53,7 +63,7 @@ def executar_acao_modulo(self, modulo, acao):
                     logger.error(f"Erro ao executar parar_leitura via menu: {e}", exc_info=True)
 
             elif acao == 'toggle_regua_foco':
-                self.tabs.setCurrentIndex(0)
+                _go_to_tab("leitor", 0)
                 novo_estado = not self.leitor.btn_regua.isChecked()
                 self.leitor.btn_regua.setChecked(novo_estado)
                 self.leitor.toggle_regua_foco()
@@ -61,7 +71,7 @@ def executar_acao_modulo(self, modulo, acao):
 
         elif modulo == 'gerenciador' and hasattr(self, 'gerenciador'):
             if acao == 'adicionar_tarefa':
-                self.tabs.setCurrentIndex(1)
+                _go_to_tab("gerenciador", 1)
 
                 try:
                     self.gerenciador.tarefas.input_tarefa.setFocus()
@@ -90,65 +100,65 @@ def executar_acao_modulo(self, modulo, acao):
                     logger.error(f"Erro ao agendar adicionar_tarefa: {e}", exc_info=True)
 
             elif acao == 'toggle_timer':
-                self.tabs.setCurrentIndex(1)
+                _go_to_tab("gerenciador", 1)
                 self.gerenciador.pomodoro.toggle_timer()
 
             elif acao == 'resetar_timer':
-                self.tabs.setCurrentIndex(1)
+                _go_to_tab("gerenciador", 1)
                 self.gerenciador.pomodoro.resetar_timer()
 
             elif acao == 'resetar_ciclo':
-                self.tabs.setCurrentIndex(1)
+                _go_to_tab("gerenciador", 1)
                 self.gerenciador.pomodoro.resetar_ciclo()
 
             elif acao == 'pular_ciclo':
-                self.tabs.setCurrentIndex(1)
+                _go_to_tab("gerenciador", 1)
                 self.gerenciador.pomodoro.pular_ciclo()
 
         elif modulo == 'mapa' and hasattr(self, 'mapa'):
             if acao == 'adicionar_no':
-                self.tabs.setCurrentIndex(2)
+                _go_to_tab("mapa", 2)
                 self.mapa.adicionar_no()
 
             elif acao == 'toggle_modo_conexao':
-                self.tabs.setCurrentIndex(2)
+                _go_to_tab("mapa", 2)
                 self.mapa.toggle_modo_conexao()
                 self.action_conectar_conceitos.setChecked(self.mapa.btn_conectar.isChecked())
 
             elif acao == 'salvar_mapa':
-                self.tabs.setCurrentIndex(2)
+                _go_to_tab("mapa", 2)
                 self.mapa.salvar_mapa()
 
             elif acao == 'carregar_mapa':
-                self.tabs.setCurrentIndex(2)
+                _go_to_tab("mapa", 2)
                 self.mapa.carregar_mapa()
 
             elif acao == 'exportar_imagem':
-                self.tabs.setCurrentIndex(2)
+                _go_to_tab("mapa", 2)
                 self.mapa.exportar_imagem()
 
             elif acao == 'limpar_mapa':
-                self.tabs.setCurrentIndex(2)
+                _go_to_tab("mapa", 2)
                 self.mapa.limpar_mapa()
 
         elif modulo == 'feynman' and hasattr(self, 'feynman'):
             if acao == 'novo_conceito':
-                self.tabs.setCurrentIndex(3)
+                _go_to_tab("feynman", 3)
                 self.feynman.novo_conceito()
 
             elif acao == 'salvar_conceito_atual':
-                self.tabs.setCurrentIndex(3)
+                _go_to_tab("feynman", 3)
                 self.feynman.salvar_conceito_atual()
 
             elif acao == 'deletar_conceito':
-                self.tabs.setCurrentIndex(3)
+                _go_to_tab("feynman", 3)
                 self.feynman.deletar_conceito()
 
         elif modulo == 'eisenhower' and hasattr(self, 'eisenhower'):
             idx = 4
 
             if acao in ('novo','abrir','salvar','limpar','calendar_toggle'):
-                 self.tabs.setCurrentIndex(idx)
+                _go_to_tab("eisenhower", idx)
 
             if acao == 'novo':
                 self.eisenhower.nova_sessao()

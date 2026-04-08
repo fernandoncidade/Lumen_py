@@ -1,4 +1,94 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.8.0
+Data: 8 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em flexibilidade de UI para o fluxo principal da aplicação: permite que o usuário reordene as abas principais (📖 Leitor Acessível, ⏱️ Gestão de Tempo, 🧠 Mapas Mentais, 🎓 Método Feynman, 🗂️ Matriz Eisenhower), persiste a ordem definida entre execuções e adiciona mecanismo de restauração para a ordem padrão. Também inclui correções de compatibilidade com PySide6 (uso de tabBar().tabData), robustez em navegação por chave e pequenas correções de indentação/logging no módulo de execução de ações.
+
+Melhorias principais
+1. Reordenação interativa de abas
+   - Habilitado QTabWidget.setMovable(True) para permitir ao usuário arrastar e soltar abas.
+   - O movimento das abas dispara persistência automática do novo ordenamento.
+
+2. Persistência da ordem das abas
+   - Implementado salvamento da ordem em arquivo JSON: ordem_abas.json no diretório de configuração (obter_caminho_persistente()).
+   - Estrutura do arquivo: {"order": ["leitor","gerenciador","mapa","feynman","eisenhower"]}.
+   - Ao carregar a UI, a ordem persistida é carregada e aplicada; entradas desconhecidas são ignoradas e itens faltantes são anexados ao final na ordem padrão.
+
+3. Restauração da ordem padrão
+   - Adicionada ação de menu "↩️ Restaurar ordem das abas" em Configurações que recria a ordem padrão e força persistência.
+   - API disponível: resetar_ordem_abas() exposta no objeto janela para ligações unitárias/automatizadas.
+
+4. Chaves e navegação por módulo desacoplada da posição
+   - Cada aba agora carrega/guarda uma key (ex.: "leitor", "gerenciador") via tabBar().setTabData / tabBar().tabData para resolver módulos independentemente do índice.
+   - Introduzida função _switch_to_tab_key() para navegar por chave; usar em comandos/atalhos garante que ações sempre abram o módulo correto mesmo após reordenação.
+
+5. Compatibilidade PySide6 e robustez
+   - Corrigido uso incorreto de setTabData/tabData em QTabWidget (não existe) substituindo por chamadas a self.tabs.tabBar().setTabData / tabBar().tabData.
+   - Tratamento de erros e logs melhorados para operações de persistência e lazy-load de módulos.
+
+6. Atualização dinâmica de títulos e atalhos
+   - atualizar_interface() agora resolve títulos com base nas chaves armazenadas em tabBar().tabData e aplica traduções.
+   - Diálogo de ajuda / atalhos (F1) obtém os nomes atuais das abas dinamicamente, refletindo a ordem personalizada do usuário.
+
+7. Lazy-loading e placeholders mantidos
+   - Lazy-load dos módulos preservado: placeholders temporários são substituídos pelo widget real mantendo a key da aba.
+   - Rebuild das abas (quando necessário) preserva widgets já carregados e remapeia por chave.
+
+8. Correções de indentação e pequenos bugs
+   - Ajustes de recuo/indentação no módulo de execução de ações (ui_04_executar_acao_modulo.py) que resolviam advertências do analisador estático (Pylance).
+   - Garantia de que blocos de exceção logam exc_info para facilitar diagnóstico.
+
+Arquivos principais alterados
+- source/gui/ui/ui_01_setup_ui.py
+  - Implementação de persistência (ordem_abas.json), uso de tabBar().setTabData/tabData, rebuild/reorder de abas, exposições: _switch_to_tab_key, resetar_ordem_abas.
+- source/gui/ui/ui_03_setup_menubar.py
+  - Inclusão da ação "↩️ Restaurar ordem das abas" no menu Configurações e ligação para resetar_ordem_abas.
+- source/gui/ui/ui_04_executar_acao_modulo.py
+  - Uso preferencial de _switch_to_tab_key(key) para navegação, correção de indentação e blocos try/except mais robustos.
+- source/gui/ui/ui_07_atualizar_interface.py
+  - Resolução de títulos via tabBar().tabData e chamadas atualizadas para manter textos traduzidos conforme ordem atual.
+- source/gui/ui/ui_08_atualizar_menu.py
+  - Texto e disponibilidade da ação de reset em sincronia com traduções.
+- source/gui/ui/ui_16_setup_statusbar.py / ui_19_show_help.py
+  - Status bar e diálogo de ajuda atualizam mensagens e atalhos refletindo a ordem atual das abas.
+- source/gui/ui/ui_02_sincronizar_regua_menu.py e demais pontos de integração
+  - Pequenos ajustes para manter comportamento dos controles (ex.: régua de foco) mesmo após reordenação de abas.
+
+Testes e verificação recomendados
+- Reordenação e persistência:
+  - Abrir app, arrastar abas para nova ordem, fechar e reabrir; verificar que a ordem é restaurada conforme salvo em ordem_abas.json.
+  - Confirmar que placeholders são substituídos corretamente após reorder e lazy-load.
+- Restauração à ordem padrão:
+  - Acionar "↩️ Restaurar ordem das abas" e confirmar que todas as abas voltam à ordem ["leitor","gerenciador","mapa","feynman","eisenhower"].
+  - Verificar que ordem_abas.json foi atualizada.
+- Navegação por comandos/atalhos:
+  - Usar menu/atalhos que acionam executar_acao_modulo(...) e validar que cada ação abre o módulo correto independentemente da posição da aba.
+- Internacionalização:
+  - Alternar idioma (pt_BR / en_US) e confirmar que títulos das abas, menus e diálogo de ajuda mostram textos traduzidos conforme a ordem atual.
+- Robustez:
+  - Forçar erros de leitura/escrita do arquivo de persistência (permissões/arquivo corrompido) e observar logs; a UI deve cair para a ordem padrão sem crash.
+- Análise estática:
+  - Confirmar ausência de avisos de recuo/indentação (Pylance) nos arquivos ajustados.
+
+Correções e notas técnicas
+- Adoção de tabBar().setTabData/tabBar().tabData é necessária por compatibilidade com PySide6 QTabWidget; evitar chamadas diretas em self.tabs.
+- A estratégia de persistência tolera chaves desconhecidas e garante inclusão de módulos novos/omitidos (fallback para default).
+- _rebuild_tabs preserva instâncias carregadas por chave, evita recriação desnecessária e reduz flicker visual.
+- Sinais conectados: tabs.tabBar().tabMoved → grava ordem automaticamente após movimento.
+- Mensagens de log (LogManager) ampliadas para capturar exc_info em operações críticas: persistência, lazy-load e execução de ações.
+
+Observações finais
+- Esta entrega melhora significativamente a usabilidade, permitindo que cada usuário adapte a ordem das abas ao seu fluxo de trabalho sem perder a configuração entre execuções. A separação entre chave de módulo e índice da aba fortalece a robustez do sistema frente a reordenações e facilita futuras extensões (ex.: perfis de layout, export/import de configuração).
+- Próximos passos sugeridos:
+  1) Permitir múltiplos perfis de ordem (por usuário/perfil).
+  2) Adicionar confirmação opcional antes de restaurar ordem padrão.
+  3) Expor UI para editar ordem via um diálogo (drag+drop em lista) e opção de desfazer.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.7.0
 Data: 7 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

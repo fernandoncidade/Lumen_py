@@ -1,4 +1,48 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.8.0
+Data: 8 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Melhoria focada em oferecer mais flexibilidade na interface principal: agora o usuário pode reorganizar as abas principais (📖 Leitor Acessível, ⏱️ Gestão de Tempo, 🧠 Mapas Mentais, 🎓 Método Feynman, 🗂️ Matriz Eisenhower), salvar a ordem escolhida entre execuções e restaurar facilmente a ordem padrão quando desejar. Também foram feitas correções de compatibilidade e maior robustez na navegação e execução das ações da interface.
+
+Principais novidades
+- Reordenação de abas
+  - Arraste e solte as abas para posicioná‑las na ordem que preferir.
+  - A nova ordem é salva automaticamente, mantendo sua configuração ao reabrir o aplicativo.
+
+- Persistência da ordem personalizada
+  - A ordem definida pelo usuário é restaurada em execuções seguintes.
+  - Entradas desconhecidas são ignoradas e novas abas sempre aparecem sem perder a ordem estabelecida.
+
+- Restaurar ordem padrão
+  - Nova opção no menu de Configurações para restaurar a ordem original das abas (↩️ Restaurar ordem das abas).
+
+- Navegação consistente
+  - Atalhos e ações do menu abrem o módulo correto independentemente da posição visual das abas.
+  - Ajuda e atalhos (F1) mostram os nomes das abas conforme a ordem atual do usuário.
+
+- Experiência preservada
+  - Conteúdos temporários e componentes carregados sob demanda continuam funcionando; a reposição visual mantém o estado já carregado sempre que possível.
+
+- Compatibilidade e robustez
+  - Ajustes que melhoram a compatibilidade em diferentes ambientes e reduzem falhas ao ler/gravar configurações.
+  - Logs e tratamentos de erro ampliados para facilitar diagnóstico sem interromper o uso.
+
+O que muda para você
+- Personalize a ordem das abas para adaptar o aplicativo ao seu fluxo de trabalho.
+- Feche e reabra o app sem perder a ordem escolhida.
+- Use a opção de restauração para voltar rapidamente à configuração padrão.
+- Menos frustração com atalhos ou menus que abrem a aba errada após reorganizar.
+
+Recomendações rápidas
+- Reorganize as abas arrastando‑as e confirme o comportamento desejado.
+- Use "↩️ Restaurar ordem das abas" se quiser retornar à ordem original.
+- Caso encontre problemas ao salvar/restaurar a ordem, verifique mensagens ou logs e tente restaurar a ordem padrão.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.7.0
 Data: 7 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

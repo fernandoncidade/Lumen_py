@@ -2393,5 +2393,40 @@ Deseja continuar?</translation>
       <translation>Ocorreu um erro ao remover a tarefa.</translation>
     </message>
 
+    <message>
+      <source>Carregando módulo...</source>
+      <translation>Carregando módulo...</translation>
+    </message>
+
+    <message>
+      <source>Erro ao Carregar Módulo</source>
+      <translation>Erro ao Carregar Módulo</translation>
+    </message>
+
+    <message>
+      <source>Ocorreu um erro ao carregar o módulo:</source>
+      <translation>Ocorreu um erro ao carregar o módulo:</translation>
+    </message>
+
+    <message>
+      <source>Verifique se todas as dependências estão instaladas.</source>
+      <translation>Verifique se todas as dependências estão instaladas.</translation>
+    </message>
+
+    <message>
+      <source>↩️ Restaurar ordem das abas</source>
+      <translation>↩️ Restaurar ordem das abas</translation>
+    </message>
+
+    <message>
+      <source>📅 Mostrar Calendário</source>
+      <translation>📅 Mostrar Calendário</translation>
+    </message>
+
+    <message>
+      <source>📅 Ocultar Calendário</source>
+      <translation>📅 Ocultar Calendário</translation>
+    </message>
+
   </context>
 </TS>

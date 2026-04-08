@@ -1,19 +1,25 @@
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtCore import QCoreApplication
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def show_help(self):
     try:
         title = QCoreApplication.translate("App", "Lúmen - Atalhos")
 
-        atalhos = [
-            (QCoreApplication.translate("App", "Ctrl+1"), QCoreApplication.translate("App", "📖 Leitor Acessível")),
-            (QCoreApplication.translate("App", "Ctrl+2"), QCoreApplication.translate("App", "⏱️ Gestão de Tempo")),
-            (QCoreApplication.translate("App", "Ctrl+3"), QCoreApplication.translate("App", "🧠 Mapas Mentais")),
-            (QCoreApplication.translate("App", "Ctrl+4"), QCoreApplication.translate("App", "🎓 Método Feynman")),
-            (QCoreApplication.translate("App", "Ctrl+5"), QCoreApplication.translate("App", "🗂️ Matriz Eisenhower")),
+        atalhos = []
+        try:
+            if hasattr(self, "tabs"):
+                for i in range(min(5, self.tabs.count())):
+                    atalhos.append((
+                        QCoreApplication.translate("App", f"Ctrl+{i + 1}"),
+                        self.tabs.tabText(i)
+                    ))
+
+        except Exception:
+            pass
+
+        atalhos.extend([
             (QCoreApplication.translate("App", "Ctrl+O"), QCoreApplication.translate("App", "📁 Carregar PDF")),
             (QCoreApplication.translate("App", "Ctrl+R"), QCoreApplication.translate("App", "▶️ Ler")),
             (QCoreApplication.translate("App", "Ctrl+P"), QCoreApplication.translate("App", "⏸️ Pausar")),
@@ -26,7 +32,7 @@ def show_help(self):
             (QCoreApplication.translate("App", "Ctrl+Shift+S"), QCoreApplication.translate("App", "🔔 Som...")),
             (QCoreApplication.translate("App", "Ctrl+Q"), QCoreApplication.translate("App", "🚪 Sair")),
             (QCoreApplication.translate("App", "F1"), QCoreApplication.translate("App", "Ajuda")),
-        ]
+        ])
 
         regua_title = QCoreApplication.translate("App", "Régua de Foco:")
         regua_items = [

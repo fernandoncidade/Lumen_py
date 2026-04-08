@@ -8,11 +8,18 @@ def atualizar_interface(self, codigo_idioma):
         if not hasattr(self, 'tabs'):
             return
 
-        self.tabs.setTabText(0, QCoreApplication.translate("App", "📖 Leitor Acessível"))
-        self.tabs.setTabText(1, QCoreApplication.translate("App", "⏱️ Gestão de Tempo"))
-        self.tabs.setTabText(2, QCoreApplication.translate("App", "🧠 Mapas Mentais"))
-        self.tabs.setTabText(3, QCoreApplication.translate("App", "🎓 Método Feynman"))
-        self.tabs.setTabText(4, QCoreApplication.translate("App", "🗂️ Matriz Eisenhower"))
+        titles = {
+            "leitor": QCoreApplication.translate("App", "📖 Leitor Acessível"),
+            "gerenciador": QCoreApplication.translate("App", "⏱️ Gestão de Tempo"),
+            "mapa": QCoreApplication.translate("App", "🧠 Mapas Mentais"),
+            "feynman": QCoreApplication.translate("App", "🎓 Método Feynman"),
+            "eisenhower": QCoreApplication.translate("App", "🗂️ Matriz Eisenhower"),
+        }
+
+        for i in range(self.tabs.count()):
+            key = self.tabs.tabBar().tabData(i)
+            if key in titles:
+                self.tabs.setTabText(i, titles[key])
 
         self.atualizar_menu()
 

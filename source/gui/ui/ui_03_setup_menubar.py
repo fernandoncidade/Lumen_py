@@ -61,8 +61,12 @@ def setup_menubar(self):
         def _on_add_task():
             try:
                 logger.info("menu: _on_add_task acionado via atalho/menu")
+
                 try:
-                    if hasattr(self, 'switch_to_tab'):
+                    if hasattr(self, '_switch_to_tab_key'):
+                        self._switch_to_tab_key("gerenciador")
+
+                    elif hasattr(self, 'switch_to_tab'):
                         self.switch_to_tab(1)
 
                 except Exception:
@@ -265,6 +269,10 @@ def setup_menubar(self):
 
         self.action_config_sound.triggered.connect(_open_sound_dialog)
         self.menu_config.addAction(self.action_config_sound)
+
+        self.action_resetar_ordem_abas = QAction(QCoreApplication.translate("App", "↩️ Restaurar ordem das abas"), self)
+        self.action_resetar_ordem_abas.triggered.connect(lambda: getattr(self, "resetar_ordem_abas", lambda: None)())
+        self.menu_config.addAction(self.action_resetar_ordem_abas)
 
         self.menu_vozes = self.menu_config.addMenu(QCoreApplication.translate("App", "🗣️ Vozes"))
         self.actions_vozes = []

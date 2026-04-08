@@ -2393,5 +2393,40 @@ Do you want to continue?</translation>
       <translation>An error occurred while removing the task.</translation>
     </message>
 
+    <message>
+      <source>Carregando módulo...</source>
+      <translation>Loading module...</translation>
+    </message>
+
+    <message>
+      <source>Erro ao Carregar Módulo</source>
+      <translation>Error Loading Module</translation>
+    </message>
+
+    <message>
+      <source>Ocorreu um erro ao carregar o módulo:</source>
+      <translation>An error occurred while loading the module:</translation>
+    </message>
+
+    <message>
+      <source>Verifique se todas as dependências estão instaladas.</source>
+      <translation>Check if all dependencies are installed.</translation>
+    </message>
+
+    <message>
+      <source>↩️ Restaurar ordem das abas</source>
+      <translation>↩️ Restore tab order</translation>
+    </message>
+
+    <message>
+      <source>📅 Mostrar Calendário</source>
+      <translation>📅 Show Calendar</translation>
+    </message>
+
+    <message>
+      <source>📅 Ocultar Calendário</source>
+      <translation>📅 Hide Calendar</translation>
+    </message>
+
   </context>
 </TS>

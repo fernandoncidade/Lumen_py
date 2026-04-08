@@ -164,7 +164,23 @@ def init_ui(app):
         get_text("🟡 Não Importante, mas Urgente"),
         get_text("🟢 Não Importante e Não Urgente")
     ])
+    app.quadrant_selector_label = QLabel(get_text("Prioridade"))
+
+    try:
+        _apply_widget_min_height(app, app.quadrant_selector_label, "quadrant_selector_label")
+
+    except Exception:
+        pass
+
+    input_layout_row2.addWidget(app.quadrant_selector_label)
     input_layout_row2.addWidget(app.quadrant_selector)
+
+    if hasattr(app, "gerenciador_traducao"):
+        try:
+            app.gerenciador_traducao.idioma_alterado.connect(lambda _: app.quadrant_selector_label.setText(get_text("Prioridade")))
+
+        except Exception as e:
+            logger.error(f"Erro ao conectar sinal de idioma_alterado para rótulo Prioridade: {e}", exc_info=True)
 
     app.add_button = QPushButton(get_text("Adicionar Tarefa"))
     add_icon_path = get_icon_path("organizador.png")

@@ -77,6 +77,9 @@ def atualizar_menu(self):
         if hasattr(self, 'action_config_sound'):
             self.action_config_sound.setText(QCoreApplication.translate("App", "🔔 Som..."))
 
+        if hasattr(self, 'action_resetar_ordem_abas'):
+            self.action_resetar_ordem_abas.setText(QCoreApplication.translate("App", "↩️ Restaurar ordem das abas"))
+
         self.action_pt_br.setText(QCoreApplication.translate("App", "🇧🇷 Português (Brasil)"))
         self.action_en_us.setText(QCoreApplication.translate("App", "🇺🇸 English (United States)"))
 

@@ -1,4 +1,48 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.8.0
+Date: February 8, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Release focused on providing more flexibility in the main interface: users can now reorder the main tabs (📖 Accessible Reader, ⏱️ Time Management, 🧠 Mind Maps, 🎓 Feynman Method, 🗂️ Eisenhower Matrix), persist the chosen order between runs, and easily restore the default order when desired. The release also includes compatibility fixes and increased robustness in navigation and action execution.
+
+Main highlights
+- Tab reordering
+  - Drag and drop tabs to position them as you prefer.
+  - The new order is saved automatically and preserved when reopening the application.
+
+- Persistence of custom order
+  - The order set by the user is restored in subsequent runs.
+  - Unknown entries are ignored and new tabs are appended without losing the established order.
+
+- Restore default order
+  - New option in the Settings menu to restore the original tab order (↩️ Restore tab order).
+
+- Consistent navigation
+  - Shortcuts and menu actions open the correct module regardless of the tabs' visual position.
+  - Help and shortcuts (F1) display tab names according to the user's current order.
+
+- Preserved experience
+  - Temporary content and on-demand loaded components continue to work; visual replacement preserves already-loaded state whenever possible.
+
+- Compatibility and robustness
+  - Adjustments that improve compatibility across environments and reduce failures when reading/writing configurations.
+  - Expanded logging and error handling to facilitate diagnosis without interrupting use.
+
+What changes for you
+- Customize the tab order to adapt the app to your workflow.
+- Close and reopen the app without losing your chosen order.
+- Use the restore option to quickly return to the default configuration.
+- Less frustration from shortcuts or menus opening the wrong tab after reordering.
+
+Quick recommendations
+- Reorder tabs by dragging them and verify the behavior you want.
+- Use "↩️ Restore tab order" to return to the original order.
+- If you encounter problems saving/restoring the order, check messages or logs and try restoring the default order.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.7.0
 Date: February 7, 2026
 Author: Fernando Nillsson Cidade
