@@ -1004,8 +1004,41 @@ def mostrar_menu_contexto(app, point, list_widget):
         if not bool(item.flags() & Qt.ItemIsSelectable):
             return
 
-        menu = QMenu(list_widget)
+        def _selected_items():
+            try:
+                items = list(list_widget.selectedItems() or [])
 
+            except Exception:
+                items = []
+
+            if item not in items:
+                items = [item]
+
+            return [it for it in items if it and (it.flags() & Qt.ItemIsSelectable)]
+
+        def _resolve_source(it):
+            try:
+                data = it.data(Qt.UserRole) or {}
+                if isinstance(data, dict) and data.get("category"):
+                    src_list, src_item = _find_source_item_for_calendar(app, data)
+                    if src_list is not None and src_item is not None:
+                        return src_list, src_item
+
+            except Exception:
+                pass
+
+            return list_widget, it
+
+        def _resolved_selection():
+            resolved = []
+            for it in _selected_items():
+                src_list, src_item = _resolve_source(it)
+                if src_list is not None and src_item is not None:
+                    resolved.append((src_list, src_item))
+
+            return resolved
+
+        menu = QMenu(list_widget)
         editar_acao = QAction(get_text("✏️ Editar Tarefa...") or "✏️ Editar Tarefa...", app)
         editar_acao.triggered.connect(lambda: editar_tarefa_item(app, item, list_widget))
         menu.addAction(editar_acao)
@@ -1019,57 +1052,68 @@ def mostrar_menu_contexto(app, point, list_widget):
                     from source.utils.EventBus import get_event_bus
                     from source.modules.tempo.tmp_01_Tarefa import Tarefa
 
-                    data = item.data(Qt.UserRole) or {}
-                    titulo = (data.get("text") or _base_text_from_item(item) or "").strip()
-                    if not titulo:
-                        return
+                    enviados = 0
+                    for _, it in _resolved_selection():
+                        data = it.data(Qt.UserRole) or {}
+                        titulo = (data.get("text") or _base_text_from_item(it) or "").strip()
+                        if not titulo:
+                            continue
 
-                    pr = data.get("priority") or data.get("prioridade")
-                    if isinstance(pr, (int, float)) or (isinstance(pr, str) and str(pr).isdigit()):
-                        try:
-                            pnum = int(pr)
+                        pr = data.get("priority") or data.get("prioridade")
+                        if isinstance(pr, (int, float)) or (isinstance(pr, str) and str(pr).isdigit()):
+                            try:
+                                pnum = int(pr)
 
-                        except Exception:
-                            pnum = 1
+                            except Exception:
+                                pnum = 1
 
-                        mapa = {
-                            1: "🔴 Importante e Urgente",
-                            2: "🟠 Importante, mas Não Urgente",
-                            3: "🟡 Não Importante, mas Urgente",
-                            4: "🟢 Não Importante e Não Urgente",
+                            mapa = {
+                                1: "🔴 Importante e Urgente",
+                                2: "🟠 Importante, mas Não Urgente",
+                                3: "🟡 Não Importante, mas Urgente",
+                                4: "🟢 Não Importante e Não Urgente",
+                            }
+                            prioridade_raw = mapa.get(pnum, mapa[1])
+
+                        else:
+                            prioridade_raw = pr or "Importante e Urgente"
+
+                        prioridade_norm = Tarefa.normalizar_prioridade(prioridade_raw)
+                        date_iso = data.get("date")
+                        time_str = data.get("time")
+                        description = data.get("description") or data.get("desc") or None
+                        file_path = data.get("file_path") or None
+
+                        payload = {
+                            "integration_id": str(uuid4()),
+                            "origin": "eisenhower",
+                            "titulo": titulo,
+                            "prioridade": prioridade_norm,
+                            "date": date_iso,
+                            "time": time_str,
+                            "description": description,
+                            "file_path": file_path,
                         }
-                        prioridade_raw = mapa.get(pnum, mapa[1])
 
-                    else:
-                        prioridade_raw = pr or "Importante e Urgente"
-
-                    prioridade_norm = Tarefa.normalizar_prioridade(prioridade_raw)
-                    date_iso = data.get("date")
-                    time_str = data.get("time")
-                    description = data.get("description") or data.get("desc") or None
-                    file_path = data.get("file_path") or None
-
-                    payload = {
-                        "integration_id": str(uuid4()),
-                        "origin": "eisenhower",
-                        "titulo": titulo,
-                        "prioridade": prioridade_norm,
-                        "date": date_iso,
-                        "time": time_str,
-                        "description": description,
-                        "file_path": file_path,
-                    }
-
-                    try:
-                        get_event_bus().send_tarefa(payload)
                         try:
-                            QMessageBox.information(app, get_text("Sucesso") or "Sucesso", get_text("Tarefa enviada com sucesso para ⏱️ Gestão de Tempo - Pomodoro!⏱️"))
+                            get_event_bus().send_tarefa(payload)
+                            enviados += 1
+
+                        except Exception as e:
+                            logger.debug(f"Falha ao enviar tarefa ao Gerenciador de Tempo: {e}", exc_info=True)
+
+                    if enviados:
+                        try:
+                            if enviados == 1:
+                                msg = get_text("Tarefa enviada com sucesso para ⏱️ Gestão de Tempo - Pomodoro!⏱️")
+
+                            else:
+                                msg = get_text("{n} tarefas enviadas com sucesso para ⏱️ Gestão de Tempo - Pomodoro!⏱️").replace("{n}", str(enviados))
+
+                            QMessageBox.information(app, get_text("Sucesso") or "Sucesso", msg)
 
                         except Exception:
                             pass
-
-                    except Exception as e:
-                        logger.debug(f"Falha ao enviar tarefa ao Gerenciador de Tempo: {e}", exc_info=True)
 
                 except Exception as e:
                     logger.error(f"Erro ao compartilhar tarefa com Pomodoro: {e}", exc_info=True)
@@ -1084,54 +1128,43 @@ def mostrar_menu_contexto(app, point, list_widget):
             opts = _quadrant_options(app)
             mover_menu = QMenu(get_text("🔀 Mover para outro quadrante"), app)
 
-            try:
-                data_for_resolution = item.data(Qt.UserRole) or {}
-                src_list_for_move, src_item_for_move = (None, None)
-                if isinstance(data_for_resolution, dict) and data_for_resolution.get("category"):
-                    src_list_for_move, src_item_for_move = _find_source_item_for_calendar(app, data_for_resolution)
-
-                if src_list_for_move is None:
-                    src_list_for_move = list_widget
-                    src_item_for_move = item
-
-            except Exception:
-                src_list_for_move = list_widget
-                src_item_for_move = item
-
             for idx, label in enumerate(opts):
                 a = QAction(label, app)
-                def _make_handler(i, source_list=src_list_for_move, source_item=src_item_for_move):
+                def _make_handler(i):
                     def _handler():
                         try:
-                            keep_completed = _is_completed_list(app, source_list)
-                            target = _target_list_for_quadrant(app, i, keep_completed=keep_completed)
-                            if target is None or target is source_list:
-                                return
+                            moved = False
+                            for source_list, source_item in _resolved_selection():
+                                keep_completed = _is_completed_list(app, source_list)
+                                target = _target_list_for_quadrant(app, i, keep_completed=keep_completed)
+                                if target is None or target is source_list:
+                                    continue
 
-                            new_state = Qt.Checked if keep_completed else Qt.Unchecked
+                                new_state = Qt.Checked if keep_completed else Qt.Unchecked
+                                source_list.blockSignals(True)
+                                target.blockSignals(True)
 
-                            source_list.blockSignals(True)
-                            target.blockSignals(True)
+                                try:
+                                    app.move_item_between_lists(source_item, source_list, target, new_state)
+                                    moved = True
 
-                            try:
-                                app.move_item_between_lists(source_item, source_list, target, new_state)
+                                finally:
+                                    source_list.blockSignals(False)
+                                    target.blockSignals(False)
 
-                            finally:
-                                source_list.blockSignals(False)
-                                target.blockSignals(False)
+                            if moved:
+                                try:
+                                    app.save_tasks()
 
-                            try:
-                                app.save_tasks()
+                                except Exception:
+                                    pass
 
-                            except Exception:
-                                pass
+                                try:
+                                    if hasattr(app, "calendar_pane") and app.calendar_pane:
+                                        app.calendar_pane.calendar_panel.update_task_list()
 
-                            try:
-                                if hasattr(app, "calendar_pane") and app.calendar_pane:
-                                    app.calendar_pane.calendar_panel.update_task_list()
-
-                            except Exception:
-                                pass
+                                except Exception:
+                                    pass
 
                         except Exception as e:
                             logger.error(f"Erro ao mover tarefa de quadrante via submenu: {e}", exc_info=True)
@@ -1145,13 +1178,84 @@ def mostrar_menu_contexto(app, point, list_widget):
 
         except Exception:
             mover_acao = QAction(get_text("🔀 Mover para outro quadrante"), app)
-            mover_acao.triggered.connect(lambda: _move_to_quadrant(app, item, list_widget))
+            mover_acao.triggered.connect(lambda: [_move_to_quadrant(app, src_item, src_list) for src_list, src_item in _resolved_selection()])
             menu.addAction(mover_acao)
 
         menu.addSeparator()
         remover_acao = QAction(get_text("🗑️ Remover Tarefa"), app)
-        remover_acao.triggered.connect(lambda: remover_tarefa_item(app, item, list_widget, True))
 
+        def _remover_selecionadas():
+            try:
+                items = _selected_items()
+                if not items:
+                    return
+
+                try:
+                    msg = QMessageBox(app)
+                    msg.setWindowTitle(get_text("Remover Tarefa"))
+
+                    if len(items) == 1:
+                        msg.setText(get_text("Deseja remover a tarefa '{item}'?").replace("{item}", items[0].text()))
+
+                    else:
+                        msg.setText(get_text("Deseja remover {n} tarefas selecionadas?").replace("{n}", str(len(items))))
+
+                    btn_yes = msg.addButton(get_text("Yes"), QMessageBox.YesRole)
+                    msg.addButton(get_text("No"), QMessageBox.NoRole)
+                    msg.exec()
+
+                    if msg.clickedButton() != btn_yes:
+                        return
+
+                except Exception:
+                    pass
+
+                rows = []
+                for it in items:
+                    try:
+                        rows.append(list_widget.row(it))
+
+                    except Exception:
+                        pass
+
+                for row in sorted(set(rows), reverse=True):
+                    try:
+                        list_widget.takeItem(row)
+
+                    except Exception:
+                        pass
+
+                try:
+                    if hasattr(app, "cleanup_time_groups"):
+                        app.cleanup_time_groups(list_widget)
+
+                except Exception:
+                    pass
+
+                try:
+                    if hasattr(app, "atualizar_placeholders"):
+                        app.atualizar_placeholders()
+
+                except Exception:
+                    pass
+
+                try:
+                    app.save_tasks()
+
+                except Exception:
+                    pass
+
+                try:
+                    if hasattr(app, "calendar_pane") and app.calendar_pane:
+                        app.calendar_pane.calendar_panel.update_task_list()
+
+                except Exception:
+                    pass
+
+            except Exception as e:
+                logger.error(f"Erro ao remover tarefas selecionadas: {e}", exc_info=True)
+
+        remover_acao.triggered.connect(_remover_selecionadas)
         menu.addAction(remover_acao)
         menu.exec(list_widget.mapToGlobal(point))
 

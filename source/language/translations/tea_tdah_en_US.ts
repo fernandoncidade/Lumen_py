@@ -2329,5 +2329,15 @@ Do you want to continue?</translation>
       <translation>Do you want to remove all tasks for the selected day?</translation>
     </message>
 
+    <message>
+      <source>Deseja remover {n} tarefas selecionadas?</source>
+      <translation>Do you want to remove {n} selected tasks?</translation>
+    </message>
+
+    <message>
+      <source>{n} tarefas enviadas com sucesso para ⏱️ Gestão de Tempo - Pomodoro!⏱️</source>
+      <translation>{n} tasks successfully sent to ⏱️ Time Management - Pomodoro!⏱️</translation>
+    </message>
+
   </context>
 </TS>

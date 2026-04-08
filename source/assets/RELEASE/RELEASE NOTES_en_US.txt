@@ -1,4 +1,63 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.5.0
+Date: February 5, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Improvements and fixes focused on editing tasks via the context menu, calendar stability, attachment experience and drag & drop behavior. The interface is more resilient to errors and consistent between lists and the calendar panel.
+
+Main highlights
+- Editing via context menu
+  - The edit window is reused and more secure, with fields for title, attachment, description, date and time.
+  - Basic validations (e.g., title required) and immediate application of changes to the original list.
+
+- Date and time
+  - Date/time editing is clearer and more reliable, with the option to link/unlink and correct format conversion.
+
+- Synchronization with the calendar
+  - Items originating from the calendar are now correctly recognized by the system before editing or deleting, avoiding inconsistencies.
+
+- Individual and bulk removal
+  - Safe removal of tasks, including a "Remove All" option by date, always with confirmation and correct updating of counts and groupings.
+
+- More robust attachment opening
+  - Attempts to open attachments using mechanisms compatible with each platform; the user is warned in case of failure.
+
+- Drag & drop and ordering
+  - Moving and reordering tasks is more predictable; timed items are inserted in the correct order and metadata is preserved.
+
+- Attachments and user experience
+  - Support for dragging files into the attachment field, display of name/path and controls to choose/clear/open attachments.
+
+- Locale and appearance
+  - Better consistency when applying date/time formats and when synchronizing colors/theme in composite areas of the interface.
+
+- Tooltips and visual feedback
+  - More informative tooltips (date, time, attachment, short description and priority) and consistent display of priority emojis when enabled.
+
+- Robustness and logs
+  - Various protections against exceptions and improved logging to facilitate diagnosis without impacting the user experience.
+
+Bug fixes
+- Fix in editing/removal of items originating from the calendar (now affects the correct item).
+- Preservation of important information when editing date/time or modifying a task.
+- Drag & drop between lists fixed to avoid losses and inconsistencies.
+- Failures opening attachments on different systems handled with fallbacks and warnings.
+- Visual issues in composite widgets minimized by correctly reapplying the palette.
+
+What changes for you
+- Editing, moving and removing tasks via the calendar or lists is now safer and more direct.
+- Opening attachments should work better on Windows/macOS/Linux.
+- Fewer visible errors and more predictable behavior when changing dates, times and priorities.
+
+Quick recommendations
+- Test editing from the calendar's context menu to see the improvements.
+- Use "Remove All" with care — a confirmation appears before deletion.
+- Check attachments by double-clicking or using the open button; if it fails, verify the file path.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.4.0
 Date: 4 February 2026
 Author: Fernando Nillsson Cidade

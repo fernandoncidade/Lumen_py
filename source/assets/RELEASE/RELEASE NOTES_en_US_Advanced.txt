@@ -1,4 +1,120 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.5.0
+Date: February 5, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Release focused on hardening and polishing the context menu flow and UI components of the Eisenhower module: refinements to the edit dialog, robustness when opening linked files, improvements to drag & drop and ordered insertion of tasks, and fine adjustments for locale/palette. Several protections and logs were added to avoid exceptions visible to the user and to ensure synchronization between lists and the calendar panel.
+
+Main improvements
+1. Edit flow via context menu
+   - Hardened EditTaskDialog (svc_06_show_context_menu.py: editar_tarefa_item):
+     - Safe reuse of the edit dialog with fields: title (QLineEdit), FileDropLineEdit (drag/drop + choose file + open/remove), description (QTextEdit), date/time controls (QDateEdit/QTimeEdit) with linking checkboxes.
+     - Initial values populated from the item's Qt.UserRole; simple validations (title required) before applying changes.
+     - On confirm, the original item is replaced by a new QListWidgetItem preserving check state, updated tooltip and formatting (bold/blue when a file is linked).
+     - List update via insert_task_into_quadrant_list when available and calls to cleanup_time_groups and save_tasks protected.
+
+2. Refined date/time editing
+   - Edit Date/Time dialog (_edit_date_time_dialog):
+     - Uses QDateEdit with calendar popup and QTimeEdit, applying displayFormat based on app.date_input; defensive application of locale and palette for visual consistency.
+     - Synchronization of checkboxes to enable/disable controls; input conversion to ISODate / "HH:mm".
+     - Replacement of the source item while preserving metadata, tooltip enriched with priority via prioridade_para_texto() when available.
+
+3. Resolving correct source for calendar-originated items
+   - Implemented _find_source_item_for_calendar to robustly locate the real QListWidgetItem (source list and item) from the task dict present in the calendar's map.
+   - Logic compares category/label, text, date and time and guards against null lists and placeholder items; used by editar_tarefa_por_dados and remover_tarefa_por_dados to maintain coherence between the CalendarPanel and quadrant lists.
+
+4. Item removal and bulk removal by date
+   - remover_tarefa_item / remover_tarefa_por_dados / remover_todas_por_data:
+     - Removal delegated to app.remove_task when the source item is resolved; updates placeholders, runs cleanup_time_groups and invokes app.save_tasks inside try/except guards.
+     - "Remove All" asks for confirmation via QMessageBox and iterates all lists (pending and completed) removing items whose date matches the selected ISO date; clears time headers and updates calendar_panel.
+
+5. Opening linked files with multi-platform fallbacks
+   - Open file actions (FileDropLineEdit / EditTaskDialog / svc_01_initUI._open_linked_file) try QDesktopServices.openUrl(QUrl.fromLocalFile), with fallback to os.startfile (Windows), subprocess(["open"]) (macOS) or xdg-open (Linux). Failures are logged and the user is warned when appropriate.
+
+6. Drag & Drop and ordered insertion of tasks
+   - DragDropTaskList.dropEvent (svc_01_initUI.py):
+     - Different handling when source == destination (in-place reordering) vs source != destination (move between lists).
+     - On drop, preserves metadata integrity (Qt.UserRole) and uses app.insert_task_into_quadrant_list when there is a time key to insert in order by time/text.
+     - Signals are blocked during batch operations to avoid repaints/side effects; calls to save_tasks and calendar_panel updates are protected.
+
+7. FileDropLineEdit and attachment UX
+   - FileDropLineEdit supports file drag, fills displayed name and tooltip with full path, and exposes _dragged_file_path on the app for consumption by the edit dialog.
+   - Choose/clear/open buttons integrated into the edit dialog; file opening follows the platform-compatible fallback policy.
+
+8. Locale and palette synchronization
+   - Utility functions _effective_locale, _apply_locale_to_dateedit and _apply_widget_min_height strengthened to cover scenarios without app.date_input or without a translation manager.
+   - Palette defensively applied via _apply_window_as_base installed in init UI (svc_01_initUI.py): propagates QPalette.Window to Base/AlternateBase and, when applicable, to view()/viewport() of composite widgets, reducing visual issues in light/dark themes.
+   - Event filter _PaletteThemeSyncFilter installed to react to palette/theme changes and reapply background synchronization without reentrancy.
+
+9. Visual feedback and enriched tooltips
+   - Consistent display of information in tooltips: Date, Time, File, Description (preview up to 3 lines) and Priority (using prioridade_para_texto).
+   - Formatting of display lines and labels with priority emoji handled when building tooltips and display text (emoji positioned before time when present).
+
+10. Logging and exception protection
+    - Systematic use of LogManager.get_logger() for logger.debug / logger.error with exc_info in sensitive try/except blocks (editing, drag&drop, opening files, finding source item).
+    - Increased guard-clauses to avoid calls to missing attributes (e.g., app.calendar_pane, app.date_input, gerenciador_traducao).
+
+Bug fixes
+1. Fix handling of items originating from the calendar
+   - Correct resolution of the original source item before editing/removing, avoiding disassociation between the CalendarPanel and the originating QListWidget.
+
+2. Prevent loss of metadata when editing/changing date-time
+   - When editing, important metadata (file_path, description, priority, category) are preserved or explicitly removed; tooltips and styles updated according to content.
+
+3. Inconsistent drag & drop between lists
+   - Explicit handling for local reordering and moving between lists, including signals blocking and consistent updating of time-groups and badges.
+
+4. Failure to open attachments on different platforms
+   - Added robust fallbacks and logging that avoids silent errors when QDesktopServices fails.
+
+5. Palette issues in composite widgets
+   - Defensive application of palette to view()/viewport() and installation of the palette filter to reapply at runtime.
+
+Implementation details (technical points)
+- Architecture / flow:
+  - editar_tarefa_item:
+      1) resolve source_list/src_item via _find_source_item_for_calendar;
+      2) open populated EditTaskDialog;
+      3) build new data dict (text, file_path, description, date, time) removing keys when not linked;
+      4) generate display_text and tooltip via _build_display_and_tooltip and additional logic (file/description/priority);
+      5) create new QListWidgetItem, preserve check state, apply formatting and insert via insert_task_into_quadrant_list or addItem;
+      6) call cleanup_time_groups, app.save_tasks and update calendar_panel when available.
+  - remover_todas_por_data:
+      - confirmation via QMessageBox, reverse iteration through lists, safe removal of items, cleanup of groups and placeholders, persistence and calendar update.
+
+- Compatibility and fallbacks:
+  - Functions check getattr/hasattr before calling optional host methods (insert_task_into_quadrant_list, cleanup_time_groups, calendar_pane.update_task_list).
+  - Locale: tries app.date_input.locale(), then gerenciador_traducao.obter_idioma_atual(), then QLocale.system().
+
+Testing and verification
+- Edit task:
+  - Edit title/file/description/date/time of an item coming from the calendar and of a regular item; confirm edited item in the original list, updated tooltip and save_tasks triggered.
+- Remove task:
+  - Individual and multiple removal via context menu; confirmation appears, placeholders and header cleanup applied.
+- Remove all by date:
+  - Confirm dialog; all tasks for that day removed from all lists; badges and calendar_panel update.
+- Drag & Drop:
+  - Reorder items in the same list and move between lists; verify ordered insertion for timed items and async/sync persistence according to configuration.
+- Open file:
+  - Test opening an attachment on Windows/macOS/Linux using the edit dialog and double-click in the list; validate fallbacks.
+- Palette and locale:
+  - Switch theme and language (when gerenciador_traducao present) and confirm palette reapply and date formats in dialogs.
+
+Main files changed / related in this delivery
+- source/modules/eisenhower/services/svc_06_show_context_menu.py
+  - editar_tarefa_item, editar_tarefa_por_dados, remover_tarefa_item, remover_tarefa_por_dados, remover_todas_por_data, _find_source_item_for_calendar, _edit_date_time_dialog, build tooltips and integration with calendar_panel.
+- source/modules/eisenhower/services/svc_01_initUI.py
+  - DragDropTaskList, FileDropLineEdit, init_ui (palette sync application, open_linked_file fallback), CustomTimeEdit, event connections and installation of palette filter.
+- source/modules/eisenhower/services/svc_09_prioridade_display.py
+  - prioridade_para_texto used to enrich tooltips and display priority emoji.
+
+Final notes
+- This delivery strengthens coherence between the calendar panel and quadrant lists, reduces failure points in editing and removal via the context menu, and improves the attachments and drag&drop experience. Expanded logs and protections facilitate diagnostics in production. It is recommended to run integration tests (edit/remove/drag/open file) on Windows/macOS/Linux to validate I/O fallbacks and palette behavior across themes.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.4.0
 Date: 4 February 2026
 Author: Fernando Nillsson Cidade

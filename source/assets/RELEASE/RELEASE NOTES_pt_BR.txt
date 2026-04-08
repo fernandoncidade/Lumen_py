@@ -1,4 +1,63 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.5.0
+Data: 5 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Aprimoramentos e correções focados na edição de tarefas via menu de contexto, estabilidade do calendário, experiência com anexos e no comportamento de arrastar e soltar. A interface está mais resistente a erros e consistente entre listas e painel de calendário.
+
+Principais novidades
+- Edição via menu de contexto
+  - Janela de edição reaproveitada e mais segura, com campos para título, anexo, descrição, data e horário.
+  - Validações básicas (ex.: título obrigatório) e aplicação imediata das alterações na lista original.
+
+- Data e horário
+  - Edição de data/hora mais clara e confiável, com opção de vincular/desvincular e conversão correta dos formatos.
+
+- Sincronização com o calendário
+  - Itens originados do calendário agora são reconhecidos corretamente pelo sistema antes de editar ou excluir, evitando inconsistências.
+
+- Remoção individual e em lote
+  - Remoção segura de tarefas, incluindo a opção "Remover Todas" por data, sempre com confirmação e atualização correta das contagens e agrupamentos.
+
+- Abertura de anexos mais robusta
+  - Tentar abrir anexos com mecanismos compatíveis com cada plataforma; usuário recebe aviso em caso de falha.
+
+- Arrastar & soltar e ordenação
+  - Movimentação e reordenação de tarefas mais previsíveis; itens com horário são inseridos na ordem certa e metadados são preservados.
+
+- Anexos e experiência do usuário
+  - Suporte a arrastar arquivos para o campo de anexo, visualização do nome/caminho e controles para escolher/limpar/abrir anexos.
+
+- Locale e aparência
+  - Melhor consistência ao aplicar formatos de data/hora e ao sincronizar cores/tema em áreas compostas da interface.
+
+- Tooltips e feedback visual
+  - Tooltips mais informativos (data, horário, anexo, descrição curta e prioridade) e exibição consistente de emojis de prioridade quando habilitados.
+
+- Robustez e logs
+  - Diversas proteções contra exceções e registros melhores para facilitar diagnóstico sem impactar a experiência do usuário.
+
+Correções de bugs
+- Correção na edição/remoção de itens originados do calendário (agora afeta o item correto).
+- Preservação de informações importantes ao editar data/hora ou alterar uma tarefa.
+- Arrastar & soltar entre listas corrigido para evitar perdas e inconsistências.
+- Falhas ao abrir anexos em diferentes sistemas tratadas com fallbacks e avisos.
+- Problemas visuais em widgets compostos minimizados ao reaplicar a paleta corretamente.
+
+O que muda para você
+- Editar, mover e remover tarefas pelo calendário ou pelas listas ficou mais seguro e direto.
+- Abrir anexos deve funcionar melhor em Windows/macOS/Linux.
+- Menos erros visíveis e comportamento mais previsível ao alterar datas, horários e prioridades.
+
+Recomendações rápidas
+- Teste a edição a partir do menu de contexto do calendário para ver as melhorias.
+- Use "Remover Todas" com atenção — há confirmação antes da exclusão.
+- Verifique anexos por dupla-clique ou pelo botão de abrir; em caso de falha, confirme o caminho do arquivo.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.4.0
 Data: 4 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade
