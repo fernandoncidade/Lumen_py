@@ -1,13 +1,48 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit, QLabel, QComboBox, QListWidget, QSplitter, QFrame, QAbstractItemView, QSizePolicy
 from PySide6.QtWidgets import QTabWidget
 from PySide6.QtCore import Qt, QObject, QEvent, QCoreApplication, QTimer
-from PySide6.QtGui import QPalette, QColor
+from PySide6.QtGui import QPalette, QColor, QFontMetrics
 from source.modules.feynman.fey_17_limpar_abas import adicionar_botao_limpar
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
 def setup_ui(self):
     try:
+        def _ajustar_largura_combo_dominio():
+            try:
+                if self.combo_dominio is None:
+                    return
+
+                fm = QFontMetrics(self.combo_dominio.font())
+                maior_largura_texto = 0
+
+                for i in range(self.combo_dominio.count()):
+                    txt = self.combo_dominio.itemText(i) or ""
+                    maior_largura_texto = max(maior_largura_texto, fm.horizontalAdvance(txt))
+
+                largura_total = max(220, maior_largura_texto + 48)
+                self.combo_dominio.setFixedWidth(largura_total)
+
+            except Exception:
+                self.combo_dominio.setMinimumWidth(220)
+
+        def _ajustar_altura_combo_dominio():
+            try:
+                if self.combo_dominio is None or self.btn_salvar is None:
+                    return
+
+                altura_botao = max(
+                    self.btn_salvar.sizeHint().height(),
+                    self.btn_salvar.minimumSizeHint().height()
+                )
+                self.combo_dominio.setFixedHeight(max(altura_botao, 24))
+
+            except Exception:
+                self.combo_dominio.setMinimumHeight(24)
+
+        self._ajustar_largura_combo_dominio = _ajustar_largura_combo_dominio
+        self._ajustar_altura_combo_dominio = _ajustar_altura_combo_dominio
+
         layout = QVBoxLayout()
 
         self.label_instrucoes = QLabel()
@@ -150,9 +185,10 @@ def setup_ui(self):
             pass
 
         footer_layout = QHBoxLayout()
-        self.combo_dominio.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
+        self.combo_dominio.setSizeAdjustPolicy(QComboBox.AdjustToContents)
+        self.combo_dominio.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
         footer_layout.addWidget(self.label_nivel)
-        footer_layout.addWidget(self.combo_dominio, 1)
+        footer_layout.addWidget(self.combo_dominio, 0, Qt.AlignLeft)
         footer_layout.addStretch()
         footer_layout.addWidget(self.btn_salvar)
 
@@ -341,6 +377,8 @@ def setup_ui(self):
                 return super().eventFilter(obj, event)
 
         _sync_feynman_backgrounds()
+        _ajustar_largura_combo_dominio()
+        _ajustar_altura_combo_dominio()
 
         self._feynman_palette_sync_filter = _PaletteThemeSyncFilter(self)
         app = QApplication.instance()
@@ -352,6 +390,8 @@ def setup_ui(self):
         self.atualizar_lista()
         self.conceito_atual = None
         QTimer.singleShot(0, _update_right_panel_min_width)
+        QTimer.singleShot(0, _ajustar_largura_combo_dominio)
+        QTimer.singleShot(0, _ajustar_altura_combo_dominio)
 
     except Exception as e:
         logger.error(f"Erro ao configurar interface do MetodoFeynman: {str(e)}", exc_info=True)

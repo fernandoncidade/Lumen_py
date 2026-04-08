@@ -754,18 +754,18 @@ Vamos para o próximo ciclo de foco! 💪</translation>
     </message>
 
     <message>
-      <source>📄 Importar Documento (IA)</source>
-      <translation>📄 Importar Documento (IA)</translation>
+      <source>📄 Importar Documento (IA) 🤖</source>
+      <translation>📄 Importar Documento (IA) 🤖</translation>
     </message>
 
     <message>
-      <source>🤖 Reorganizar com IA</source>
-      <translation>🤖 Reorganizar com IA</translation>
+      <source>🔄 Reorganizar com IA 🤖</source>
+      <translation>🔄 Reorganizar com IA 🤖</translation>
     </message>
 
     <message>
-      <source>🤖 Restaurar com IA</source>
-      <translation>🤖 Restaurar com IA</translation>
+      <source>♻️ Restaurar com IA 🤖</source>
+      <translation>♻️ Restaurar com IA 🤖</translation>
     </message>
 
     <message>

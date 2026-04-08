@@ -11,9 +11,9 @@ def atualizar_traducoes(self):
         self.btn_carregar.setText(QCoreApplication.translate("App", "📂 Carregar"))
         self.btn_exportar.setText(QCoreApplication.translate("App", "📸 Exportar PNG"))
         self.btn_limpar.setText(QCoreApplication.translate("App", "🧽 Limpar"))
-        self.btn_importar_doc.setText(QCoreApplication.translate("App", "📄 Importar Documento (IA)"))
-        self.btn_reorganizar.setText(QCoreApplication.translate("App", "🤖 Reorganizar com IA"))
-        self.btn_restaurar.setText(QCoreApplication.translate("App", "🤖 Restaurar com IA"))
+        self.btn_importar_doc.setText(QCoreApplication.translate("App", "📄 Importar Documento (IA) 🤖"))
+        self.btn_reorganizar.setText(QCoreApplication.translate("App", "🔄 Reorganizar com IA 🤖"))
+        self.btn_restaurar.setText(QCoreApplication.translate("App", "♻️ Restaurar com IA 🤖"))
 
         self.label_instrucoes.setText(
             QCoreApplication.translate("App",

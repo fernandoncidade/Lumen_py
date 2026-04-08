@@ -42,6 +42,26 @@ def atualizar_traducoes(self):
         if hasattr(self, 'label_ciclos'):
             self.label_ciclos.setText(QCoreApplication.translate("App", "Ciclo 1/{total}:").format(total=ciclos_total))
 
+        try:
+            ref_h = 0
+            ref_btn = getattr(self, "btn_adicionar", None)
+
+            if ref_btn is None:
+                ref_btn = getattr(self, "btn_iniciar", None)
+
+            if ref_btn is not None:
+                ref_h = int(ref_btn.sizeHint().height())
+
+            if ref_h > 0:
+                for name in ("spin_foco", "spin_descanso", "spin_ciclos"):
+                    w = getattr(self, name, None)
+
+                    if w is not None:
+                        w.setFixedHeight(ref_h)
+
+        except Exception:
+            pass
+
         self._aplicar_tema_dinamico()
 
     except Exception as e:

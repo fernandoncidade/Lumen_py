@@ -101,6 +101,8 @@ def setup_ui(self):
         le.setFrame(False)
         le.setReadOnly(True)
         self.combo_fonte.setFrame(True)
+        if getattr(self, "_find_text_ref_height", 0) > 0:
+            self.combo_fonte.setFixedHeight(self._find_text_ref_height)
         ajustes.addWidget(self.combo_fonte)
 
         layout.addLayout(ajustes)
@@ -125,6 +127,12 @@ def setup_ui(self):
         self.btn_find_text = QPushButton(QCoreApplication.translate("App", "🔎 Buscar"))
         self.btn_find_text.clicked.connect(self._text_find_show)
         text_toolbar.addWidget(self.btn_find_text)
+        try:
+            self._find_text_ref_height = max(1, self.btn_find_text.sizeHint().height())
+        except Exception:
+            self._find_text_ref_height = 0
+        if getattr(self, "_find_text_ref_height", 0) > 0 and hasattr(self, "combo_fonte"):
+            self.combo_fonte.setFixedHeight(self._find_text_ref_height)
 
         text_toolbar.addStretch()
 
@@ -150,6 +158,8 @@ def setup_ui(self):
         le.setFrame(False)
         le.setReadOnly(True)
         self.combo_bullet_style.setFrame(True)
+        if getattr(self, "_find_text_ref_height", 0) > 0:
+            self.combo_bullet_style.setFixedHeight(self._find_text_ref_height)
         text_toolbar.addWidget(self.combo_bullet_style)
         text_toolbar.addStretch()
 
@@ -170,6 +180,8 @@ def setup_ui(self):
         le2.setFrame(False)
         le2.setReadOnly(True)
         self.combo_spacing.setFrame(True)
+        if getattr(self, "_find_text_ref_height", 0) > 0:
+            self.combo_spacing.setFixedHeight(self._find_text_ref_height)
         text_toolbar.addWidget(self.combo_spacing)
 
         self.label_indent = QLabel(QCoreApplication.translate("App", "Recuo:"))
@@ -187,6 +199,8 @@ def setup_ui(self):
         palette_margin.setColor(QPalette.Button, darker_color_margin)
         self.spin_indent.setPalette(palette_margin)
         self.spin_indent.setFrame(True)
+        if getattr(self, "_find_text_ref_height", 0) > 0:
+            self.spin_indent.setFixedHeight(self._find_text_ref_height)
         text_toolbar.addWidget(self.spin_indent)
 
         self.label_margin = QLabel(QCoreApplication.translate("App", "Margem:"))
@@ -204,6 +218,8 @@ def setup_ui(self):
         palette_margin.setColor(QPalette.Button, darker_color_margin)
         self.spin_margin.setPalette(palette_margin)
         self.spin_margin.setFrame(True)
+        if getattr(self, "_find_text_ref_height", 0) > 0:
+            self.spin_margin.setFixedHeight(self._find_text_ref_height)
         text_toolbar.addWidget(self.spin_margin)
 
         def _apply_frame_palette_from_spinbox(spin: QSpinBox, combo: QComboBox) -> None:
@@ -450,6 +466,8 @@ def setup_ui(self):
         le3.setFrame(False)
         le3.setReadOnly(True)
         self.combo_modo_leitura.setFrame(True)
+        if getattr(self, "_find_text_ref_height", 0) > 0:
+            self.combo_modo_leitura.setFixedHeight(self._find_text_ref_height)
         leitura_assistida_layout.addWidget(self.combo_modo_leitura)
 
         try:

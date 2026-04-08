@@ -754,18 +754,18 @@ Let's go to the next focus cycle! 💪</translation>
     </message>
 
     <message>
-      <source>📄 Importar Documento (IA)</source>
-      <translation>📄 Import Document (AI)</translation>
+      <source>📄 Importar Documento (IA) 🤖</source>
+      <translation>📄 Import Document (AI) 🤖</translation>
     </message>
 
     <message>
-      <source>🤖 Reorganizar com IA</source>
-      <translation>🤖 Reorganize with AI</translation>
+      <source>🔄 Reorganizar com IA 🤖</source>
+      <translation>🔄 Reorganize with AI 🤖</translation>
     </message>
 
     <message>
-      <source>🤖 Restaurar com IA</source>
-      <translation>🤖 Restore with AI</translation>
+      <source>♻️ Restaurar com IA 🤖</source>
+      <translation>♻️ Restore with AI 🤖</translation>
     </message>
 
     <message>

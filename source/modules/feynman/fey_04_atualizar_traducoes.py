@@ -43,8 +43,22 @@ def atualizar_traducoes(self):
         if indice_atual >= 0:
             self.combo_dominio.setCurrentIndex(indice_atual)
 
+        try:
+            if hasattr(self, "_ajustar_largura_combo_dominio"):
+                self._ajustar_largura_combo_dominio()
+
+        except Exception:
+            pass
+
         self.gerenciador_botoes.set_button_text(self.btn_salvar, QCoreApplication.translate("App", "💾 Salvar Conceito"))
         self.gerenciador_botoes.set_button_text(self.btn_limpar, QCoreApplication.translate("App", "🧽 Limpar"))
+
+        try:
+            if hasattr(self, "_ajustar_altura_combo_dominio"):
+                self._ajustar_altura_combo_dominio()
+
+        except Exception:
+            pass
 
         try:
             if hasattr(self, 'tab_widget') and self.tab_widget is not None:

@@ -1,4 +1,91 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.19.0
+Date: February 19, 2026
+Author: Fernando Nillsson Cidade
+
+Overview  
+Delivery focused on visual consistency and control responsiveness across modules, with standardized input heights/widths, improved runtime adaptation (translation/language switching), and usability refinements in Accessible Reader, Pomodoro, Task Manager, and the Feynman Method.
+
+Main improvements
+
+1. Feynman Method — dynamic adjustment of the domain combo box and highlighting of linked concepts  
+- Files: source/modules/feynman/fey_03_setup_ui.py, source/modules/feynman/fey_04_atualizar_traducoes.py, source/modules/feynman/fey_10_atualizar_lista.py  
+- Implemented internal routines:  
+  - _ajustar_largura_combo_dominio(): calculates width using QFontMetrics according to the longest translated combo item.  
+  - _ajustar_altura_combo_dominio(): synchronizes combo height with the save button.  
+- Layout changes:  
+  - combo_dominio was changed to QSizePolicy.Fixed.  
+  - Use of AdjustToContents and left alignment in the footer.  
+- Automatic reapplication:  
+  - Adjustments executed in the initial setup and also after atualizar_traducoes().  
+  - QTimer.singleShot(0, ...) keeps the correction after final layout pass.  
+- Visual highlight for concepts with an associated file:  
+  - Concepts with `arquivo_vinculado` now appear with blue, bold font in the list.  
+  - The highlight is applied dynamically at runtime when linking or removing a file, without restarting the screen.
+
+2. Pomodoro — height standardization for configuration combos  
+- Files: source/modules/tempo/PomodoroTimer/pomo_01_setup_ui.py, source/modules/tempo/PomodoroTimer/pomo_02_atualizar_traducoes.py  
+- Created _input_ref_height based on a reference button’s sizeHint.  
+- spin_foco, spin_descanso, and spin_ciclos now receive setFixedHeight() in setup.  
+- During translation updates, height is reapplied to avoid visual regression after language switching.
+
+3. Task Manager — visual alignment between input and priority  
+- Files: source/modules/tempo/GerenciadorTarefas/gtar_03_setup_ui.py, source/modules/tempo/GerenciadorTarefas/gtar_04_atualizar_traducoes.py  
+- input_tarefa and combo_prioridade now use the same reference height as the add button.  
+- Height is also reapplied during atualizar_traducoes(), preserving consistency after runtime i18n.
+
+4. Accessible Reader — unified height in the Text/PDF toolbar  
+- Files: source/modules/leitor/LeitorAcessivel/lta_01_setup_ui.py, lta_02_atualizar_traducoes.py, lta_22_pdf_toolbar.py  
+- Captures _find_text_ref_height from the “Search” button in the Text tab.  
+- Uniform height applied to:  
+  - combo_fonte, combo_bullet_style, combo_spacing  
+  - spin_indent, spin_margin  
+  - combo_modo_leitura  
+  - spin_page, combo_zoom (PDF toolbar)  
+- In atualizar_traducoes(), the same widgets receive height resynchronization to keep UI stable after language switching.
+
+5. FindBars (Text and PDF) — micro-alignment refinement  
+- Files: source/modules/leitor/LeitorAcessivel/lta_27_pdf_findbar.py, lta_29_text_findbar.py  
+- Search field (QLineEdit) now uses the navigation button height (btn_prev) via setFixedHeight(), reducing misalignment between the text line and buttons.
+
+Applied fixes
+
+1. Fix for dimension inconsistency after dynamic translation  
+- Inputs and combos that could return to different heights after atualizar_traducoes() are now normalized again.
+
+2. Fix for visual behavior in Feynman combos with long texts  
+- Domain combo width now reflects the actual translated content, reducing truncation and layout variation.
+
+3. Fix for search bar misalignment  
+- TextFindBar and PDFFindBar now keep consistent height between the search field and navigation buttons.
+
+4. Fix for visual feedback of linking in the Feynman Method  
+- Concepts with an associated file now have immediate visual signaling (color + font weight), making identification and review easier.
+
+Main files impacted in this delivery  
+- source/modules/feynman/fey_03_setup_ui.py  
+- source/modules/feynman/fey_04_atualizar_traducoes.py  
+- source/modules/feynman/fey_10_atualizar_lista.py  
+- source/modules/tempo/PomodoroTimer/pomo_01_setup_ui.py  
+- source/modules/tempo/PomodoroTimer/pomo_02_atualizar_traducoes.py  
+- source/modules/tempo/GerenciadorTarefas/gtar_03_setup_ui.py  
+- source/modules/tempo/GerenciadorTarefas/gtar_04_atualizar_traducoes.py  
+- source/modules/leitor/LeitorAcessivel/lta_01_setup_ui.py  
+- source/modules/leitor/LeitorAcessivel/lta_02_atualizar_traducoes.py  
+- source/modules/leitor/LeitorAcessivel/lta_22_pdf_toolbar.py  
+- source/modules/leitor/LeitorAcessivel/lta_27_pdf_findbar.py  
+- source/modules/leitor/LeitorAcessivel/lta_29_text_findbar.py
+
+Recommended validation (quick)  
+1. Switch the application language at runtime and confirm heights/alignments are preserved.  
+2. Open the Feynman Method and validate dynamic width/height adjustment of the domain combo in different languages.  
+3. In the Feynman Method, link and remove a file from a concept and confirm immediate highlight update (blue + bold).  
+4. In Accessible Reader, verify visual uniformity between Text and PDF controls.  
+5. Open FindBars (Text/PDF) and confirm vertical alignment of the search field with the buttons.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.18.0
 Date: February 18, 2026
 Author: Fernando Nillsson Cidade

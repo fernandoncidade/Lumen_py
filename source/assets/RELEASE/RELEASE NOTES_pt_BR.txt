@@ -1,4 +1,58 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.19.0
+Data: 19 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo geral  
+Esta versão traz melhorias visuais e de usabilidade para deixar a experiência mais consistente em toda a aplicação. Também foram feitos ajustes para que a interface se adapte melhor quando o idioma é alterado durante o uso.
+
+Principais melhorias
+
+1. Método Feynman  
+- Ajustes visuais para melhor organização da área de domínio.  
+- Conceitos com arquivo vinculado agora ficam destacados em azul e negrito, facilitando a identificação.  
+- Esse destaque é atualizado na hora, ao vincular ou remover arquivos.
+
+2. Pomodoro  
+- Campos de configuração ficaram com tamanho visual mais uniforme.  
+- A aparência se mantém consistente mesmo após trocar o idioma.
+
+3. Gerenciador de Tarefas  
+- Melhor alinhamento visual entre campo de tarefa e seleção de prioridade.  
+- Interface mais estável e padronizada em diferentes idiomas.
+
+4. Leitor Acessível  
+- Controles da barra de ferramentas ficaram com altura uniforme nas áreas de Texto e PDF.  
+- Resultado: visual mais limpo e navegação mais confortável.
+
+5. Barras de busca (Texto e PDF)  
+- Melhor alinhamento entre campo de busca e botões de navegação.  
+- Leitura e uso dos controles ficaram mais naturais.
+
+Correções aplicadas
+
+1. Correção de variações visuais após troca de idioma  
+- Elementos da interface que podiam ficar desalinhados agora mantêm padrão consistente.
+
+2. Correção de largura no Método Feynman  
+- Ajuste para melhor exibição de conteúdos longos, reduzindo cortes e desalinhamentos.
+
+3. Correção de alinhamento nas barras de busca  
+- Campo de busca e botões agora permanecem visualmente alinhados.
+
+4. Correção de feedback visual para conceitos com arquivo  
+- Destaque visual imediato para conceitos vinculados, ajudando na revisão e organização.
+
+Validação recomendada (rápida)  
+1. Trocar o idioma com o app aberto e verificar se o layout permanece alinhado.  
+2. No Método Feynman, conferir se os controles continuam bem ajustados em idiomas diferentes.  
+3. Vincular e remover arquivo de um conceito no Feynman e confirmar o destaque imediato (azul e negrito).  
+4. No Leitor Acessível, validar se os controles de Texto e PDF estão visualmente padronizados.  
+5. Verificar se as barras de busca de Texto e PDF estão com alinhamento consistente.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.18.0
 Data: 18 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

@@ -64,6 +64,18 @@ def setup_ui(self):
         linha_botoes.addWidget(self.btn_adicionar)
 
         try:
+            self._input_ref_height = max(1, int(self.btn_adicionar.sizeHint().height()))
+
+            if hasattr(self, "input_tarefa") and self.input_tarefa is not None:
+                self.input_tarefa.setFixedHeight(self._input_ref_height)
+
+            if hasattr(self, "combo_prioridade") and self.combo_prioridade is not None:
+                self.combo_prioridade.setFixedHeight(self._input_ref_height)
+
+        except Exception:
+            self._input_ref_height = 0
+
+        try:
             self.btn_mover = self.gerenciador_botoes.create_button()
 
         except Exception:

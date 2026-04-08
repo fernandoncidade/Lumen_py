@@ -1,6 +1,7 @@
 import html
 from PySide6.QtWidgets import QListWidgetItem
 from PySide6.QtCore import QCoreApplication, Qt
+from PySide6.QtGui import QColor, QFont
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -31,7 +32,14 @@ def atualizar_lista(self):
             revisao = conceito.get('revisao', '') or ''
             arquivo_vinculado = (conceito.get('arquivo_vinculado') or '').strip()
 
+            if arquivo_vinculado:
+                item.setForeground(QColor("#1E64DC"))
+                fonte = QFont(item.font())
+                fonte.setBold(True)
+                item.setFont(fonte)
+
             parts = []
+
             ft = _first_n_lines(titulo, 5)
 
             if ft:

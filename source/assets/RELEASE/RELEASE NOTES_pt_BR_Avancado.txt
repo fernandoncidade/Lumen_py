@@ -1,4 +1,91 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.19.0
+Data: 19 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em consistência visual e responsividade de controles entre módulos, com padronização de alturas/larguras de inputs, melhorias de adaptação em runtime (tradução/troca de idioma) e refinamentos de usabilidade no Leitor Acessível, Pomodoro, Gerenciador de Tarefas e Método Feynman.
+
+Melhorias principais
+
+1. Método Feynman — ajuste dinâmico do combo de domínio e realce de conceitos vinculados
+- Arquivos: source/modules/feynman/fey_03_setup_ui.py, source/modules/feynman/fey_04_atualizar_traducoes.py, source/modules/feynman/fey_10_atualizar_lista.py
+- Implementadas rotinas internas:
+  - _ajustar_largura_combo_dominio(): calcula largura com QFontMetrics conforme maior item traduzido do combo.
+  - _ajustar_altura_combo_dominio(): sincroniza altura do combo com o botão de salvar.
+- Alterações de layout:
+  - combo_dominio passou para QSizePolicy.Fixed.
+  - Uso de AdjustToContents e alinhamento à esquerda no rodapé.
+- Reaplicação automática:
+  - Ajustes executados no setup inicial e também após atualizar_traducoes().
+  - QTimer.singleShot(0, ...) mantém correção após layout final.
+- Realce visual de conceitos com arquivo associado:
+  - Conceitos com `arquivo_vinculado` agora aparecem com fonte azul e em negrito na lista.
+  - O destaque é aplicado dinamicamente em tempo de execução ao vincular ou remover arquivo, sem reiniciar a tela.
+
+2. Pomodoro — padronização de altura dos combos de configuração
+- Arquivos: source/modules/tempo/PomodoroTimer/pomo_01_setup_ui.py, source/modules/tempo/PomodoroTimer/pomo_02_atualizar_traducoes.py
+- Criado _input_ref_height com base no sizeHint de botão de referência.
+- spin_foco, spin_descanso e spin_ciclos agora recebem setFixedHeight() no setup.
+- Na atualização de traduções, a altura é reaplicada para evitar regressão visual após troca de idioma.
+
+3. Gerenciador de Tarefas — alinhamento visual entre entrada e prioridade
+- Arquivos: source/modules/tempo/GerenciadorTarefas/gtar_03_setup_ui.py, source/modules/tempo/GerenciadorTarefas/gtar_04_atualizar_traducoes.py
+- input_tarefa e combo_prioridade passaram a usar a mesma altura de referência do botão adicionar.
+- Reaplicação da altura também durante atualizar_traducoes(), preservando consistência após i18n em runtime.
+
+4. Leitor Acessível — unificação de altura na toolbar de Texto/PDF
+- Arquivos: source/modules/leitor/LeitorAcessivel/lta_01_setup_ui.py, lta_02_atualizar_traducoes.py, lta_22_pdf_toolbar.py
+- Captura de _find_text_ref_height a partir do botão “Buscar” da aba Texto.
+- Aplicação de altura uniforme para:
+  - combo_fonte, combo_bullet_style, combo_spacing
+  - spin_indent, spin_margin
+  - combo_modo_leitura
+  - spin_page, combo_zoom (toolbar PDF)
+- Em atualizar_traducoes(), os mesmos widgets recebem ressincronização de altura para manter UI estável após troca de idioma.
+
+5. FindBars (Texto e PDF) — refinamento de microalinhamento
+- Arquivos: source/modules/leitor/LeitorAcessivel/lta_27_pdf_findbar.py, lta_29_text_findbar.py
+- Campo de busca (QLineEdit) passa a usar altura do botão de navegação (btn_prev) via setFixedHeight(), reduzindo desalinhamento entre linha de texto e botões.
+
+Correções aplicadas
+
+1. Correção de inconsistência de dimensões após tradução dinâmica
+- Inputs e combos que podiam voltar a alturas diferentes após atualizar_traducoes() agora são normalizados novamente.
+
+2. Correção de comportamento visual em combos com textos longos no Feynman
+- Largura do combo de domínio passou a refletir o conteúdo real traduzido, reduzindo truncamento e variação de layout.
+
+3. Correção de desalinhamento em barras de busca
+- TextFindBar e PDFFindBar agora mantêm altura coerente entre campo de busca e botões de navegação.
+
+4. Correção de feedback visual de vínculo no Método Feynman
+- Conceitos com arquivo associado agora têm sinalização visual imediata (cor + peso da fonte), facilitando identificação e revisão.
+
+Arquivos principais impactados nesta entrega
+- source/modules/feynman/fey_03_setup_ui.py
+- source/modules/feynman/fey_04_atualizar_traducoes.py
+- source/modules/feynman/fey_10_atualizar_lista.py
+- source/modules/tempo/PomodoroTimer/pomo_01_setup_ui.py
+- source/modules/tempo/PomodoroTimer/pomo_02_atualizar_traducoes.py
+- source/modules/tempo/GerenciadorTarefas/gtar_03_setup_ui.py
+- source/modules/tempo/GerenciadorTarefas/gtar_04_atualizar_traducoes.py
+- source/modules/leitor/LeitorAcessivel/lta_01_setup_ui.py
+- source/modules/leitor/LeitorAcessivel/lta_02_atualizar_traducoes.py
+- source/modules/leitor/LeitorAcessivel/lta_22_pdf_toolbar.py
+- source/modules/leitor/LeitorAcessivel/lta_27_pdf_findbar.py
+- source/modules/leitor/LeitorAcessivel/lta_29_text_findbar.py
+
+Validação recomendada (rápida)
+1. Alternar idioma da aplicação em runtime e confirmar manutenção das alturas/alinhamentos.
+2. Abrir Método Feynman e validar ajuste de largura/altura do combo de domínio em diferentes idiomas.
+3. No Método Feynman, vincular e remover arquivo de um conceito e confirmar atualização imediata do realce (azul + negrito).
+4. No Leitor Acessível, verificar uniformidade visual entre controles de Texto e PDF.
+5. Abrir FindBars (Texto/PDF) e confirmar alinhamento vertical do campo de busca com os botões.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.18.0
 Data: 18 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

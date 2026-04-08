@@ -197,6 +197,28 @@ def atualizar_traducoes(self):
             logger.debug(f"Erro ao atualizar traduções do toolbar PDF: {e}", exc_info=True)
 
         try:
+            ref_btn = getattr(self, "btn_find_text", None)
+            ref_h = int(ref_btn.sizeHint().height()) if ref_btn is not None else 0
+            if ref_h > 0:
+                widgets_to_sync = (
+                    "combo_fonte",
+                    "combo_modo_leitura",
+                    "combo_bullet_style",
+                    "combo_spacing",
+                    "spin_indent",
+                    "spin_margin",
+                    "spin_page",
+                    "combo_zoom",
+                )
+                for name in widgets_to_sync:
+                    w = getattr(self, name, None)
+                    if w is not None:
+                        w.setFixedHeight(ref_h)
+
+        except Exception as e:
+            logger.debug(f"Erro ao sincronizar altura de widgets com btn_find_text: {e}", exc_info=True)
+
+        try:
             if hasattr(self, "_content_stack"):
                 self._content_stack.setTabText(0, QCoreApplication.translate("App", "Texto"))
                 self._content_stack.setTabText(1, QCoreApplication.translate("App", "PDF"))

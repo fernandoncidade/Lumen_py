@@ -32,6 +32,16 @@ def setup_ui(self):
         self.btn_iniciar.clicked.connect(self.toggle_timer)
         controles.addWidget(self.btn_iniciar)
 
+        try:
+            ref_btn = getattr(self, "btn_adicionar", None)
+            if ref_btn is None:
+                ref_btn = self.btn_iniciar
+
+            self._input_ref_height = max(1, int(ref_btn.sizeHint().height()))
+
+        except Exception:
+            self._input_ref_height = 0
+
         self.btn_resetar = self.gerenciador_botoes.create_button()
         self.btn_resetar.clicked.connect(self.resetar_timer)
         controles.addWidget(self.btn_resetar)
@@ -59,6 +69,10 @@ def setup_ui(self):
         self.spin_foco.addItems(["1", "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60", "65", "70", "75", "80", "85", "90", "95", "100", "105", "110", "115", "120"])
         self.spin_foco.setCurrentText("25")
         self.spin_foco.currentTextChanged.connect(self.atualizar_configuracoes)
+
+        if getattr(self, "_input_ref_height", 0) > 0:
+            self.spin_foco.setFixedHeight(self._input_ref_height)
+
         config_layout.addWidget(self.spin_foco)
         config_layout.setAlignment(self.spin_foco, Qt.AlignLeft)
 
@@ -72,6 +86,10 @@ def setup_ui(self):
         self.spin_descanso.addItems(["1", "3", "5", "7", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60"])
         self.spin_descanso.setCurrentText("5")
         self.spin_descanso.currentTextChanged.connect(self.atualizar_configuracoes)
+
+        if getattr(self, "_input_ref_height", 0) > 0:
+            self.spin_descanso.setFixedHeight(self._input_ref_height)
+
         config_layout.addWidget(self.spin_descanso)
         config_layout.setAlignment(self.spin_descanso, Qt.AlignLeft)
 
@@ -85,6 +103,10 @@ def setup_ui(self):
         self.spin_ciclos.addItems([str(i) for i in range(1, 21)])
         self.spin_ciclos.setCurrentText(str(getattr(self, "ciclos_permitidos", 4)))
         self.spin_ciclos.currentTextChanged.connect(self.atualizar_configuracoes)
+
+        if getattr(self, "_input_ref_height", 0) > 0:
+            self.spin_ciclos.setFixedHeight(self._input_ref_height)
+
         config_layout.addWidget(self.spin_ciclos)
         config_layout.setAlignment(self.spin_ciclos, Qt.AlignLeft)
 

@@ -166,6 +166,19 @@ def setup_pdf_toolbar(self):
         self.btn_find.clicked.connect(self._pdf_find_show)
         toolbar.addWidget(self.btn_find)
 
+        try:
+            ref_btn = getattr(self, "btn_find_text", None)
+            ref_h = int(ref_btn.sizeHint().height()) if ref_btn is not None else 0
+            if ref_h <= 0:
+                ref_h = int(self.btn_find.sizeHint().height())
+
+            if ref_h > 0:
+                self.spin_page.setFixedHeight(ref_h)
+                self.combo_zoom.setFixedHeight(ref_h)
+
+        except Exception as e:
+            logger.debug(f"Falha ao sincronizar altura de spin_page/combo_zoom: {e}", exc_info=True)
+
         toolbar.addStretch()
 
         self.label_mode = QLabel(QCoreApplication.translate("App", "Ferramentas:"))

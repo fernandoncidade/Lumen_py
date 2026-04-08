@@ -78,6 +78,7 @@ class PDFFindBar(QWidget):
         lay.addWidget(self.edt, 2)
 
         self.btn_prev = QPushButton("🔼")
+        self.edt.setFixedHeight(self.btn_prev.sizeHint().height())
         self.btn_prev.clicked.connect(self._call_owner_prev)
         lay.addWidget(self.btn_prev)
 
@@ -214,3 +215,4 @@ class PDFFindBar(QWidget):
 
         except Exception:
             pass
+

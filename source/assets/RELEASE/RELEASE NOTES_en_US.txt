@@ -1,4 +1,58 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.19.0
+Date: February 19, 2026
+Author: Fernando Nillsson Cidade
+
+General summary  
+This version brings visual and usability improvements to make the experience more consistent across the entire application. Adjustments were also made so the interface adapts better when the language is changed during use.
+
+Main improvements
+
+1. Feynman Method  
+- Visual adjustments for better organization of the domain area.  
+- Concepts with a linked file are now highlighted in blue and bold, making them easier to identify.  
+- This highlight is updated immediately when linking or removing files.
+
+2. Pomodoro  
+- Configuration fields now have a more uniform visual size.  
+- The appearance remains consistent even after changing the language.
+
+3. Task Manager  
+- Better visual alignment between the task field and priority selection.  
+- A more stable and standardized interface across different languages.
+
+4. Accessible Reader  
+- Toolbar controls now have uniform height in both Text and PDF areas.  
+- Result: a cleaner look and more comfortable navigation.
+
+5. Search bars (Text and PDF)  
+- Better alignment between the search field and navigation buttons.  
+- Reading and use of controls feel more natural.
+
+Applied fixes
+
+1. Fix for visual variations after language switching  
+- Interface elements that could become misaligned now keep a consistent pattern.
+
+2. Width fix in the Feynman Method  
+- Adjustment for better display of long content, reducing clipping and misalignment.
+
+3. Alignment fix in search bars  
+- Search field and buttons now remain visually aligned.
+
+4. Visual feedback fix for concepts with linked files  
+- Immediate visual highlighting for linked concepts, helping with review and organization.
+
+Recommended validation (quick)  
+1. Change the language with the app open and verify that the layout remains aligned.  
+2. In the Feynman Method, check whether controls remain properly adjusted in different languages.  
+3. Link and remove a file from a concept in Feynman and confirm immediate highlighting (blue and bold).  
+4. In Accessible Reader, validate whether Text and PDF controls are visually standardized.  
+5. Verify that Text and PDF search bars have consistent alignment.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.18.0
 Date: February 18, 2026
 Author: Fernando Nillsson Cidade

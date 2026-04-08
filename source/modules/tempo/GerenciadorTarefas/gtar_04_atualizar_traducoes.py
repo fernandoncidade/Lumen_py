@@ -15,6 +15,22 @@ def atualizar_traducoes(self):
         self.combo_prioridade.setCurrentText(QCoreApplication.translate("App", "🔴 Importante e Urgente"))
         self._ajustar_largura_combo(self.combo_prioridade)
 
+        try:
+            ref_h = 0
+
+            if hasattr(self, "btn_adicionar") and self.btn_adicionar is not None:
+                ref_h = int(self.btn_adicionar.sizeHint().height())
+
+            if ref_h > 0:
+                if hasattr(self, "input_tarefa") and self.input_tarefa is not None:
+                    self.input_tarefa.setFixedHeight(ref_h)
+
+                if hasattr(self, "combo_prioridade") and self.combo_prioridade is not None:
+                    self.combo_prioridade.setFixedHeight(ref_h)
+
+        except Exception:
+            pass
+
         if hasattr(self, "gerenciador_botoes") and self.gerenciador_botoes is not None:
             self.gerenciador_botoes.set_button_text(self.btn_adicionar, QCoreApplication.translate("App", "➕ Adicionar"))
             self.gerenciador_botoes.set_button_text(self.btn_remover, QCoreApplication.translate("App", "🗑️ Remover Tarefa(s)"))

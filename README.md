@@ -10,14 +10,14 @@
 
 ## <a id="ptbr"></a>🇧🇷 Português (BR)
 
-> **Observação:** Este repositório refere-se à versão **v2026.2.18.0** do 📚 Projeto Lúmen. Apoie o projeto e adquira a versão paga através do link: [Instalar via Microsoft Store](https://apps.microsoft.com/detail/9N70CLLMVRPN)
+> **Observação:** Este repositório refere-se à versão **v2026.2.19.0** do 📚 Projeto Lúmen. Apoie o projeto e adquira a versão paga através do link: [Instalar via Microsoft Store](https://apps.microsoft.com/detail/9N70CLLMVRPN)
 
 <details>
 <summary>Clique para expandir o README em português</summary>
 
 # 📚 Lúmen
 
-Versão: v2026.2.18.0  
+Versão: v2026.2.19.0  
 Autor: Fernando Nillsson Cidade
 
 - Manual de Utilização (PT‑BR): [MANUAL.md — Português](./MANUAL.md#ptbr)
@@ -119,7 +119,7 @@ Fornecer uma ferramenta desktop configurável que reduza barreiras de leitura, a
 7. Trocar idioma/tema com app aberto e verificar atualização imediata da interface.
 8. Reiniciar aplicativo e confirmar persistência normal dos dados.
 
-### 🧩 Consolidação histórica de funcionalidades e recursos (v2026.2.18.0 → v2026.2.18.0)
+### 🧩 Consolidação histórica de funcionalidades e recursos (v2025.11.26.0 → v2026.2.19.0)
 - Evolução contínua do Leitor Acessível com TTS local, controles tipográficos persistentes, régua de foco, extração de texto e maior estabilidade em pausa/retomada da leitura.
 - Gestão de Tempo ampliada com Pomodoro configurável (foco/descanso/ciclos), bloqueios por limite, alertas sonoros configuráveis e registro automático de progresso nas tarefas.
 - Gestão de Tarefas/Kanban reforçada com melhorias de edição, arrastar e soltar, ações em lote, atualização visual mais previsível e integração mais confiável com outros recursos.
@@ -216,14 +216,14 @@ Consulte assets/RELEASE/RELEASE\ NOTES_pt_BR.txt e assets/RELEASE/RELEASE\ NOTES
 
 ## <a id="enus"></a>🇺🇸 English (US)
 
-> **Note:** This repository refers to the **v2026.2.18.0** version of the 📚 Lúmen Project. Support the project and purchase the paid version through the link: [Instalar via Microsoft Store](https://apps.microsoft.com/detail/9N70CLLMVRPN)
+> **Note:** This repository refers to the **v2026.2.19.0** version of the 📚 Lúmen Project. Support the project and purchase the paid version through the link: [Instalar via Microsoft Store](https://apps.microsoft.com/detail/9N70CLLMVRPN)
 
 <details>
 <summary>Click to expand the README in English</summary>
 
 # 📚 Lúmen
 
-Version: v2026.2.18.0  
+Version: v2026.2.19.0  
 Author: Fernando Nillsson Cidade
 
 - User Manual (EN‑US): [MANUAL.md — English](./MANUAL.md#enus)
@@ -325,7 +325,7 @@ Provide a configurable desktop tool that reduces barriers to reading, attention 
 7. Change language/theme while the app is open and verify immediate UI updates.
 8. Restart the app and confirm normal data persistence.
 
-### 🧩 Consolidated feature and resource evolution (v2026.2.18.0 → v2026.2.18.0)
+### 🧩 Consolidated feature and resource evolution (v2025.11.26.0 → v2026.2.19.0)
 - Continuous evolution of the Accessible Reader with local TTS, persistent typography controls, focus ruler, text extraction, and stronger pause/resume stability.
 - Expanded Time Management with configurable Pomodoro (focus/break/cycles), cycle-limit blocking, configurable sound alerts, and automatic task progress registration.
 - Reinforced Task/Kanban management with editing improvements, drag-and-drop refinements, batch actions, more predictable visual refresh, and more reliable integration with other resources.

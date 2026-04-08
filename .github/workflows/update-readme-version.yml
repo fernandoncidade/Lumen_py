@@ -84,8 +84,12 @@ jobs:
           BEFORE_COUNT=$(grep -o -E 'v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+' README.md | wc -l || true)
           echo "Found $BEFORE_COUNT version patterns before replacement"
 
-          # Substituir qualquer vX.X.X.X pelo $VERSION
-          sed -i -E "s/v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/$VERSION/g" README.md
+          # Atualiza versões no README, mas preserva os dois títulos de consolidação histórica.
+          awk -v version="$VERSION" '
+            /^### .*Consolidação histórica de funcionalidades e recursos \(/ { print; next }
+            /^### .*Consolidated feature and resource evolution \(/ { print; next }
+            { gsub(/v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+/, version); print }
+          ' README.md > README.md.tmp && mv README.md.tmp README.md
           
           AFTER_COUNT=$(grep -o -E "$VERSION" README.md | wc -l || true)
           echo "Found $AFTER_COUNT occurrences of $VERSION after replacement"
