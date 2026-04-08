@@ -1,5 +1,5 @@
 Projeto: Lúmen
-Versão: 2026.1.31.0
+Versão: 2026.2.1.0
 Autores: Fernando Nillsson Cidade
 
 Descrição resumida:

@@ -404,7 +404,7 @@ def setup_ui(self):
         regua_layout = QHBoxLayout()
 
         self.btn_regua = self.gerenciador_botoes.create_button()
-        self.btn_regua.setIcon(QIcon(get_icon_path("ruler")))
+        # self.btn_regua.setIcon(QIcon(get_icon_path("ruler")))
         self.btn_regua.clicked.connect(self.toggle_regua_foco)
         self.btn_regua.setCheckable(True)
         regua_layout.addWidget(self.btn_regua)
@@ -419,7 +419,7 @@ def setup_ui(self):
         leitura_assistida_layout = QHBoxLayout()
 
         self.btn_leitura_assistida = self.gerenciador_botoes.create_button()
-        self.btn_leitura_assistida.setIcon(QIcon(get_icon_path("highlight")))
+        # self.btn_leitura_assistida.setIcon(QIcon(get_icon_path("highlight")))
         self.btn_leitura_assistida.clicked.connect(self._on_toggle_leitura_assistida)
         self.btn_leitura_assistida.setCheckable(True)
         self.btn_leitura_assistida.setChecked(True)

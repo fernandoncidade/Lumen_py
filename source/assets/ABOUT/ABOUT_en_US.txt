@@ -1,5 +1,5 @@
 Project: Lúmen
-Version: 2026.1.31.0
+Version: 2026.2.1.0
 Authors: Fernando Nillsson Cidade
 
 Short description:

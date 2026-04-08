@@ -1,4 +1,44 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.1.0
+Date: February 1, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+- Update aimed at greater consistency of texts, better adaptation between light/dark themes, increased robustness of the Accessible Reader and Feynman Method interfaces, and centralization of menu translations. Defensive measures were added to avoid failures at critical points and logs were improved for diagnostics.
+
+Main highlights
+- Languages and texts: interface texts were centralized and now update at runtime while preserving user selections and states.
+- Theme and colors: editing elements and lists automatically adjust their colors to maintain adequate contrast when switching themes.
+- Visual fallbacks: when custom controls are not available, the app uses standard controls to keep functionality and a coherent appearance.
+- Font management: font/size selection more resilient to invalid configurations; more stable reading of user preferences.
+- Accessible Reader: refined toolbar with load, playback (play/pause/stop) controls, speed and volume adjustment with visual feedback, integrated search, and more reliable PDF selection copy behavior.
+- Feynman Method: interface reorganized into tabs that guide the flow (Concept → Explain → Gaps → Review), more consistent buttons (New/Save/Delete/Clear) and better theme adaptation.
+- Main menu: texts and shortcuts standardized across the menu, with common key combinations for frequent tasks.
+- Logs and stability: standardized error and debug messages to facilitate problem investigation.
+
+Bug fixes
+- Updating tab texts is now safe, avoiding crashes when changing language.
+- Contrast and element clipping issues across different themes were fixed.
+- Buttons and selectors work correctly even without optional modules installed.
+- Shortcuts and key contexts were adjusted to avoid inconsistent behavior on different platforms.
+- Copying selection in PDFs received protections to avoid silent failures.
+
+What changes in daily use
+- Changing the language updates texts immediately without losing your selections.
+- Switching the theme (light/dark) preserves readability of editing areas and lists.
+- The Reader shows clearer controls for playback, search and copying PDF excerpts.
+- The Feynman Method is easier to use with guided tabs and a Clear button always available.
+- Fewer unexpected errors in environments missing optional components.
+
+Quick recommendations
+- Try switching language and theme to check immediate updates of texts and colors.
+- In the Reader, test speed/volume and search to validate the new experience.
+- In the Feynman Method, create/edit a concept and use the Clear button to check the flow.
+- If you encounter odd behavior, consult the logs for clues before reporting.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.1.31.0
 Date: January 31, 2026
 Author: Fernando Nillsson Cidade

@@ -1,6 +1,5 @@
 from PySide6.QtCore import QCoreApplication
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def atualizar_menu(self):
@@ -47,18 +46,18 @@ def atualizar_menu(self):
         self.action_salvar_mapa.setText(QCoreApplication.translate("App", "💾 Salvar"))
         self.action_carregar_mapa.setText(QCoreApplication.translate("App", "📂 Carregar"))
         self.action_exportar_mapa.setText(QCoreApplication.translate("App", "📸 Exportar PNG"))
-        self.action_limpar_mapa.setText(QCoreApplication.translate("App", "🗑️ Limpar"))
+        self.action_limpar_mapa.setText(QCoreApplication.translate("App", "🧽 Limpar"))
 
         self.submenu_feynman.setTitle(QCoreApplication.translate("App", "🎓 Método Feynman"))
         self.action_novo_conceito.setText(QCoreApplication.translate("App", "➕ Novo"))
         self.action_salvar_conceito.setText(QCoreApplication.translate("App", "💾 Salvar Conceito"))
-        self.action_deletar_conceito.setText(QCoreApplication.translate("App", "🗑️ Deletar"))
+        self.action_deletar_conceito.setText(QCoreApplication.translate("App", "🗑️ Excluir"))
 
         self.submenu_eisenhower.setTitle(QCoreApplication.translate("App", "🗂️ Matriz Eisenhower"))
         self.action_eis_novo.setText(QCoreApplication.translate("App", "🆕 Novo"))
         self.action_eis_abrir.setText(QCoreApplication.translate("App", "📂 Abrir"))
         self.action_eis_salvar.setText(QCoreApplication.translate("App", "💾 Salvar"))
-        self.action_eis_limpar.setText(QCoreApplication.translate("App", "🗑️ Limpar"))
+        self.action_eis_limpar.setText(QCoreApplication.translate("App", "🧽 Limpar"))
 
         if self.action_eis_calendario.isChecked():
             self.action_eis_calendario.setText(QCoreApplication.translate("App","📅 Ocultar Calendário"))

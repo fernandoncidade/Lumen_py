@@ -1,4 +1,119 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.1.0
+Date: February 1, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+This release focuses on refinements to internationalization, theme/palette synchronization, increased robustness of the Accessible Reader and Feynman Method UIs, and centralization of main menu texts. Fallback improvements were applied for button manager, font handling, shortcuts and defensive guards at critical points. Logs were standardized to ease diagnosis.
+
+Main improvements
+1. Internationalization and text updates
+   - Centralized translations in runtime update functions for Mind Map, Feynman Method and reader/menu components.
+   - Preserves state when reloading translated items (e.g., domain combo preserves currentIndex).
+   - Consistent use of QCoreApplication.translate("App", ...) and try/except guards to avoid crashes during retranslate.
+
+2. Palette / Theme synchronization
+   - Implemented a global/local event filter (_PaletteThemeSyncFilter) to react to ApplicationPaletteChange, PaletteChange, StyleChange, ThemeChange and, when available, ColorSchemeChange.
+   - Applied QPalette.Window as Base/AlternateBase to QTextEdit/QComboBox/QListWidget and made specific adjustments for QComboBox.view()/viewport(), improving contrast when switching themes (light/dark).
+   - Idempotent routines and a _palette_sync_in_progress flag to avoid reentrancy.
+
+3. UI robustness and fallbacks
+   - Fallbacks for button manager: create_button/set_button_text used when available; otherwise QPushButton is used with minimal width adjustments.
+   - Use of FontManager to load font and size; fallbacks and logging when configuration read fails.
+   - Extensive try/except protection around signal connections, optional host methods (e.g., update_list, save_current_concept) and UI handlers.
+
+4. Accessible Reader — usability improvements
+   - Refined text/PDF toolbar: load, play/pause/stop controls, find bars (TextFindBar / PDFFindBar) and integrated PDFView.
+   - Speed/volume controls with dynamic labels and binding to internal handlers (_on_speed_changed, _on_volume_changed).
+   - Editable font combo with config read and protection around setCurrentText; lineEdit set to read-only to avoid inconsistent edits.
+   - Visual adjustments: applying app palette to QTextEdit (text_area) and synchronizing colors in dependent widgets (spinboxes, comboboxes).
+   - Global shortcuts: intelligent Ctrl+F toggle between find bars; special Ctrl+C to copy PDF selection when PDF tab is active.
+   - Integration of PDF toolbar, find bars and defensive connection to current_page_changed.
+
+5. Feynman Method — UI and flow
+   - Modular UI setup with QSplitter, QTabWidget (4 tabs) and fields marked with objectName "feynman_user_input" to ease styling and testing.
+   - New/Delete/Save buttons with fallback to button manager; Clear button added via utility that respects button manager when present.
+   - Palette synchronized for all relevant Feynman widgets (input_title, text areas, domain combo, concepts list).
+   - Dynamic update of tab texts and labels via update translations function; list update invoked when available.
+
+6. Menu bar and main actions
+   - Consolidated setup_menubar with translations for all menus and actions (File, Reader, Time Management, Mind Maps, Feynman Method, Eisenhower, Settings, Voices, About).
+   - Standardized shortcuts (Ctrl+O, Ctrl+R, Ctrl+P, Ctrl+S, Ctrl+L, Ctrl+N, Ctrl+T, Ctrl+Q, F1) with attempt to apply ApplicationShortcut where supported.
+   - Conditional actions update their text according to state (e.g., calendar action toggles "Show/Hide Calendar").
+
+7. Logging and error handling
+   - Homogeneous use of LogManager.get_logger() for logger.error / logger.debug with exc_info in catch blocks.
+   - Error and debug messages added at sensitive points: font loading, palette application, signal connections, config read/write and optional UI operations.
+
+Bug fixes
+1. Failures when updating tab texts
+   - try/except blocks around setTabText prevent crashes when tab_widget is not present; debug logs added for diagnosis.
+
+2. Palette inconsistencies in composite widgets
+   - Fixed calculation/assignment of palettes for viewports and nested widgets; viewport().setAutoFillBackground(True) applied when applicable.
+
+3. Missing fallbacks for button manager and combo lineEdit
+   - Ensured QPushButton is used when button manager is absent; combo lineEdit is created and set to read-only when missing.
+
+4. Inconsistent shortcuts and contexts
+   - Attempts to call setShortcutContext on actions are protected by try/except to support environments where changing shortcut context may raise.
+
+5. Silent failure when copying PDF selection
+   - Ctrl+C handling now checks currentIndex and existence of handler.copy_selection, logging debug on failure.
+
+Implementation details (relevant points)
+- Palette architecture:
+  - Internal utility functions per module: _apply_frame_palette_from_spinbox, _apply_window_as_base and _sync_* which convert QPalette.Window / Base colors to target widgets.
+  - Event filters (_PaletteThemeSyncFilter) installed on QApplication.instance() when available.
+
+- Internationalization:
+  - update_translations implemented in modules:
+    - mm_12_atualizar_traducoes.py: button texts and labels for Mind Map, instructions and support for connection mode.
+    - fey_04_atualizar_traducoes.py: labels, placeholders, domain combo, tab titles and calls to update_list.
+    - ui_08_atualizar_menu.py / ui_03_setup_menubar.py: centralization of menu texts and actions; voices menu loaded dynamically via load_voices().
+
+- Accessible Reader:
+  - setup_ui in lta_01_setup_ui.py builds the reading interface with defensive guards for external integrations (button manager, FontManager, PDFView handlers).
+  - Routines to apply palette and synchronize dark/light widgets implemented; _palette_sync_in_progress flag prevents loops.
+
+- Feynman Method:
+  - setup_ui in fey_03_setup_ui.py: modular construction, installation of palette filter and call to add_clear_button in fey_17_limpar_abas.py.
+  - add_clear_button attempts to use button manager and defines defensive behavior to create a button if absent.
+
+Changed / main files
+- source/modules/leitor/LeitorAcessivel/lta_01_setup_ui.py
+- source/modules/mapa/MapaMental/mm_12_atualizar_traducoes.py
+- source/modules/feynman/fey_03_setup_ui.py
+- source/modules/feynman/fey_04_atualizar_traducoes.py
+- source/modules/feynman/fey_17_limpar_abas.py
+- source/gui/ui/ui_03_setup_menubar.py
+- source/gui/ui/ui_08_atualizar_menu.py
+
+Migration and compatibility notes
+- External integrations expect optional attributes (button_manager, translator, update_list); code now handles absence of these with fallbacks, but validating presence of these components is recommended for full behavior.
+- It is recommended to restart the application after changing palette/theme to validate behavior on platforms with partial support for ColorSchemeChange.
+- Changes are compatible with PySide6; when updating the translation manager, ensure current language is obtained via translator.get_current_language() for correct action labeling.
+
+Tests and verification
+- UI / Palette:
+  - Switch theme (light/dark) and confirm QTextEdit, QComboBox and QListWidget adopt colors consistent with QPalette.Window.
+- Internationalization:
+  - Switch language pt_BR / en_US and verify labels, tabs and menus update; confirm domain combo preserves currentIndex.
+- Reader:
+  - Test Ctrl+F toggle between Text/PDF, Ctrl+C in PDF (when PDF tab active) and playback (play/pause/stop).
+- Feynman Method:
+  - Create/Save/Delete concept; use Clear; switch tabs; confirm updates via update_translations without state loss.
+- Robustness:
+  - Remove (or set to None) the button manager and confirm UIs remain operational with fallbacks.
+- Logs:
+  - Review logs produced by LogManager for error/debug messages in palette, translation and callback routines.
+
+Final notes
+- This release prioritizes runtime visual and text stability, plus hardening of optional integrations. Detailed logs and fallbacks make the application more tolerant to varied environments and facilitate future test automation and migrations.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.1.31.0
 Date: January 31, 2026
 Author: Fernando Nillsson Cidade

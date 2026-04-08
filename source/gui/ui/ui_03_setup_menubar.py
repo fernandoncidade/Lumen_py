@@ -123,7 +123,7 @@ def setup_menubar(self):
         self.action_exportar_mapa.triggered.connect(lambda: self.executar_acao_modulo('mapa', 'exportar_imagem'))
         self.submenu_mapa.addAction(self.action_exportar_mapa)
 
-        self.action_limpar_mapa = QAction(QCoreApplication.translate("App", "🗑️ Limpar"), self)
+        self.action_limpar_mapa = QAction(QCoreApplication.translate("App", "🧽 Limpar"), self)
         self.action_limpar_mapa.triggered.connect(lambda: self.executar_acao_modulo('mapa', 'limpar_mapa'))
         self.submenu_mapa.addAction(self.action_limpar_mapa)
 
@@ -137,7 +137,7 @@ def setup_menubar(self):
         self.action_salvar_conceito.triggered.connect(lambda: self.executar_acao_modulo('feynman', 'salvar_conceito_atual'))
         self.submenu_feynman.addAction(self.action_salvar_conceito)
 
-        self.action_deletar_conceito = QAction(QCoreApplication.translate("App", "🗑️ Deletar"), self)
+        self.action_deletar_conceito = QAction(QCoreApplication.translate("App", "🗑️ Excluir"), self)
         self.action_deletar_conceito.triggered.connect(lambda: self.executar_acao_modulo('feynman', 'deletar_conceito'))
         self.submenu_feynman.addAction(self.action_deletar_conceito)
 
@@ -155,7 +155,7 @@ def setup_menubar(self):
         self.action_eis_salvar.triggered.connect(lambda: self.executar_acao_modulo('eisenhower', 'salvar'))
         self.submenu_eisenhower.addAction(self.action_eis_salvar)
 
-        self.action_eis_limpar = QAction(QCoreApplication.translate("App", "🗑️ Limpar"), self)
+        self.action_eis_limpar = QAction(QCoreApplication.translate("App", "🧽 Limpar"), self)
         self.action_eis_limpar.triggered.connect(lambda: self.executar_acao_modulo('eisenhower', 'limpar'))
         self.submenu_eisenhower.addAction(self.action_eis_limpar)
 

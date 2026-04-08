@@ -1,4 +1,44 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.1.0
+Data: 1 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+- Atualização voltada para maior consistência de textos, melhor adaptação entre temas claro/escuro, aumento da robustez das interfaces do Leitor Acessível e do Método Feynman, e centralização das traduções do menu. Foram adicionados mecanismos de proteção para evitar falhas em pontos críticos e aprimorados os logs para diagnóstico.
+
+Principais novidades
+- Idiomas e textos: textos da interface foram centralizados e agora atualizam em tempo de execução preservando seleções e estados do usuário.
+- Tema e cores: elementos de edição e listas ajustam automaticamente suas cores para manter contraste adequado ao alternar entre temas.
+- Fallbacks visuais: quando controles personalizados não estiverem disponíveis, o aplicativo usa controles padrão para manter funcionalidade e aparência coerente.
+- Gerenciamento de fontes: seleção de fonte/teamanho mais resistente a configurações inválidas; leitura mais estável das preferências do usuário.
+- Leitor Acessível: barra de ferramentas refinada com controles de carregar, reprodução (play/pause/stop), ajuste de velocidade e volume com feedback visual, busca integrada e comportamento de copiar seleção em PDF mais confiável.
+- Método Feynman: interface reorganizada em abas que orientam o fluxo (Conceito → Explique → Lacunas → Revisão), botões mais consistentes (Novo/Salvar/Excluir/Limpar) e melhor adaptação aos temas.
+- Menu principal: textos e atalhos padronizados em todo o menu, com combinações de teclas comuns para tarefas frequentes.
+- Logs e estabilidade: mensagens de erro e debug padronizadas para facilitar investigação de problemas.
+
+Correções de bugs
+- Atualização de textos nas abas passou a ser segura, evitando travamentos ao trocar idioma.
+- Problemas de contraste e corte de elementos em temas diferentes foram corrigidos.
+- Botões e seletores funcionam corretamente mesmo sem módulos opcionais instalados.
+- Atalhos e contexto de teclas foram ajustados para evitar comportamento inconsistente em plataformas diferentes.
+- A cópia de seleção em PDFs recebeu proteções para não falhar silenciosamente.
+
+O que muda no uso diário
+- Trocar o idioma atualiza os textos na hora sem perder suas seleções.
+- Alternar o tema (claro/escuro) mantém legibilidade das áreas de edição e listas.
+- Leitor apresenta controles mais claros para reprodução, busca e cópia de trechos em PDF.
+- Método Feynman ficou mais fácil de usar com abas guiadas e um botão Limpar sempre disponível.
+- Menos erros inesperados em ambientes com componentes opcionais ausentes.
+
+Recomendações rápidas
+- Experimente alternar idioma e tema para conferir atualização imediata de textos e cores.
+- No Leitor, teste velocidade/volume e a busca para validar a nova experiência.
+- No Método Feynman, crie/edite um conceito e use o botão Limpar para conferir o fluxo.
+- Caso encontre comportamentos estranhos, consulte os logs para pistas antes de reportar.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.31.0
 Data: 31 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

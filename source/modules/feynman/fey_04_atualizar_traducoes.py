@@ -14,7 +14,7 @@ def atualizar_traducoes(self):
         self.label_meus_conceitos.setText(QCoreApplication.translate("App", "📚 Meus Conceitos:"))
 
         self.btn_novo.setText(QCoreApplication.translate("App", "➕ Novo"))
-        self.btn_deletar.setText(QCoreApplication.translate("App", "🗑️ Deletar"))
+        self.btn_deletar.setText(QCoreApplication.translate("App", "🗑️ Excluir"))
 
         self.label_conceito.setText(QCoreApplication.translate("App", "1️⃣ <b>Conceito</b> (ponto de vista sintetizado):"))
 
@@ -44,6 +44,7 @@ def atualizar_traducoes(self):
             self.combo_dominio.setCurrentIndex(indice_atual)
 
         self.gerenciador_botoes.set_button_text(self.btn_salvar, QCoreApplication.translate("App", "💾 Salvar Conceito"))
+        self.gerenciador_botoes.set_button_text(self.btn_limpar, QCoreApplication.translate("App", "🧽 Limpar"))
 
         try:
             if hasattr(self, 'tab_widget') and self.tab_widget is not None:

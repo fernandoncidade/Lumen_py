@@ -2,6 +2,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QT
 from PySide6.QtWidgets import QTabWidget
 from PySide6.QtCore import Qt, QObject, QEvent, QCoreApplication
 from PySide6.QtGui import QIcon, QPalette
+from source.modules.feynman.fey_17_limpar_abas import adicionar_botao_limpar
 from source.utils.LogManager import LogManager
 from source.utils.IconUtils import get_icon_path
 logger = LogManager.get_logger()
@@ -144,6 +145,20 @@ def setup_ui(self):
         footer_layout.addWidget(self.combo_dominio)
         footer_layout.addStretch()
         footer_layout.addWidget(self.btn_salvar)
+
+        try:
+            try:
+                adicionar_botao_limpar(self)
+
+            except Exception:
+                pass
+
+            if hasattr(self, 'btn_limpar') and self.btn_limpar is not None:
+                footer_layout.addWidget(self.btn_limpar)
+
+        except Exception:
+            pass
+
         layout_direito.addLayout(footer_layout)
         painel_direito.setLayout(layout_direito)
 

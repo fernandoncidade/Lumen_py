@@ -232,8 +232,8 @@
     </message>
 
     <message>
-      <source>🗑️ Deletar</source>
-      <translation>🗑️ Deletar</translation>
+      <source>🗑️ Excluir</source>
+      <translation>🗑️ Excluir</translation>
     </message>
 
     <message>
@@ -402,8 +402,8 @@
     </message>
 
     <message>
-      <source>🗑️ Limpar</source>
-      <translation>🗑️ Limpar</translation>
+      <source>🧽 Limpar</source>
+      <translation>🧽 Limpar</translation>
     </message>
 
     <message>
