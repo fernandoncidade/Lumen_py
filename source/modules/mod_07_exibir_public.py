@@ -137,11 +137,11 @@ def exibir_sobre(app):
             if app_title == app_title_key:
                 app_title = "Lúmen" if idioma_local == "en_US" else app_title_key
 
-            cabecalho_fixo = (
-                f"<h3>{app_title}</h3>"
-                f"<p><b>{version_label}</b> 2026.1.29.0</p>"
-                f"<p><b>{authors_label}</b> Fernando Nillsson Cidade</p>"
-                f"<p><b>{description_label}</b> {description_text}</p>"
+            texto_fixo = (
+                f"<span style='font-size:16px;font-weight:bold'>{app_title}</span><br/><br/>"
+                f"<span><b>{version_label}</b> 2026.1.31.0</span><br/><br/>"
+                f"<span><b>{authors_label}</b> Fernando Nillsson Cidade</span><br/><br/>"
+                f"<span><b>{description_label}</b> {description_text}</span><br/>"
             )
 
             ok_text = _tr_multi("OK")
@@ -158,7 +158,7 @@ def exibir_sobre(app):
 
             return {
                 "titulo": titulo_tr,
-                "texto_fixo": cabecalho_fixo,
+                "texto_fixo": texto_fixo,
                 "texto_history": texto_history,
                 "detalhes": texto_sobre,
                 "licencas": texto_licenca,
@@ -174,7 +174,7 @@ def exibir_sobre(app):
                 "avisos": texto_aviso,
                 "show_notices_text": show_notices,
                 "hide_notices_text": hide_notices,
-                "Privacy_Policy": texto_privacidade,
+                "privacy_policy": texto_privacidade,
                 "show_privacy_policy_text": show_privacy_policy,
                 "hide_privacy_policy_text": hide_privacy_policy,
                 "info_not_available_text": info_not_available_text,
@@ -196,7 +196,7 @@ def exibir_sobre(app):
                 ok_text=p["ok_text"],
                 site_oficial_text=p["site_oficial_text"],
                 avisos=p["avisos"],
-                Privacy_Policy=p["Privacy_Policy"],
+                privacy_policy=p["privacy_policy"],
                 release_notes=p["release_notes"],
                 show_history_text=p["show_history_text"],
                 hide_history_text=p["hide_history_text"],
@@ -246,7 +246,7 @@ def exibir_sobre(app):
             avisos=p["avisos"],
             show_notices_text=p["show_notices_text"],
             hide_notices_text=p["hide_notices_text"],
-            Privacy_Policy=p["Privacy_Policy"],
+            privacy_policy=p["privacy_policy"],
             show_privacy_policy_text=p["show_privacy_policy_text"],
             hide_privacy_policy_text=p["hide_privacy_policy_text"],
             info_not_available_text=p["info_not_available_text"],
@@ -275,6 +275,14 @@ def exibir_sobre(app):
             pass
 
         dialog.resize(900, int(500 * 1.2))
+
+        try:
+            if hasattr(dialog, '_adjust_fixed_label_height'):
+                dialog._adjust_fixed_label_height()
+
+        except Exception:
+            pass
+
         dialog.show()
         dialog.raise_()
         dialog.activateWindow()

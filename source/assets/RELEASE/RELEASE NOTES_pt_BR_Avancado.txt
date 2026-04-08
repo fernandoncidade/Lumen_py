@@ -1,4 +1,87 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.31.0
+Data: 31 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Este lançamento concentra-se em melhorias na experiência do diálogo "Sobre" (SobreDialog) e no módulo público de exibição (mod_07_exibir_public). Foram introduzidas melhorias de usabilidade, robustez frente a erros e suporte a internacionalização em tempo de execução. Também foram realizadas correções em renderização de conteúdo, gerenciamento de memória do diálogo e tratamento de sinais do Qt.
+
+Melhorias principais
+1. Arquitetura de abas consolidada
+   - SobreDialog agora expõe uma QTabWidget com abas para: Histórico, Detalhes, Licenças, Avisos, Política de Privacidade e Notas de Versão.
+   - Conteúdo de cada aba é carregado em QTextBrowser com openExternalLinks ativado, permitindo abrir links externos diretamente.
+
+2. Atualização dinâmica de conteúdo (runtime)
+   - Implementado método update_content(...) em SobreDialog para atualizar título, textos das abas e conteúdo das QTextBrowser em runtime sem precisar recriar o diálogo.
+   - mod_07_exibir_public cria uma subclasse SobreDialogRuntime que intercepta QEvent.Type.LanguageChange e dispara refresh_sobre() para atualizar traduções em execução.
+
+3. Internacionalização robusta
+   - Função _tr_multi implementada para tentativas de tradução em vários contextos ("App" e "InterfaceGrafica") com fallback seguro.
+   - _compute_payload centraliza seleção dos textos por idioma (pt_BR / en_US), fornece rótulos padrão e textos de fallback.
+   - Textos dos botões e rótulos das abas suportam atualização em tempo de execução e são configuráveis via parâmetros.
+
+4. Renderização e layout aprimorados
+   - Ajuste automático de altura do label fixo (fixed_label) usando QTextDocument para cálculo preciso de altura de conteúdo HTML/RichText.
+   - Limites e políticas de tamanho configuradas (setMinimumSize, setSizePolicy) para proporcionar dimensionamento consistente em diferentes resoluções.
+   - Conversão segura de texto de licença para HTML com <br> e <ul> gerado a partir de SITE_LICENSES, preservando links clicáveis.
+
+5. Gerenciamento de ciclo de vida do diálogo
+   - Evita criação de múltiplas instâncias: exibir_sobre reutiliza diálogo existente se estiver visível, chamando raise_/activateWindow.
+   - O diálogo é marcado com WA_DeleteOnClose e conectado a limpeza automática do atributo app._sobre_dialog no momento de destroyed.
+   - Conexão com QCoreApplication.instance().aboutToQuit para fechamento ordenado do diálogo ao encerrar a aplicação.
+
+6. Logging e tratamento de erros
+   - Uso consistente de LogManager para registrar exceções (logger.error / logger.debug).
+   - Exibir mensagens críticas via QMessageBox.critical em falhas inesperadas dentro de exibir_sobre e exibir_manual.
+
+Correções de bugs
+1. Rótulos das abas inconsistentes ao mudar de aba
+   - Implementado _update_tab_labels que normaliza arrays de textos de "mostrar" e "ocultar" conforme quantidade de abas e atualiza rótulos baseado no índice atual, evitando rótulos vazios ou índice fora do alcance.
+
+2. Altura incorreta do label fixo em redimensionamentos
+   - _adjust_fixed_label_height utiliza QTextDocument para cálculo do tamanho real do conteúdo; chamado em resizeEvent e após atualização de texto.
+
+3. Perda de links nas licenças
+   - Conversão de lista de sites em SITE_LICENSES agora gera elementos <li><a href="...">...</a></li>, mantendo links clicáveis.
+
+4. Vazamento de referência do diálogo
+   - Garantida limpeza de app._sobre_dialog quando diálogo é destruído; evita referências residuais que impediam re-criação correta.
+
+5. Fallback inconsistente em textos não disponíveis
+   - Uso consistente de info_not_available_text com fallback "Information not available" e sua tradução para pt_BR, evitando abas vazias sem mensagem.
+
+Detalhes de implementação
+- SobreDialog
+  - Construtor expandido para aceitar vários parâmetros de texto e rótulos customizáveis.
+  - Propriedades principais: self.fixed_label, self.history_browser, self.detalhes_browser, self.licencas_browser, self.avisos_browser, self.privacidade_browser, self.release_notes_browser, self.tabs, self.ok_button.
+  - Métodos críticos: _adjust_fixed_label_height, update_content, _on_tab_changed, _update_tab_labels, resizeEvent.
+  - Uso de try/except em pontos sensíveis para evitar crash em caso de conteúdo mal-formado.
+
+- mod_07_exibir_public
+  - Função exibir_sobre encapsula lógica de criação, reuso e atualização do diálogo.
+  - _compute_payload cria dicionário com todos os textos necessários, separando lógica de seleção de idioma.
+  - Classe interna SobreDialogRuntime sobrescreve changeEvent para reagir a QEvent.Type.LanguageChange.
+  - Integração com sinais Qt (destroyed, aboutToQuit) e proteção contra exceções ao conectar app.destroyed.
+
+Notas de migração e compatibilidade
+- Assinatura do construtor de SobreDialog aceita muitos parâmetros opcionais; código que cria o diálogo pode continuar a usar apenas os parâmetros essenciais (titulo, texto_fixo, etc.). Recomenda-se usar update_content para atualizações posteriores em vez de recriar instancia.
+- Ao fornecer listas de sites de licença, usar string com separação por nova linha (SITE_LICENSES já esperado como '\n'-separado).
+- Alterações são compatíveis com PySide6; verifique se a aplicação usa gerenciador de tradução compatível com app.gerenciador_traducao.obter_idioma_atual() para tirar proveito das traduções runtime.
+
+Testes e verificação
+- Verificar criação e reexibição do diálogo: abrir Sobre, fechar e abrir novamente; medir se nova instância é criada corretamente.
+- Testar mudança de idioma em runtime (se gerenciador de tradução disponível) e confirmar atualização dos rótulos e conteúdos via changeEvent.
+- Testar redimensionamento da janela e verificar recálculo da altura do fixed_label.
+- Testar links nas abas de Licenças abrindo URL externos.
+- Testar comportamento ao encerrar a aplicação para garantir fechamento ordenado do diálogo sem exceções.
+
+Observações finais
+- O código prioriza robustez e experiência do usuário com manutenção integrada de traduções e atualização dinâmica. Logs detalhados foram adicionados para facilitar diagnóstico de problemas em produção.
+- Futuras melhorias possíveis: suporte a carregamento assíncrono de textos extensos (ex.: notas de versão muito grandes), tema/estilos configuráveis e testes unitários para update_content e _update_tab_labels.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.29.0
 Data: 29 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

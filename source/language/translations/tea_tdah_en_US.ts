@@ -1301,7 +1301,7 @@ This may take a few minutes.</translation>
 
     <message>
         <source>description_text</source>
-        <translation>Desktop application aimed at supporting neurodivergent youth and adults (ASD, ADHD, Dyslexia) in studying and organization. Integrates an accessible reader with neural voices, task prioritization tools, Pomodoro timers, mind maps and resources for active explanation (Feynman Technique).</translation>
+        <translation>This project was conceived from the author's personal experience with the combination of Dyslexia, ADHD and Autism Spectrum Disorder (ASD). The focus is to reduce cognitive barriers that make academic activities exhausting — such as extensive reading, sustaining attention and organizing ideas — by offering configurable features that adapt to profiles with high cognitive variability (peaks and valleys of performance). The system prioritizes assisted reading, speed control, typographic adjustments, a focus ruler for visual tracking, task organization (Eisenhower Matrix), timers (Pomodoro), creation and review of mind maps and support for the Feynman Technique to consolidate knowledge.</translation>
     </message>
 
     <message>

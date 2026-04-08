@@ -1,4 +1,87 @@
 RELEASE NOTES — Lúmen
+Version: 2026.1.31.0
+Date: January 31, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+This release focuses on improvements to the "About" dialog (SobreDialog) and the public display module (mod_07_exibir_public). Usability, resilience to errors, and runtime internationalization support were introduced. Fixes were also made to content rendering, dialog memory management, and Qt signal handling.
+
+Main improvements
+1. Consolidated tab architecture
+   - The About dialog now exposes a QTabWidget with tabs for: History, Details, Licenses, Notices, Privacy Policy and Release Notes.
+   - Content of each tab is loaded into QTextBrowser with openExternalLinks enabled, allowing external links to be opened directly.
+
+2. Dynamic content update (runtime)
+   - Implemented update_content(...) to update title, tab texts and QTextBrowser content at runtime without recreating the dialog.
+   - The public display module creates a runtime subclass that intercepts QEvent.Type.LanguageChange and triggers a refresh to update translations while running.
+
+3. Robust internationalization
+   - A _tr_multi helper was added to attempt translations in multiple contexts ("App" and "InterfaceGrafica") with safe fallbacks.
+   - _compute_payload centralizes selection of texts by language (pt_BR / en_US), providing default labels and fallback texts.
+   - Button texts and tab labels support runtime updates and are configurable via parameters.
+
+4. Rendering and layout improvements
+   - Automatic adjustment of the fixed descriptive label height using QTextDocument to compute the precise height for HTML/RichText content.
+   - Size limits and policies configured (setMinimumSize, setSizePolicy) to provide consistent scaling across different resolutions.
+   - Safe conversion of license texts to HTML, generating <br> and <ul> from SITE_LICENSES while preserving clickable links.
+
+5. Dialog lifecycle management
+   - Prevents creating multiple instances: the show-about flow reuses the existing dialog if visible, calling raise()/activateWindow().
+   - The dialog is set to WA_DeleteOnClose and connected to automatic cleanup of the app._sobre_dialog attribute when destroyed.
+   - Connected to QCoreApplication.instance().aboutToQuit for orderly closing of the dialog when the application exits.
+
+6. Logging and error handling
+   - Consistent use of LogManager to log exceptions (logger.error / logger.debug).
+   - Critical messages are shown with QMessageBox.critical on unexpected failures within the show-about and show-manual flows.
+
+Bug fixes
+1. Inconsistent tab labels when switching tabs
+   - Implemented label normalization to keep "show" / "hide" text arrays aligned with the number of tabs and update labels according to the current index, avoiding empty labels or out-of-range indices.
+
+2. Incorrect fixed label height on resize
+   - The fixed label height is recalculated using QTextDocument to obtain the actual content size; recalculation is invoked in resize events and after text updates.
+
+3. Lost links in licenses
+   - Conversion of the list of license sites now generates <li><a href="...">...</a></li> elements to preserve clickable links.
+
+4. Dialog reference leak
+   - Ensured cleanup of app._sobre_dialog when the dialog is destroyed to avoid residual references that prevented correct re-creation.
+
+5. Inconsistent fallback for unavailable texts
+   - Consistent use of an info_not_available_text fallback ("Information not available") and its pt_BR equivalent to avoid empty tabs without a message.
+
+Implementation details
+- About dialog
+  - Constructor expanded to accept various text parameters and customizable labels.
+  - Main properties include the fixed descriptive label, the QTextBrowsers for History, Details, Licenses, Notices, Privacy Policy and Release Notes, the tab widget and the OK button.
+  - Critical routines: label height adjustment, content update, tab change handler, tab label updater and resize handling.
+  - Try/except blocks added in sensitive places to avoid crashes when content is malformed.
+
+- Public display module
+  - The show-about flow encapsulates creation, reuse and update logic for the dialog.
+  - Payload computation centralizes all texts needed and separates language selection logic.
+  - A runtime subclass handles language-change events to refresh contents.
+  - Integration with Qt signals (destroyed, aboutToQuit) includes exception protection when connecting application signals.
+
+Migration and compatibility notes
+- The About dialog constructor accepts many optional parameters; callers can still use only the essential parameters (title, fixed text, etc.). Using update_content is recommended for later updates instead of recreating the instance.
+- When providing license site lists, use a newline-separated string (SITE_LICENSES expected as '\n'-separated).
+- Changes are compatible with PySide6; ensure the application provides a translation manager (app.gerenciador_traducao.obter_idioma_atual()) to benefit from runtime translations.
+
+Tests and verification
+- Verify creation and re-show behavior: open About, close and open again; confirm a new instance is created only when expected.
+- Test language change at runtime (if a translation manager is available) and confirm labels and contents update via the language-change event.
+- Test window resizing and confirm recalculation of the fixed label height.
+- Test license tab links by opening external URLs.
+- Test application shutdown to ensure the dialog closes cleanly without exceptions.
+
+Final notes
+- The work prioritizes robustness and user experience with integrated translation maintenance and dynamic updates. Detailed logs were added to facilitate diagnosing issues in production.
+- Future improvements may include asynchronous loading for very large texts (e.g., very large release notes), configurable themes/styles and unit tests for content update and tab label logic.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.1.29.0
 Date: January 29, 2026
 Author: Fernando Nillsson Cidade

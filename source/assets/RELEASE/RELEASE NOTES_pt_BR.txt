@@ -1,4 +1,39 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.1.31.0
+Data: 31 de janeiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+- Atualização focada em melhorar a experiência da janela "Sobre": organização das informações, confiabilidade ao abrir/fechar, suporte a troca de idioma em tempo de execução e correções na exibição de conteúdo e links.
+
+Principais novidades para você
+- Abas consolidadas para acessar facilmente: Histórico, Detalhes, Licenças, Avisos, Política de Privacidade e Notas de Versão.
+- Conteúdo das abas com links externos clicáveis e mais confiáveis.
+- Textos e rótulos atualizam imediatamente ao mudar o idioma, sem precisar reiniciar a janela.
+- Ajuste automático do tamanho do texto descritivo para melhorar leitura ao redimensionar a janela.
+- Evita múltiplas janelas "Sobre" abertas ao mesmo tempo; abertura e foco da janela estão mais previsíveis.
+- Mensagens de erro e comportamento em situações inesperadas foram melhorados para reduzir travamentos.
+
+Correções importantes
+- Rótulos das abas corrigidos para não ficarem inconsistentes ao alternar entre elas.
+- Exibição do texto descritivo ajustada para não cortar conteúdo quando a janela muda de tamanho.
+- Links das licenças mantêm funcionalidade ao serem exibidos.
+- Limpeza adequada ao fechar a janela para evitar comportamentos residuais.
+
+O que muda no uso diário
+- Informações do "Sobre" ficam mais acessíveis e legíveis.
+- Ao trocar o idioma, os textos e botões se atualizam na hora.
+- Links de licença e site oficial abrem corretamente.
+- Menos janelas duplicadas e menos problemas ao reabrir a tela de informação.
+
+Recomendações rápidas
+- Abra a janela "Sobre" para conferir os textos e links.
+- Troque o idioma da interface e verifique se os rótulos e conteúdos são atualizados.
+- Redimensione a janela para validar o ajuste do texto descritivo.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.1.29.0
 Data: 29 de janeiro de 2026
 Autor: Fernando Nillsson Cidade

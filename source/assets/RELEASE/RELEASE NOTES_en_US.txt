@@ -1,4 +1,39 @@
 RELEASE NOTES — Lúmen
+Version: 2026.1.31.0
+Date: January 31, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+- Update focused on improving the "About" window experience: better organization of information, more reliable open/close behavior, runtime language switching support, and fixes to content and link display.
+
+Main highlights for you
+- Consolidated tabs to easily access: History, Details, Licenses, Notices, Privacy Policy and Release Notes.
+- Tab content with clickable external links and improved reliability.
+- Texts and labels update immediately when changing the language, without needing to restart the window.
+- Automatic adjustment of the descriptive text size for better readability when resizing the window.
+- Prevents multiple "About" windows from opening at the same time; opening and focusing behavior is more predictable.
+- Error messages and behavior in unexpected situations improved to reduce crashes.
+
+Important fixes
+- Tab labels fixed to avoid inconsistencies when switching between them.
+- Descriptive text display adjusted to avoid cutting content when the window is resized.
+- License links remain functional when displayed.
+- Proper cleanup when closing the window to avoid residual behavior.
+
+What changes in daily use
+- "About" information is more accessible and readable.
+- When switching the language, texts and buttons update immediately.
+- License and official site links open correctly.
+- Fewer duplicate windows and fewer issues when reopening the info screen.
+
+Quick recommendations
+- Open the "About" window to check texts and links.
+- Change the interface language and verify that labels and contents are updated.
+- Resize the window to validate the descriptive text adjustment.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.1.29.0
 Date: January 29, 2026
 Author: Fernando Nillsson Cidade

@@ -1301,7 +1301,7 @@ Isso pode levar alguns minutos.</translation>
 
     <message>
         <source>description_text</source>
-        <translation>Aplicativo desktop voltado para apoiar jovens e adultos neurodivergentes (TEA, TDAH, Dislexia) em estudo e organização. Integra leitor acessível com vozes neurais, ferramentas de priorização de tarefas, timers Pomodoro, mapas mentais e recursos para explicação ativa (Método Feynman).</translation>
+        <translation>Este projeto foi concebido a partir da experiência pessoal do autor diante da combinação de Dislexia, TDAH e Transtorno do Espectro Autista (TEA). O foco é reduzir barreiras cognitivas que tornam atividades acadêmicas extenuantes — como leitura extensiva, manutenção de atenção e organização de ideias — oferecendo recursos configuráveis que se adaptam a perfis com alta variabilidade cognitiva (picos e vales de desempenho). O sistema prioriza leitura assistida, controle de velocidade, ajustes tipográficos, régua de foco para acompanhamento visual, organização de tarefas (Matriz de Eisenhower), timers (Pomodoro), criação e revisão de mapas mentais e suporte ao Método Feynman para consolidar conhecimento.</translation>
     </message>
 
     <message>
