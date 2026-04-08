@@ -9,7 +9,7 @@ def get_text(text):
 def atualizar_textos(app):
     try:
         app.setWindowTitle(get_text("Matriz de Eisenhower - Organizador de Tarefas"))
-        app.task_input.setPlaceholderText(get_text("Adicione uma tarefa..."))
+        app.task_input.setPlaceholderText(get_text("Adicione uma tarefa ou arraste um arquivo..."))
         app.add_button.setText(get_text("Adicionar Tarefa"))
         app.calendar_button.setText(get_text("Calendário"))
         if hasattr(app, "integrate_time_button") and app.integrate_time_button:

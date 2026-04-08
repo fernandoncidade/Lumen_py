@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit, QLabel, QComboBox, QListWidget, QSplitter, QFrame
 from PySide6.QtWidgets import QTabWidget
 from PySide6.QtCore import Qt, QObject, QEvent, QCoreApplication
-from PySide6.QtGui import QIcon, QPalette
+from PySide6.QtGui import QIcon, QPalette, QColor
 from source.modules.feynman.fey_17_limpar_abas import adicionar_botao_limpar
 from source.utils.LogManager import LogManager
 from source.utils.IconUtils import get_icon_path
@@ -128,12 +128,6 @@ def setup_ui(self):
         except Exception:
             self.btn_salvar = QPushButton()
 
-        # try:
-        #     self.btn_salvar.setIcon(QIcon(get_icon_path("save")))
-
-        # except Exception:
-        #     pass
-
         try:
             self.btn_salvar.clicked.connect(self.salvar_conceito_atual)
 
@@ -186,9 +180,17 @@ def setup_ui(self):
             app_pal = app.palette()
             window_color = app_pal.color(QPalette.Window)
 
+            def _is_light_color(col: QColor) -> bool:
+                try:
+                    r, g, b = col.red(), col.green(), col.blue()
+                    lum = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255.0
+                    return lum >= 0.85
+
+                except Exception:
+                    return True
+
+            is_light_theme = _is_light_color(window_color)
             pal = widget.palette()
-            pal.setColor(QPalette.Base, window_color)
-            pal.setColor(QPalette.AlternateBase, window_color)
 
             try:
                 is_combo = isinstance(widget, QComboBox)
@@ -197,37 +199,77 @@ def setup_ui(self):
                 is_combo = False
 
             if is_combo:
-                pal.setColor(QPalette.Button, window_color)
-
-            widget.setPalette(pal)
-
-            vp = getattr(widget, "viewport", None)
-            if callable(vp):
                 try:
-                    widget.viewport().setAutoFillBackground(True)
-                    widget.viewport().setPalette(pal)
+                    pal.setColor(QPalette.Button, window_color)
 
                 except Exception:
                     pass
+
+                widget.setPalette(pal)
+                view = getattr(widget, "view", None)
+
+                if callable(view):
+                    try:
+                        v = view()
+
+                        if v is not None:
+                            popup_pal = v.palette()
+
+                            if is_light_theme:
+                                popup_base = window_color
+
+                            else:
+                                popup_base = window_color.darker(115)
+
+                            popup_pal.setColor(QPalette.Base, popup_base)
+                            popup_pal.setColor(QPalette.AlternateBase, popup_base)
+                            v.setPalette(popup_pal)
+
+                            try:
+                                v.viewport().setAutoFillBackground(True)
+                                v.viewport().setPalette(popup_pal)
+
+                            except Exception:
+                                pass
+
+                    except Exception:
+                        pass
 
             else:
-                widget.setAutoFillBackground(True)
+                pal.setColor(QPalette.Base, window_color)
+                pal.setColor(QPalette.AlternateBase, window_color)
+                widget.setPalette(pal)
+                vp = getattr(widget, "viewport", None)
 
-            view = getattr(widget, "view", None)
-            if callable(view):
-                try:
-                    v = view()
-                    if v is not None:
-                        v.setPalette(pal)
-                        try:
-                            v.viewport().setAutoFillBackground(True)
-                            v.viewport().setPalette(pal)
+                if callable(vp):
+                    try:
+                        widget.viewport().setAutoFillBackground(True)
+                        widget.viewport().setPalette(pal)
 
-                        except Exception:
-                            pass
+                    except Exception:
+                        pass
 
-                except Exception:
-                    pass
+                else:
+                    widget.setAutoFillBackground(True)
+
+                view = getattr(widget, "view", None)
+
+                if callable(view):
+                    try:
+                        v = view()
+
+                        if v is not None:
+                            v.setPalette(pal)
+
+                            try:
+                                v.viewport().setAutoFillBackground(True)
+                                v.viewport().setPalette(pal)
+
+                            except Exception:
+                                pass
+
+                    except Exception:
+                        pass
 
         def _sync_feynman_backgrounds():
             try:
@@ -261,6 +303,7 @@ def setup_ui(self):
 
         self._feynman_palette_sync_filter = _PaletteThemeSyncFilter(self)
         app = QApplication.instance()
+
         if app is not None:
             app.installEventFilter(self._feynman_palette_sync_filter)
 

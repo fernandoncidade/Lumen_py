@@ -1,8 +1,7 @@
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QComboBox, QGroupBox, QProgressBar
 from PySide6.QtCore import Qt
-from PySide6.QtGui import QFont, QIcon
+from PySide6.QtGui import QFont
 from source.utils.LogManager import LogManager
-from source.utils.IconUtils import get_icon_path
 logger = LogManager.get_logger()
 
 def setup_ui(self):
@@ -25,28 +24,23 @@ def setup_ui(self):
         fonte_status = QFont("Arial", 14, QFont.Bold)
         self.label_status.setFont(fonte_status)
         self.label_status.setAlignment(Qt.AlignCenter)
-        # self.label_status.setStyleSheet("font-size: 14pt; font-weight: bold;")
         layout.addWidget(self.label_status)
 
         controles = QHBoxLayout()
 
         self.btn_iniciar = self.gerenciador_botoes.create_button()
-        # self.btn_iniciar.setIcon(QIcon(get_icon_path("play")))
         self.btn_iniciar.clicked.connect(self.toggle_timer)
         controles.addWidget(self.btn_iniciar)
 
         self.btn_resetar = self.gerenciador_botoes.create_button()
-        # self.btn_resetar.setIcon(QIcon(get_icon_path("reset")))
         self.btn_resetar.clicked.connect(self.resetar_timer)
         controles.addWidget(self.btn_resetar)
 
         self.btn_resetar_ciclo = self.gerenciador_botoes.create_button()
-        # self.btn_resetar_ciclo.setIcon(QIcon(get_icon_path("reset")))
         self.btn_resetar_ciclo.clicked.connect(self.resetar_ciclo)
         controles.addWidget(self.btn_resetar_ciclo)
 
         self.btn_pular = self.gerenciador_botoes.create_button()
-        # self.btn_pular.setIcon(QIcon(get_icon_path("skip")))
         self.btn_pular.clicked.connect(self.pular_ciclo)
         controles.addWidget(self.btn_pular)
 

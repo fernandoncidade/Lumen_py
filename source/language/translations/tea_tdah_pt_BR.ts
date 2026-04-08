@@ -572,8 +572,8 @@ Vamos para o próximo ciclo de foco! 💪</translation>
     </message>
 
     <message>
-      <source>Digite uma nova tarefa... (Ex: 'Estudar Resistência dos Materiais - Cap 3')</source>
-      <translation>Digite uma nova tarefa... (Ex: 'Estudar Resistência dos Materiais - Cap 3')</translation>
+      <source>Digite uma nova tarefa ou arraste um arquivo... (Ex: 'Estudar Resistência dos Materiais - Cap 3')</source>
+      <translation>Digite uma nova tarefa ou arraste um arquivo... (Ex: 'Estudar Resistência dos Materiais - Cap 3')</translation>
     </message>
 
     <message>
@@ -1055,8 +1055,8 @@ Isso pode levar alguns minutos.</translation>
     </message>
 
     <message>
-        <source>Adicione uma tarefa...</source>
-        <translation>Adicione uma tarefa...</translation>
+        <source>Adicione uma tarefa ou arraste um arquivo...</source>
+        <translation>Adicione uma tarefa ou arraste um arquivo...</translation>
     </message>
 
     <message>

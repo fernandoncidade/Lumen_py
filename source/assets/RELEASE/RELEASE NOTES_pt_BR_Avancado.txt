@@ -1,4 +1,84 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.10.0
+Data: 10 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em consistência visual nativa e correções de paleta para inputs e popups em múltiplos módulos. Remove efeitos visuais indesejados (retângulos/bordas) forçados sobre widgets nativos do Qt, padroniza cor de preenchimento nativa do QPalette para inputs e dropdowns e sincroniza comportamento claro/escuro entre Matriz Eisenhower, Gestão de Tempo, Gerenciador de Tarefas e Método Feynman.
+
+Melhorias principais
+1. Renderização nativa de inputs e combos
+   - Removido comportamento que forçava AutoFillBackground / estilos de fundo em widgets nativos (QLineEdit, QDateEdit, QTimeEdit, QComboBox, QTextEdit), garantindo renderização nativa do Qt sem retângulos indesejados.
+   - Aplicado ajuste de QPalette.Base apenas quando necessário, usando variações leves (darker / lighter) do QPalette.Window para manter aparência integrada ao tema do sistema.
+
+2. Popups de QComboBox padronizados
+   - Popup do quadrant_selector (Eisenhower) padronizado: tema claro usa window_color (mais claro); tema escuro usa window_color.darker(115).
+   - Mesma lógica reaplicada para popups de spin_foco, spin_descanso (Pomodoro), combo_prioridade e combo_dominio (Gerenciador de Tarefas / Método Feynman) para consistência visual.
+
+3. Inputs do Gerenciador de Tarefas e Pomodoro
+   - input_tarefa recebe preenchimento nativo mais escuro no tema escuro; no tema claro, usa window_color para ficar uniforme com quadrant_selector.
+   - spin_foco e spin_descanso (implementados como QComboBox) usam popup com Base/AlternateBase ajustados conforme tema.
+
+4. Método Feynman
+   - combo_dominio ajustado para não forçar AutoFillBackground no widget principal; popup do combo segue as mesmas regras de cor (claro → window_color; escuro → window_color.darker(115)).
+
+5. Sincronizador de paleta centralizado e defensivo
+   - svc_14_palette_theme_sync.py aprimorado:
+     - Detecta widgets nativos e aplica QPalette sem forçar stylesheets.
+     - Aplica cor Base mais escura apenas a inputs alvo (task_input, date_input, time_input, input_tarefa) com fator leve (darker(110/115)).
+     - Trata view()/viewport() com verificações robustas antes de setAutoFillBackground/Palette para evitar vazamentos visuais em widgets compostos.
+   - Instalado filtro de eventos para reagir a mudanças de paleta/tema sem reentrância.
+
+Correções de bugs
+1. Retângulos visuais em widgets nativos
+   - Corrigido: widgets como task_input, date_input, time_input, quadrant_selector, input_tarefa, spin_foco, spin_descanso, combo_prioridade e combo_dominio não aparecem mais com retângulos de fundo; exibem aparência nativa do Qt.
+
+2. Inconsistências entre temas Claro/Escuro
+   - Corrigido: popups de QComboBox que antes usavam cor fixa agora seguem QPalette.Window e recebem ligeira variação (darker/lighter) conforme is_light_theme, evitando contraste excessivo.
+
+3. Aplicação segura em widgets compostos
+   - Corrigido: listas e widgets com viewport (QListWidget, views de QComboBox) recebem paleta apenas quando view/viewport disponíveis; AutoFillBackground setado apenas quando apropriado.
+
+Arquivos principais alterados
+- source/modules/eisenhower/services/svc_14_palette_theme_sync.py
+  - Lógica central de sincronização de paleta: detecção de inputs nativos, aplicação condicional de QPalette.Base e tratamento do popup do quadrant_selector.
+- source/modules/eisenhower/services/svc_01_initUI.py
+  - Garantias de uso de QComboBox/QDateEdit/QTimeEdit e exposição dos widgets alvo para o sync de paleta.
+- source/modules/tempo/PomodoroTimer/pomo_12_aplicar_tema_dinamico.py
+  - Popup de spin_foco / spin_descanso ajustado para usar window_color ou window_color.darker(115) conforme tema.
+- source/modules/tempo/GerenciadorTarefas/gtar_22_aplicar_tema_dinamico_inputs.py
+  - input_tarefa e combo_prioridade adaptados para paleta nativa; popups padronizados.
+- source/modules/feynman/fey_03_setup_ui.py
+  - combo_dominio ajustado para não forçar fundo; popup de domínio segue padrão de cor central.
+- source/modules/eisenhower/services/svc_13_FileDropLineEdit.py
+  - Integração com fluxo de FileDrop mantida sem alterar aparência nativa do LineEdit.
+- Demais: pequenos ajustes de logging e proteções try/except em pontos de aplicação de paleta.
+
+Recomendações de validação (tests & verificação)
+- Tema Claro / Escuro:
+  1. Abrir app em Windows 10/11 com tema Claro: verificar quadrant_selector, combo_prioridade, combo_dominio, spin_foco/descanso e input_tarefa — popups devem usar cor mais clara (window_color).
+  2. Abrir app em tema Escuro: same controls devem usar variação darker(110/115) sem retângulos no widget principal.
+
+- Consistência visual:
+  1. Verificar que QLineEdit / QTextEdit / QDateEdit / QTimeEdit exibem fundo nativo (sem bordas retangulares visíveis impostas por AutoFillBackground).
+  2. Confirmar que QComboBox principal (botão) mantém cor de botão alinhada com QPalette.Button e que apenas o popup recebe o Base ajustado.
+
+- Regressão:
+  1. Testar drag&drop e abertura de popups em diálogos (CalendarDialog, Pomodoro config, Feynman footer) para assegurar que a paleta aplicada não quebre áreas com viewport (listas, calendar view).
+
+Notas técnicas
+- Não foi usado setStyleSheet em nenhum ponto; todas as alterações fizeram uso exclusivo de QPalette e chamadas seguras a view()/viewport() e setAutoFillBackground quando apropriado.
+- Fatores de escurecimento/clareamento escolhidos leve (darker(110/115) / lighter via window_color) para preservar legibilidade e integração com o tema do sistema.
+- Implementação defensiva: verificações isinstance / callable para evitar exceções em ambientes PySide6 variados.
+
+Próximos passos sugeridos
+1. Ajustar fator de darker/lighter após validação de UX com usuários (p.ex. 105–120).
+2. Considerar expose de configurações visuais no Preferences para usuários ajustarem contraste dos inputs.
+3. Adicionar testes visuais automatizados (pixel diff) para alterações críticas de paleta.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.9.0
 Data: 9 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

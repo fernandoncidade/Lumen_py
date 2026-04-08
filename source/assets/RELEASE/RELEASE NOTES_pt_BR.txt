@@ -1,4 +1,38 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.10.0
+Data: 10 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Atualização voltada à consistência visual: inputs e menus dropdown agora seguem a aparência nativa do sistema e respeitam corretamente temas Claro/Escuro, proporcionando interface mais integrada e sem artefatos visuais.
+
+Principais mudanças
+- Aparência nativa dos campos
+  - Campos de texto e seletores exibem fundo nativo sem retângulos ou bordas visuais impostas pelo aplicativo.
+- Popups e menus mais coerentes
+  - Dropdowns (listas abertas) usam cor de preenchimento alinhada ao tema do Windows: mais claro em tema Claro e levemente escurecido em tema Escuro.
+- Uniformidade entre módulos
+  - Comportamento visual padronizado em Matriz Eisenhower, Gestão de Tempo, Gerenciador de Tarefas e Método Feynman.
+- Melhoria na experiência do Pomodoro e listas
+  - Campos do timer e seletores de prioridade/tempo abrem listas com o mesmo estilo de preenchimento, sem criar caixas visuais no controle principal.
+
+Correções de bugs
+- Removidos retângulos indesejados em campos e combos que apareciam em alguns temas.
+- Popups que antes usavam cores fixas agora ajustam-se ao modo Claro/Escuro para evitar contrastes fortes.
+- Ajustes protegidos para evitar efeitos visuais incorretos em listas e áreas compostas.
+
+O que verificar
+- Em Windows 10/11 tema Claro: abra dropdowns (prioridade, timer, domínio, quadrantes) — o fundo da lista deve ficar claro e integrado ao tema.
+- Em tema Escuro: os mesmos controles devem apresentar o preenchimento levemente mais escuro, sem retângulos no controle principal.
+- Confirme que campos de texto e seletores mantêm aparência nativa do sistema em diálogos e painéis.
+
+Observações
+- Não houve alteração funcional no comportamento das ações; a atualização foca na aparência e consistência visual.
+- Caso deseje ajustes de contraste, fatores de clareamento/escurecimento podem ser afinados em versões futuras.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.9.0
 Data: 9 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

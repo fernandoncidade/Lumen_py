@@ -1,4 +1,84 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.10.0
+Date: February 10, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Delivery focused on native visual consistency and palette fixes for inputs and popups across multiple modules. Removes unwanted visual artifacts (rectangles/borders) forced on native Qt widgets, standardizes the native QPalette fill color for inputs and dropdowns, and synchronizes light/dark behavior across the Eisenhower Matrix, Time Management, Task Manager, and Feynman Method.
+
+Main improvements
+1. Native rendering for inputs and combos
+   - Removed behavior that forced AutoFillBackground / background styles on native widgets (QLineEdit, QDateEdit, QTimeEdit, QComboBox, QTextEdit), ensuring native Qt rendering without unwanted rectangles.
+   - Applied QPalette.Base adjustments only when necessary, using slight variations (darker / lighter) of QPalette.Window to keep appearance integrated with the system theme.
+
+2. Standardized QComboBox popups
+   - quadrant_selector popup (Eisenhower) standardized: light theme uses window_color (lighter); dark theme uses window_color.darker(115).
+   - Same logic reapplied to spin_foco and spin_descanso (Pomodoro), combo_prioridade and combo_dominio (Task Manager / Feynman Method) for visual consistency.
+
+3. Task Manager and Pomodoro inputs
+   - input_tarefa receives a natively darker fill in dark theme; in light theme it uses window_color to match quadrant_selector.
+   - spin_foco and spin_descanso (implemented as QComboBox) use popups with Base/AlternateBase adjusted according to the theme.
+
+4. Feynman Method
+   - combo_dominio adjusted to avoid forcing AutoFillBackground on the main widget; the combo popup follows the same color rules (light → window_color; dark → window_color.darker(115)).
+
+5. Centralized, defensive palette synchronizer
+   - svc_14_palette_theme_sync.py improved:
+     - Detects native widgets and applies QPalette without forcing stylesheets.
+     - Applies a slightly darker Base color only to targeted inputs (task_input, date_input, time_input, input_tarefa) with a light factor (darker(110/115)).
+     - Handles view()/viewport() with robust checks before calling setAutoFillBackground/Palette to avoid visual leaks in composite widgets.
+   - Installed an event filter to react to palette/theme changes without reentrancy.
+
+Bug fixes
+1. Visual rectangles on native widgets
+   - Fixed: widgets such as task_input, date_input, time_input, quadrant_selector, input_tarefa, spin_foco, spin_descanso, combo_prioridade and combo_dominio no longer show background rectangles; they display the native Qt appearance.
+
+2. Light/Dark theme inconsistencies
+   - Fixed: QComboBox popups that previously used a fixed color now follow QPalette.Window and receive a slight variation (darker/lighter) according to is_light_theme, avoiding excessive contrast.
+
+3. Safe application on composite widgets
+   - Fixed: lists and widgets with viewports (QListWidget, QComboBox views) receive a palette only when view/viewport are available; AutoFillBackground is set only when appropriate.
+
+Main files changed
+- source/modules/eisenhower/services/svc_14_palette_theme_sync.py
+  - Central palette synchronization logic: detection of native inputs, conditional application of QPalette.Base, and handling of the quadrant_selector popup.
+- source/modules/eisenhower/services/svc_01_initUI.py
+  - Ensures use of QComboBox/QDateEdit/QTimeEdit and exposes target widgets for palette sync.
+- source/modules/tempo/PomodoroTimer/pomo_12_aplicar_tema_dinamico.py
+  - spin_foco / spin_descanso popup adjusted to use window_color or window_color.darker(115) depending on theme.
+- source/modules/tempo/GerenciadorTarefas/gtar_22_aplicar_tema_dinamico_inputs.py
+  - input_tarefa and combo_prioridade adapted to native palette; popups standardized.
+- source/modules/feynman/fey_03_setup_ui.py
+  - combo_dominio adjusted to avoid forcing background; domain popup follows the central color rule.
+- source/modules/eisenhower/services/svc_13_FileDropLineEdit.py
+  - FileDrop integration preserved without changing native LineEdit appearance.
+- Others: small logging tweaks and try/except protections at palette application points.
+
+Validation recommendations (tests & verification)
+- Light / Dark theme:
+  1. Open the app on Windows 10/11 with Light theme: check quadrant_selector, combo_prioridade, combo_dominio, spin_foco/descanso and input_tarefa — popups should use a lighter fill (window_color).
+  2. Open the app in Dark theme: same controls should use a darker variation (darker(110/115)) without rectangles on the main widget.
+
+- Visual consistency:
+  1. Verify that QLineEdit / QTextEdit / QDateEdit / QTimeEdit show the native background (no rectangular borders imposed by AutoFillBackground).
+  2. Confirm that the main QComboBox (button) keeps its button color aligned with QPalette.Button and only the popup receives the adjusted Base.
+
+- Regression:
+  1. Test drag & drop and popup opening in dialogs (CalendarDialog, Pomodoro config, Feynman footer) to ensure the applied palette does not break areas with viewports (lists, calendar view).
+
+Technical notes
+- No setStyleSheet was used anywhere; all changes exclusively use QPalette and safe calls to view()/viewport() and setAutoFillBackground when appropriate.
+- Darken/lighten factors chosen are mild (darker(110/115) / lighter via window_color) to preserve readability and integration with the system theme.
+- Defensive implementation: isinstance / callable checks to avoid exceptions in varied PySide6 environments.
+
+Next suggested steps
+1. Tune darker/lighter factors after UX validation with users (e.g. 105–120).
+2. Consider exposing visual settings in Preferences for users to adjust input contrast.
+3. Add automated visual tests (pixel diff) for critical palette changes.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.9.0
 Date: February 9, 2026
 Author: Fernando Nillsson Cidade

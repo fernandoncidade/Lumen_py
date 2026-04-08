@@ -1,4 +1,38 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.10.0
+Date: February 10, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Update focused on visual consistency: input fields and dropdown menus now follow the system's native appearance and properly respect Light/Dark themes, providing a more integrated interface without visual artifacts.
+
+Main changes
+- Native appearance of fields
+  - Text fields and selectors display the native background without rectangles or visual borders imposed by the application.
+- More coherent popups and menus
+  - Dropdowns (open lists) use a fill color aligned with the Windows theme: lighter in Light theme and slightly darkened in Dark theme.
+- Uniformity across areas
+  - Visual behavior standardized in Eisenhower Matrix, Time Management, Task Manager and Feynman Method.
+- Improved Pomodoro and list experience
+  - Timer fields and priority/time selectors open lists with the same fill style, without creating visual boxes on the main control.
+
+Bug fixes
+- Removed unwanted rectangles on fields and combos that appeared in some themes.
+- Popups that previously used fixed colors now adapt to Light/Dark mode to avoid strong contrast.
+- Protective adjustments to avoid incorrect visual effects in lists and composite areas.
+
+What to check
+- On Windows 10/11 Light theme: open dropdowns (priority, timer, domain, quadrants) — the list background should be light and integrated with the theme.
+- On Dark theme: the same controls should present a slightly darker fill, without rectangles on the main control.
+- Confirm that text fields and selectors maintain the system's native appearance in dialogs and panels.
+
+Notes
+- No functional changes were made to actions; the update focuses on appearance and visual consistency.
+- If you want contrast adjustments, lighten/darken factors can be tuned in future releases.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.9.0
 Date: February 9, 2026
 Author: Fernando Nillsson Cidade

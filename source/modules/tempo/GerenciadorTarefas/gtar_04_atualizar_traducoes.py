@@ -4,7 +4,7 @@ logger = LogManager.get_logger()
 
 def atualizar_traducoes(self):
     try:
-        self.input_tarefa.setPlaceholderText(QCoreApplication.translate("App", "Digite uma nova tarefa... (Ex: 'Estudar Resistência dos Materiais - Cap 3')"))
+        self.input_tarefa.setPlaceholderText(QCoreApplication.translate("App", "Digite uma nova tarefa ou arraste um arquivo... (Ex: 'Estudar Resistência dos Materiais - Cap 3')"))
         self.combo_prioridade.clear()
         self.combo_prioridade.addItems([
             QCoreApplication.translate("App", "🔴 Importante e Urgente"),

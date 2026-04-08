@@ -572,8 +572,8 @@ Let's go to the next focus cycle! 💪</translation>
     </message>
 
     <message>
-      <source>Digite uma nova tarefa... (Ex: 'Estudar Resistência dos Materiais - Cap 3')</source>
-      <translation>Type a new task... (Ex: 'Study Strength of Materials - Ch 3')</translation>
+      <source>Digite uma nova tarefa ou arraste um arquivo... (Ex: 'Estudar Resistência dos Materiais - Cap 3')</source>
+      <translation>Type a new task or drag and drop a file... (Ex: 'Study Strength of Materials - Ch 3')</translation>
     </message>
 
     <message>
@@ -1055,8 +1055,8 @@ This may take a few minutes.</translation>
     </message>
 
     <message>
-        <source>Adicione uma tarefa...</source>
-        <translation>Add a task...</translation>
+        <source>Adicione uma tarefa ou arraste um arquivo...</source>
+        <translation>Add a task or drag and drop a file...</translation>
     </message>
 
     <message>

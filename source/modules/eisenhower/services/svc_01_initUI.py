@@ -1,8 +1,8 @@
 import os
 import subprocess
-from PySide6.QtGui import QIcon
+from PySide6.QtGui import QIcon, QColor, QPainterPath
 from PySide6.QtCore import Qt, QCoreApplication, QDate, QLocale
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QComboBox, QDateEdit, QCheckBox, QFrame, QTabWidget
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QComboBox, QDateEdit, QCheckBox, QFrame, QTabWidget, QProxyStyle, QStyle, QTabBar
 from .svc_11_CustomTimeEdit import CustomTimeEdit
 from .svc_12_DragDropTaskList import DragDropTaskList
 from .svc_13_FileDropLineEdit import FileDropLineEdit
@@ -46,7 +46,7 @@ def init_ui(app):
     input_layout_row2.setAlignment(Qt.AlignLeft)
 
     app.task_input = FileDropLineEdit(app, app)
-    app.task_input.setPlaceholderText(get_text("Adicione uma tarefa..."))
+    app.task_input.setPlaceholderText(get_text("Adicione uma tarefa ou arraste um arquivo..."))
 
     try:
         _apply_widget_min_height(app, app.task_input, "task_input")
@@ -234,6 +234,40 @@ def init_ui(app):
     app.quadrant4_completed_list = DragDropTaskList(app, is_completed_list=True)
     app.add_placeholder(app.quadrant4_completed_list, get_text("Nenhuma Tarefa Concluída"))
 
+    class _QuadrantTabStyle(QProxyStyle):
+        _TAB_COLORS = {
+            0: QColor(200, 50, 50, 80),
+            1: QColor(230, 140, 20, 80),
+            2: QColor(230, 210, 30, 80),
+            3: QColor(50, 170, 60, 80),
+        }
+
+        def drawControl(self, element, option, painter, widget=None):
+            if element == QStyle.ControlElement.CE_TabBarTabShape:
+                super().drawControl(element, option, painter, widget)
+
+                if option.state & QStyle.StateFlag.State_Selected:
+                    idx = -1
+
+                    if isinstance(widget, QTabBar):
+                        idx = widget.tabAt(option.rect.center())
+
+                    color = self._TAB_COLORS.get(idx)
+
+                    if color:
+                        inner_rect = option.rect.adjusted(2, 2, 0, 2)
+                        radius = max(3, min(0, inner_rect.height() // 1))
+                        clip_path = QPainterPath()
+                        clip_path.addRoundedRect(inner_rect, radius, radius)
+                        painter.save()
+                        painter.setClipPath(clip_path)
+                        painter.fillRect(inner_rect, color)
+                        painter.restore()
+
+                return
+
+            super().drawControl(element, option, painter, widget)
+
     class _AutoOpenTabWidget(QTabWidget):
         def __init__(self, owner, parent=None):
             super().__init__(parent)
@@ -357,6 +391,8 @@ def init_ui(app):
 
     tabs = _AutoOpenTabWidget(app)
     app.quadrant_tabs = tabs
+    tabs._quadrant_style = _QuadrantTabStyle()
+    tabs.tabBar().setStyle(tabs._quadrant_style)
 
     def _make_tab(label_widget, list_widget, completed_label_widget, completed_list_widget):
         tab = QWidget()

@@ -1,6 +1,5 @@
 from PySide6.QtGui import QPalette, QColor
 from PySide6.QtCore import QObject, QEvent
-from PySide6.QtWidgets import QComboBox
 
 
 def install_palette_theme_sync(app, logger) -> None:
@@ -71,50 +70,128 @@ def install_palette_theme_sync(app, logger) -> None:
             except Exception:
                 fill_color = window_color
 
-            pal = widget.palette()
-            pal.setColor(QPalette.Base, fill_color)
-            pal.setColor(QPalette.AlternateBase, fill_color)
-
             try:
-                if isinstance(widget, QComboBox):
-                    pal.setColor(QPalette.Button, window_color)
+                from PySide6.QtWidgets import QLineEdit, QDateEdit, QTimeEdit, QComboBox
+                is_native_input = isinstance(widget, (QLineEdit, QDateEdit, QTimeEdit, QComboBox))
 
             except Exception:
-                pass
+                is_native_input = False
 
-            widget.setPalette(pal)
-
-            vp = getattr(widget, "viewport", None)
-            if callable(vp):
+            if is_native_input:
                 try:
-                    widget.viewport().setAutoFillBackground(True)
-                    widget.viewport().setPalette(pal)
+                    p = widget.palette()
+                    if isinstance(widget, QComboBox):
+                        p.setColor(QPalette.Button, window_color)
+
+                    try:
+                        target_inputs = (
+                            getattr(app, "task_input", None),
+                            getattr(app, "date_input", None),
+                            getattr(app, "time_input", None),
+                        )
+                        if widget in target_inputs and fill_color is not None:
+                            darker = QColor(fill_color).darker(110)
+                            p.setColor(QPalette.Base, darker)
+
+                    except Exception:
+                        pass
+
+                    widget.setPalette(p)
+
+                    try:
+                        if widget is getattr(app, "quadrant_selector", None):
+                            view = getattr(widget, "view", None)
+
+                            if callable(view):
+                                try:
+                                    v = view()
+
+                                    if v is not None:
+                                        popup_pal = v.palette()
+
+                                        try:
+                                            if fill_color is not None:
+                                                try:
+                                                    if is_light_theme:
+                                                        popup_base = QColor(window_color)
+
+                                                    else:
+                                                        popup_base = QColor(fill_color).darker(115)
+
+                                                except Exception:
+                                                    popup_base = QColor(fill_color)
+
+                                                popup_pal.setColor(QPalette.Base, popup_base)
+                                                popup_pal.setColor(QPalette.AlternateBase, popup_base)
+
+                                        except Exception:
+                                            pass
+
+                                        v.setPalette(popup_pal)
+
+                                        try:
+                                            v.viewport().setAutoFillBackground(True)
+                                            v.viewport().setPalette(popup_pal)
+
+                                        except Exception:
+                                            pass
+
+                                except Exception:
+                                    pass
+
+                    except Exception:
+                        pass
 
                 except Exception:
                     pass
 
             else:
+                pal = widget.palette()
+                pal.setColor(QPalette.Base, fill_color)
+                pal.setColor(QPalette.AlternateBase, fill_color)
+
                 try:
-                    widget.setAutoFillBackground(True)
+                    if isinstance(widget, QComboBox):
+                        pal.setColor(QPalette.Button, window_color)
 
                 except Exception:
                     pass
 
-            view = getattr(widget, "view", None)
-            if callable(view):
-                try:
-                    v = view()
-                    if v is not None:
-                        v.setPalette(pal)
-                        try:
-                            v.viewport().setAutoFillBackground(True)
-                            v.viewport().setPalette(pal)
+                widget.setPalette(pal)
+                vp = getattr(widget, "viewport", None)
 
-                        except Exception:
-                            pass
+                if callable(vp):
+                    try:
+                        widget.viewport().setAutoFillBackground(True)
+                        widget.viewport().setPalette(pal)
 
-                except Exception:
-                    pass
+                    except Exception:
+                        pass
+
+                else:
+                    try:
+                        widget.setAutoFillBackground(True)
+
+                    except Exception:
+                        pass
+
+                view = getattr(widget, "view", None)
+                if callable(view):
+                    try:
+                        v = view()
+
+                        if v is not None:
+                            v.setPalette(pal)
+
+                            try:
+                                v.viewport().setAutoFillBackground(True)
+                                v.viewport().setPalette(pal)
+
+                            except Exception:
+                                pass
+
+                    except Exception:
+                        pass
 
         def _sync_eisenhower_backgrounds():
             if getattr(app, "_eisenhower_palette_sync_in_progress", False):
