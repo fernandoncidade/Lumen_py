@@ -58,8 +58,7 @@ def exibir_manual(app):
         dlg.setWindowTitle(window_title)
 
         dlg.setWindowFlags(
-            dlg.windowFlags()
-            | Qt.WindowType.Window
+            Qt.WindowType.Window
             | Qt.WindowType.WindowSystemMenuHint
             | Qt.WindowType.WindowMinimizeButtonHint
             | Qt.WindowType.WindowMaximizeButtonHint

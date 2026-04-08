@@ -1,4 +1,48 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.3.0
+Date: February 3, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Small release focused on polish and robustness of public screens and the calendar: improved visibility of counters/badges, more informative tooltips, more resilient file opening, more consistent theme/palette synchronization in internal areas of the interface, and increased stability for the "About" and "Manual" windows. Additional protections and logs were added to reduce failures in extreme scenarios.
+
+Key improvements
+- Calendar
+  - Visual badges for day/week/month with a readable limit and theme-based colors.
+  - Day tooltips with organized lines (time, description and priority) for easier reading.
+  - Display filters (day/week/month) with ordered listings and placeholders when there are no tasks.
+  - Opening linked files with fallback mechanisms and user warnings in case of failure.
+
+- Theme synchronization
+  - Improved application of internal colors to maintain contrast in composite widgets (lists, tables and dropdowns).
+  - Adjustments to avoid low-contrast areas after theme changes.
+
+- About and Manual
+  - Content updatable at runtime without recreating windows; labels and texts retranslated on the fly.
+  - Automatic adjustment of descriptive text height for better reading when resizing.
+  - Manual navigation by index/anchors preserving position when changing language.
+
+- Hardening and logs
+  - Additional protections against exceptions and expanded logs to aid diagnosis.
+
+Bug fixes
+- Prevents crash when hovering over days without data (tooltips).
+- Fixes badge painting in dark/light themes preserving contrast.
+- Resolves failures when opening files without fallbacks; now shows clear notifications.
+- Maintains palette synchronization in list/combo viewports.
+- Preserves position and index when updating About/Manual texts at runtime.
+
+What changes for you
+- Calendar is more informative and visually consistent.
+- Fewer failures when opening links and when switching theme/language.
+- About and Manual update texts without losing position or needing to be reopened.
+
+Quick recommendations
+- Test hovering and opening files in the calendar; change theme/language in About/Manual to verify behavior.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.2.0
 Date: February 2, 2026
 Author: Fernando Nillsson Cidade

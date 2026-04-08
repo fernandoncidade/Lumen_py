@@ -1,4 +1,48 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.3.0
+Data: 3 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Pequena release focada em polimentos e robustez das telas públicas e do calendário: melhor visualização de contadores/badges, tooltips mais informativos, abertura de arquivos mais resiliente, sincronização de tema/paleta mais consistente em áreas internas da interface e maior estabilidade nas janelas "Sobre" e "Manual". Foram adicionadas proteções e logs para reduzir falhas em cenários extremos.
+
+Principais novidades
+- Calendário
+  - Badges visuais por dia/semana/mês com limite legível e cores do tema.
+  - Tooltips de dia com linhas organizadas (horário, descrição e prioridade) para facilitar leitura.
+  - Filtros de exibição (dia/semana/mês) com listagem ordenada e placeholders quando não houver tarefas.
+  - Abertura de arquivos vinculados com mecanismos de fallback e aviso ao usuário em caso de falha.
+
+- Sincronização de tema
+  - Melhoria na aplicação de cores internas para manter contraste em widgets compostos (listas, tabelas e dropdowns).
+  - Ajustes para evitar áreas com contraste ruim após troca de tema.
+
+- Sobre e Manual
+  - Conteúdo atualizável em tempo real sem recriar janelas; rótulos e textos retranslate em runtime.
+  - Ajuste automático da altura do texto descritivo para melhor leitura ao redimensionar.
+  - Navegação do manual por índice/âncoras preservando posição ao trocar idioma.
+
+- Hardening e logs
+  - Proteções adicionais contra exceções e logs ampliados para facilitar diagnóstico.
+
+Correções de bugs
+- Evita crash ao passar o mouse sobre dias sem dados (tooltips).
+- Corrige pintura de badges em temas escuro/claro preservando contraste.
+- Resolve falhas ao abrir arquivos sem fallback; agora há notificações claras.
+- Mantém sincronização de paleta em viewports de listas/combo.
+- Preserva posição e índice ao atualizar textos do Sobre/Manual em runtime.
+
+O que muda para você
+- Calendário mais informativo e visualmente consistente.
+- Menos falhas ao abrir links e ao trocar tema/idioma.
+- Sobre e Manual atualizam textos sem perder posição nem exigir reabertura.
+
+Recomendações rápidas
+- Teste hover e abertura de arquivo no calendário; troque tema/idioma em Sobre/Manual para verificar comportamento.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.2.0
 Data: 2 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

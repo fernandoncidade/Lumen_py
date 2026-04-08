@@ -3,6 +3,19 @@ logger = LogManager.get_logger()
 
 def closeEvent(self, event):
     try:
+        try:
+            for attr_name in ("_sobre_dialog", "_manual_dialog"):
+                try:
+                    dlg = getattr(self, attr_name, None)
+                    if dlg is not None:
+                        dlg.close()
+
+                except Exception:
+                    pass
+
+        except Exception:
+            pass
+
         if hasattr(self, 'leitor') and self.leitor:
             try:
                 self.leitor.cleanup()

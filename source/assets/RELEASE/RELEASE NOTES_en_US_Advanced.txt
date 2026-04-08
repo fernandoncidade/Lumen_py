@@ -1,4 +1,132 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.3.0
+Date: February 3, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Delivery focused on refinements and hardening of public dialogs and the Calendar/Panel subsystem: improvements in the presentation of badges and tooltips in the calendar, more robust file-opening mechanisms, refined palette/theme synchronization for viewports, hardening of the Manual and About dialog display routines (reuse, runtime content update and fixed-text height calculation). Several protections and logs were added to reduce crashes in edge-case scenarios.
+
+Main improvements
+1. Calendar / CalendarPanel / BadgeCalendarWidget
+   - Rich per-date tooltip:
+     - Implemented a tooltip map (set_task_tooltip_map) that aggregates formatted lines per task (time, text, status and priority) and shows a contextual QToolTip when hovering over days with tasks.
+     - Sorting and normalization of lines for consistent readability.
+   - Badges and counters:
+     - Day/week/month counters calculated with Counter; paintCell draws badges with a visual limit ("99+") and color based on the application's highlight palette.
+   - Robustness in mouse date detection:
+     - _date_at_pos attempts to use dateAt (when available), falls back via view/indexAt and heuristics to extract the day (DisplayRole) with multiple try/except blocks.
+   - More resilient linked-file opening:
+     - _open_linked_file tries QDesktopServices.openUrl, then platform fallbacks (os.startfile / open / xdg-open) and shows QMessageBox.warning if it fails.
+   - Display filter (day/week/month) and listing:
+     - update_task_list applies period filter, preserves ordering (date/time/text) and includes disabled placeholders when there are no tasks.
+   - Metadata exposure in tooltips:
+     - List items include a tooltip with file/date/time/description/priority translated when available.
+
+2. Palette / Theme Sync refinements
+   - _apply_window_as_base reapplies QColor(Window) into Base/AlternateBase and, when applicable, Button for QComboBox.
+   - Defensive propagation to view()/viewport() (setAutoFillBackground(True) and setPalette) to keep contrast in composite widgets (QListWidget, QTableView, QComboBox.view()).
+   - Local EventFilter (_PaletteThemeSyncFilter) installed on QApplication to react to ApplicationPaletteChange / PaletteChange / ThemeChange; debug logs for non-blocking failures.
+
+3. AboutDialog (abt_01_SobreDialog.py) — runtime and layout improvements
+   - update_content:
+     - Robust method to update the title, fixed_label, contents of the QTextBrowsers (History/Details/Licenses/Notices/Privacy/Release Notes) without recreating the dialog.
+     - Safe reconstruction of the Licenses HTML including a list of sites with clickable links.
+   - Precise fixed_label height calculation:
+     - _adjust_fixed_label_height uses QTextDocument to calculate and apply the correct height to the fixed_label after updates and on resizeEvent.
+   - Tab label routine:
+     - _update_tab_labels normalizes show/hide arrays and ensures consistent update with the current index.
+   - Reuse and lifecycle:
+     - Constructor preserves WA_DeleteOnClose and non-modal default; dialog accepts update_content for runtime translations and avoids multiple instances with reactivation logic.
+
+4. show_about / mod_07_exibir_public.py — payload and translations
+   - _compute_payload centralizes selection of texts by language (pt_BR / en_US) and safe fallback for missing translation keys.
+   - Runtime refresh:
+     - SobreDialogRuntime overrides changeEvent to react to LanguageChange by calling refresh_sobre which invokes update_content.
+   - Messages, labels and texts:
+     - Fixed texts (version/author/description) and tab labels standardized via _tr_multi with fallback to local translations or hardcoded values when necessary.
+   - Safety in creation/reuse:
+     - Logic to avoid multiple instances; connection to app.aboutToQuit for ordered closing; protection via try/except and logs.
+
+5. ManualRuntime / mod_08_exibir_manual.py
+   - Stable manual rendering:
+     - Management of blocks (toc, titles, bullets, lines) with QTextCursor and formatting (sizes and weights) for better navigation.
+   - Anchor navigation:
+     - TOC with anchors (anchorHref) and an anchorClicked handler that positions the cursor at the recorded position (position map).
+   - Close button label:
+     - _apply_close_label applies translated text and adjusts width using QFontMetrics.
+   - Reuse feature:
+     - Avoids multiple windows, preserves indices and positions when updating language at runtime; connected to app.aboutToQuit and destroyed for cleanup.
+
+6. General hardening and logging
+   - Consistent use of LogManager.get_logger() for logger.error / logger.debug with exc_info at all sensitive points: cell painting, badge calculation, list updates, item parsing, file opening, palette application and translations.
+   - Extensive localized try/except blocks to avoid exception propagation that would crash the user.
+   - Fallback messages in UIs (e.g., "Information not available" translated) when content is missing.
+
+Bug fixes
+1. Empty tooltip / crash on calendar hover
+   - Fixed handling of QEvent.ToolTip to ensure correct return and avoid exception propagation; QToolTip.hideText used on paths without data.
+
+2. Badge painting issues in dark/light themes
+   - Use of QApplication highlight palette instead of hardcoded colors; transparency adjusted for overlays and null palette checked.
+
+3. Linked-file opening without fallback
+   - Added platform fallback paths and user notification when file not found, avoiding false success.
+
+4. Loss of palette synchronization in combobox/listview viewports
+   - setAutoFillBackground(True) applied to viewports and defensive propagation of the palette to avoid areas with poor contrast after theme change.
+
+5. Updating About/Manual texts at runtime caused loss of position/indicator
+   - Preservation of indices and position map when re-rendering content and when changing language, preserving the user experience.
+
+Implementation details (relevant points)
+- BadgeCalendarWidget:
+  - Internal structure: _task_counts, _week_counts, _month_counts, _tasks_by_date.
+  - Public methods: set_task_counts(dates_list), set_task_tooltip_map(tasks_by_date).
+  - Painting: paintCell calls _draw_badge with protection; drawing uses painter.setRenderHint(Antialiasing).
+- CalendarDialog / CalendarPanel:
+  - Share task collection and filtering logic via _collect_tasks; CalendarPanel delegates to CalendarDialog core methods with try/except wrappers.
+  - Filter control (Day/Week/Month) and priority checkbox influence composition of tooltip lines and list items.
+- AboutDialog / show_about:
+  - update_content prepared to accept partial payloads; safe handling of site lists; fixed_label height adjustment via QTextDocument.
+  - SobreDialogRuntime responds to LanguageChange to call refresh_sobre.
+- ManualDialog:
+  - Content generated in memory via blocks parsed by get_manual_blocks/get_manual_document; mapping of recorded positions for direct navigation.
+- Palette / Theme Sync:
+  - Local implementations of _apply_window_as_base and _PaletteThemeSyncFilter installed only when QApplication.instance() is present, with debug logs on failures.
+
+Files changed / main scope of this release
+- source/modules/eisenhower/ui/ui_07_Calendar.py (BadgeCalendarWidget, CalendarDialog, CalendarPanel, Calendar)
+- source/modules/public/abt_01_SobreDialog.py (SobreDialog: update_content, _adjust_fixed_label_height, _update_tab_labels)
+- source/modules/mod_07_exibir_public.py (compute payloads, SobreDialogRuntime, retranslate runtime)
+- source/modules/mod_08_exibir_manual.py (ManualDialog runtime refresh, anchor navigation)
+- Small local palette sync tweaks installed in relevant dialogs/panels
+
+Tests and verification
+- Calendar:
+  - Hover over days with multiple tasks: tooltip displayed with ordered lines and no crash.
+  - Badges correctly shown for day/week/month; verification on light/dark themes.
+  - Opening linked file from the list item on Windows/Mac/Linux with fallback and warning if missing.
+- About:
+  - Open About, change language at runtime (when translator available) and verify retranslate without recreating the dialog; fixed_label recalculates height correctly after update_content.
+  - Verify links in Licenses open externally.
+- Manual:
+  - Open Manual, navigate TOC with anchors, change language and preserve selected position/index.
+- Robustness:
+  - Simulate absence of translation_manager, absence of date_input and absence of view.dateAt; UI must remain functional with fallbacks and logs.
+- Logs:
+  - Review logs generated by LogManager for debug/error messages in palette, painting and I/O routines.
+
+Migration and compatibility notes
+- Runtime retranslate features depend on app.gerenciador_traducao.obter_idioma_atual() when available; without it, components use heuristics/fallbacks.
+- The palette filter is installed only if QCoreApplication.instance() exists; restarting the application after theme updates is recommended on platforms that do not support ColorSchemeChange.
+- Recommended to test on Windows/Mac/Linux environments to validate file-opening fallbacks.
+
+Final remarks
+- This release prioritizes robustness of the public display flow (About/Manual) and calendar usability (badges/tooltips/opening files). Broad try/except blocks and logs reduce the chance of crashes caused by missing external integrations and facilitate diagnosis in real environments.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.2.0
 Date: February 2, 2026
 Author: Fernando Nillsson Cidade

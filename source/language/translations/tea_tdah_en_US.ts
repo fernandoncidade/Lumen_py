@@ -2309,5 +2309,10 @@ Deseja continuar?</source>
 Do you want to continue?</translation>
     </message>
 
+    <message>
+      <source>Mostrar prioridade</source>
+      <translation>Show priority</translation>
+    </message>
+
   </context>
 </TS>

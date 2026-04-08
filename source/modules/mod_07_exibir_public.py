@@ -139,7 +139,7 @@ def exibir_sobre(app):
 
             texto_fixo = (
                 f"<span style='font-size:16px;font-weight:bold'>{app_title}</span><br/><br/>"
-                f"<span><b>{version_label}</b> 2026.2.2.0</span><br/><br/>"
+                f"<span><b>{version_label}</b> 2026.2.3.0</span><br/><br/>"
                 f"<span><b>{authors_label}</b> Fernando Nillsson Cidade</span><br/><br/>"
                 f"<span><b>{description_label}</b> {description_text}</span><br/>"
             )
@@ -228,7 +228,7 @@ def exibir_sobre(app):
         p = _compute_payload(idioma)
 
         dialog = SobreDialogRuntime(
-            None,
+            app,
             titulo=p["titulo"],
             texto_fixo=p["texto_fixo"],
             texto_history=p["texto_history"],
@@ -263,8 +263,8 @@ def exibir_sobre(app):
 
         dialog.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose, True)
         dialog.destroyed.connect(_clear_sobre_dialog)
-
         qt_app = QCoreApplication.instance()
+
         if qt_app is not None:
             qt_app.aboutToQuit.connect(dialog.close)
 

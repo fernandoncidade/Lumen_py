@@ -32,14 +32,14 @@ class SobreDialog(QDialog):
                 release_notes=None, 
                 show_release_notes_text=None,
                 hide_release_notes_text=None):
-        super().__init__(parent)
+        super().__init__(None)
         try:
             self.setWindowTitle(titulo)
             self.setWindowFlags(
-            Qt.Window | 
-            Qt.WindowTitleHint | 
-            Qt.WindowSystemMenuHint | 
-            Qt.WindowMinMaxButtonsHint | 
+            Qt.Window |
+            Qt.WindowTitleHint |
+            Qt.WindowSystemMenuHint |
+            Qt.WindowMinMaxButtonsHint |
             Qt.WindowCloseButtonHint)
             self.setModal(False)
 
