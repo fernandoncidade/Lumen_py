@@ -8,7 +8,8 @@ def novo_conceito(self):
             'explicacao': '',
             'lacunas': '',
             'revisao': '',
-            'dominio': 0
+            'dominio': 0,
+            'arquivo_vinculado': None
         }
         self.limpar_campos()
 

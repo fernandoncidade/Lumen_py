@@ -1,4 +1,58 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.16.0
+Date: 16 February 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Release focused on improving integration between Mind Maps ↔ the Feynman Method, smoothing the experience with linked files (preview, opening and linking), increasing robustness of Mind Map persistence/backup and ensuring safe cleanup of background resources. Defensive protections were added, usability improvements (richer tooltips, manageable handlers) and adjustments for better compatibility across varied PySide6 environments.
+
+Main improvements
+- Linked files: preview and opening
+  - Enriched preview presenting clear sections (Concept, Explain, Gaps, Review and Linked File) to facilitate quick reading.
+  - Tooltip positioned to remain inside the screen and automatically hidden when the cursor leaves the item.
+  - More reliable file opening with path validation and user warning when the file is not found.
+
+- Mind Maps → Feynman Method integration
+  - Concepts sent from the map are validated and integrated safely, avoiding duplicates and preserving notes history.
+  - Ability to quickly send a node's content to the Feynman Method while keeping the linked file when present.
+  - Open/link file actions in dialogs made predictable to avoid repeated executions by accident.
+
+- Mind Map persistence and backup
+  - Safer saving of map data, including essential layout information.
+  - Automatic backup optimized to avoid rewriting files when nothing changed, reducing unnecessary I/O.
+  - Loading more tolerant of invalid data: out-of-spec entries are ignored, restoring as much as possible without crashing.
+
+- Appearance and theme
+  - Text fields, lists and selectors better follow the system theme, preserving native look without causing visual artifacts.
+  - Reactive synchronization when switching the system theme to preserve readability and consistency.
+
+- Shutdown and cleanup
+  - Safe stopping of background workers/processes when closing the application, avoiding orphaned tasks and potential instabilities.
+
+Bug fixes
+- Tooltip positioned correctly so it does not disappear outside the visible area.
+- File opening now informs the user and attempts alternatives when needed, avoiding silent failures.
+- Prevented accumulation of handlers in the node edit dialog, avoiding multiple executions of the same action.
+- Backups do not rewrite the file when there is no real change in the map.
+- Map loading tolerates invalid indices without aborting the process.
+
+Quick validation checklist
+1. Hover over items to see the preview with clear sections and ensure it does not exceed screen bounds.
+2. Use Ctrl + double-click on a node with a linked file to open it; confirm behavior on your system.
+3. Integrate a concept from the map into the Feynman Method and verify it appears in the list with the link preserved.
+4. Modify the map and observe the creation of the backup; reopen without changes and confirm no unnecessary rewrite occurred.
+5. Switch the system theme (light/dark) and check that fields and lists remain readable without artifacts.
+6. Open/close the node edit dialog repeatedly and confirm actions do not accumulate.
+
+Next suggested steps
+- Add automated tests for file preview and for the map → Feynman integration flow.
+- Expose UX preferences (e.g., enable/disable preview and confirmation when linking files).
+- Create integration tests for background processes related to the Feynman Method.
+- Evaluate visual tests to ensure no regressions across light/dark themes.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.13.0
 Date: February 13, 2026
 Author: Fernando Nillsson Cidade

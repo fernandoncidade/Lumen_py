@@ -222,6 +222,7 @@ def mouseDoubleClickEvent(self, event):
                     'lacunas': '',
                     'revisao': notas_texto,
                     'dominio': 0,
+                    'arquivo_vinculado': getattr(self, "arquivo_vinculado", None),
                 }
                 try:
                     self.event_bus.send_conceito(dados)

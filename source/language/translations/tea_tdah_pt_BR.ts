@@ -2453,11 +2453,6 @@ Deseja continuar?</translation>
     </message>
 
     <message>
-      <source>Arquivo não encontrado.</source>
-      <translation>Arquivo não encontrado.</translation>
-    </message>
-
-    <message>
       <source>Arraste um arquivo aqui para vincular (opcional)</source>
       <translation>Arraste um arquivo aqui para vincular (opcional)</translation>
     </message>
@@ -2515,6 +2510,28 @@ Deseja continuar?</translation>
     <message>
       <source>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</source>
       <translation>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</translation>
+    </message>
+
+    <message>
+      <source>📎 Arquivo Vinculado</source>
+      <translation>📎 Arquivo Vinculado</translation>
+    </message>
+
+    <message>
+      <source>(Para abrir o arquivo vinculado: CTRL + duplo clique)</source>
+      <translation>(Para abrir o arquivo vinculado: CTRL + duplo clique)</translation>
+    </message>
+
+    <message>
+      <source>O arquivo vinculado não foi encontrado:
+{caminho}</source>
+      <translation>O arquivo vinculado não foi encontrado:
+{caminho}</translation>
+    </message>
+
+    <message>
+      <source>Não foi possível abrir o arquivo vinculado.</source>
+      <translation>Não foi possível abrir o arquivo vinculado.</translation>
     </message>
 
   </context>

@@ -1,3 +1,4 @@
+import html
 from PySide6.QtWidgets import QListWidgetItem
 from PySide6.QtCore import QCoreApplication, Qt
 from source.utils.LogManager import LogManager
@@ -28,6 +29,7 @@ def atualizar_lista(self):
             explicacao = conceito.get('explicacao', '') or ''
             lacunas = conceito.get('lacunas', '') or ''
             revisao = conceito.get('revisao', '') or ''
+            arquivo_vinculado = (conceito.get('arquivo_vinculado') or '').strip()
 
             parts = []
             ft = _first_n_lines(titulo, 5)
@@ -50,10 +52,26 @@ def atualizar_lista(self):
             if fr:
                 parts.append(QCoreApplication.translate("App", "4️⃣ Revisão") + ":" + "\n" + fr)
 
+            if arquivo_vinculado:
+                arquivo_vinculado_titulo = QCoreApplication.translate("App", "📎 Arquivo Vinculado")
+                arquivo_vinculado_instrucao = QCoreApplication.translate("App", "(Para abrir o arquivo vinculado: CTRL + duplo clique)")
+                arquivo_vinculado_titulo_negrito = f"<b>{arquivo_vinculado_titulo}</b>"
+                arquivo_vinculado_cabecalho = f"{arquivo_vinculado_titulo_negrito} {arquivo_vinculado_instrucao}"
+                parts.append(arquivo_vinculado_cabecalho + ":" + "\n" + arquivo_vinculado)
+
             tooltip = "\n\n".join(parts)
 
             if tooltip:
-                item.setToolTip(tooltip)
+                tooltip_html = (
+                    "<qt>"
+                    + html.escape(tooltip)
+                    .replace("&lt;b&gt;", "<b>")
+                    .replace("&lt;/b&gt;", "</b>")
+                    .replace("\n\n", "<br/><br/>")
+                    .replace("\n", "<br/>")
+                    + "</qt>"
+                )
+                item.setToolTip(tooltip_html)
 
             self.lista_conceitos.addItem(item)
 

@@ -36,6 +36,7 @@ def setup_ui(self):
         self.lista_conceitos = QListWidget()
         self.lista_conceitos.setSelectionMode(QAbstractItemView.ExtendedSelection)
         self.lista_conceitos.itemClicked.connect(self.selecionar_conceito)
+        self.lista_conceitos.itemDoubleClicked.connect(self.on_lista_conceitos_double_click)
         self.lista_conceitos.setContextMenuPolicy(Qt.CustomContextMenu)
         self.lista_conceitos.customContextMenuRequested.connect(self.mostrar_menu_contexto)
         layout_esquerdo.addWidget(self.lista_conceitos)

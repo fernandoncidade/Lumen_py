@@ -1,4 +1,58 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.16.0
+Data: 16 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega voltada a melhorar a integração entre Mapas Mentais e o Método Feynman, tornar mais fluida a experiência com arquivos vinculados (visualização, abertura e vinculação), aumentar a robustez do salvamento/backup do Mapa Mental e garantir limpeza segura de recursos em segundo plano. Foram adicionadas proteções para reduzir falhas, aprimoramentos de usabilidade (tooltips mais ricos, handlers gerenciáveis) e ajustes para melhor compatibilidade em diferentes ambientes.
+
+Melhorias principais
+- Arquivos vinculados: preview e abertura
+  - Visualização enriquecida mostrando seções claras (Conceito, Explique, Lacunas, Revisão e Arquivo Vinculado) para facilitar a leitura rápida.
+  - Tooltip posicionado para não sair da tela e escondido automaticamente quando o cursor sai do item.
+  - Abertura de arquivos mais confiável, com verificação do caminho e aviso ao usuário caso o arquivo não seja encontrado.
+
+- Integração Mapas → Método Feynman
+  - Conceitos enviados do mapa são validados e integrados de forma segura, evitando duplicatas e preservando histórico de anotações.
+  - Possibilidade de enviar rapidamente o conteúdo de um nó para o Método Feynman mantendo o vínculo ao arquivo quando houver.
+  - Ações de abrir/vincular arquivo no diálogo foram tornadas previsíveis, evitando execuções repetidas por acidente.
+
+- Persistência e backup do Mapa Mental
+  - Salvamento mais seguro dos dados do mapa, incluindo informações de layout essenciais.
+  - Backup automático otimizado para não regravar arquivos se nada mudou, reduzindo I/O desnecessário.
+  - Carregamento mais tolerante a dados inválidos: entradas fora do esperado são ignoradas, restaurando o máximo possível sem travar.
+
+- Aparência e tema
+  - Campos de texto, listas e seletores seguem melhor o tema do sistema, mantendo a aparência nativa sem causar artefatos visuais.
+  - Sincronização reativa ao trocar tema do sistema para preservar legibilidade e consistência.
+
+- Encerramento e limpeza
+  - Parada segura de processos/trabalhos em segundo plano ao fechar a aplicação, evitando tarefas órfãs e possíveis instabilidades.
+
+Correções de bugs
+- Tooltip posicionado corretamente para não desaparecer fora da área visível.
+- Abertura de arquivos agora informa o usuário e tenta alternativas quando necessário, evitando falhas silenciosas.
+- Evitado acúmulo de handlers no diálogo de edição de nós, prevenindo múltiplas execuções de uma mesma ação.
+- Backups não reescrevem o arquivo quando não há alteração real no mapa.
+- Carregamento de mapas tolera índices inválidos sem abortar o processo.
+
+O que verificar rapidamente (validação)
+1. Pairar sobre itens para ver o preview com seções claras e sem ultrapassar as bordas da tela.
+2. Usar Ctrl + duplo clique em um nó com arquivo vinculado para abrir o arquivo; confirmar comportamento em seu sistema.
+3. Integrar um conceito do mapa ao Método Feynman e verificar que aparece na lista com o vínculo preservado.
+4. Modificar o mapa e observar a criação do backup; reabrir sem alterar e confirmar que não houve regravação desnecessária.
+5. Alternar o tema do sistema (claro/escuro) e conferir que campos e listas mantêm boa leitura sem artefatos.
+6. Abrir/fechar o diálogo de edição de nó repetidas vezes e confirmar que ações não se acumulam.
+
+Próximos passos sugeridos
+- Adicionar testes automatizados para preview de arquivos e para o fluxo de integração do mapa ao Método Feynman.
+- Expor preferências de UX (por exemplo: habilitar/desabilitar preview e confirmação ao vincular arquivos).
+- Criar testes de integração para os processos em segundo plano relacionados ao Método Feynman.
+- Avaliar testes visuais para garantir ausência de regressões em temas claro/escuro.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.13.0
 Data: 13 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

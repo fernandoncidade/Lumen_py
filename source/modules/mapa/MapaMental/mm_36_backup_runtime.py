@@ -70,10 +70,34 @@ def _serializar_mapa(self) -> dict:
             try:
                 inicio = idx_by_no.get(item.no_inicio, None)
                 fim = idx_by_no.get(item.no_fim, None)
+
                 if inicio is None or fim is None:
                     continue
 
-                conexoes.append({"inicio": inicio, "fim": fim})
+                conexao_data = {"inicio": inicio, "fim": fim}
+
+                try:
+                    pen = item.pen()
+                    estilo_val = pen.style()
+
+                    if hasattr(estilo_val, "value"):
+                        estilo_val = int(estilo_val.value)
+
+                    else:
+                        estilo_val = int(estilo_val)
+
+                    conexao_data["estilo"] = {
+                        "cor": pen.color().name(),
+                        "alpha": int(pen.color().alpha()),
+                        "largura": float(pen.widthF()),
+                        "linha_estilo": estilo_val,
+                        "cosmetica": bool(pen.isCosmetic()),
+                    }
+
+                except Exception:
+                    pass
+
+                conexoes.append(conexao_data)
 
             except Exception:
                 continue
@@ -84,6 +108,7 @@ def _serializar_mapa(self) -> dict:
     raiz_no = getattr(self, "_hierarquia_root", None)
 
     parent_idx = {}
+
     for filho, pai in hierarquia_parent.items():
         if filho not in idx_by_no:
             continue
@@ -91,6 +116,7 @@ def _serializar_mapa(self) -> dict:
         parent_idx[str(idx_by_no[filho])] = idx_by_no[pai] if pai in idx_by_no else None
 
     children_idx = {}
+
     for pai, filhos in hierarquia_children.items():
         if pai not in idx_by_no:
             continue
@@ -106,8 +132,10 @@ def _serializar_mapa(self) -> dict:
     raiz_idx = idx_by_no.get(raiz_no, None)
 
     config = {}
+
     try:
         scene = getattr(self, "scene", None)
+
         if scene is not None:
             config["scene_rect"] = [
                 float(scene.sceneRect().x()),
@@ -124,6 +152,7 @@ def _serializar_mapa(self) -> dict:
 
     try:
         view = getattr(self, "view", None)
+
         if view is not None:
             t = view.transform()
             config["view_transform"] = [
@@ -176,11 +205,13 @@ def _salvar_backup_automatico(self):
 
         dados = _serializar_mapa(self)
         hash_atual = hashlib.sha256(json.dumps(dados, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()
+
         if hash_atual == getattr(self, "_lumen_backup_last_hash", None):
             return
 
         base_dir = getattr(self, "caminho_persistente", None) or obter_caminho_persistente()
         caminho = os.path.join(base_dir, "mapa_mental.json")
+
         if _salvar_mapa_em_arquivo(self, caminho):
             self._lumen_backup_last_hash = hash_atual
 

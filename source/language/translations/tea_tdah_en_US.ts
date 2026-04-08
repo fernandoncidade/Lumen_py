@@ -2453,11 +2453,6 @@ Do you want to continue?</translation>
     </message>
 
     <message>
-      <source>Arquivo não encontrado.</source>
-      <translation>File not found.</translation>
-    </message>
-
-    <message>
       <source>Arraste um arquivo aqui para vincular (opcional)</source>
       <translation>Drag a file here to link (optional)</translation>
     </message>
@@ -2515,6 +2510,28 @@ Do you want to continue?</translation>
     <message>
       <source>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</source>
       <translation>To open the linked file, press CTRL+double click with the left mouse button on the node.</translation>
+    </message>
+
+    <message>
+      <source>📎 Arquivo Vinculado</source>
+      <translation>📎 Linked File</translation>
+    </message>
+
+    <message>
+      <source>(Para abrir o arquivo vinculado: CTRL + duplo clique)</source>
+      <translation>(To open the linked file: CTRL + double click)</translation>
+    </message>
+
+    <message>
+      <source>O arquivo vinculado não foi encontrado:
+{caminho}</source>
+      <translation>The linked file was not found:
+{caminho}</translation>
+    </message>
+
+    <message>
+      <source>Não foi possível abrir o arquivo vinculado.</source>
+      <translation>Could not open the linked file.</translation>
     </message>
 
   </context>

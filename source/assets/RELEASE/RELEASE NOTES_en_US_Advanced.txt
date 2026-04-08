@@ -1,4 +1,123 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.16.0
+Date: 16 February 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Release focused on deeper integration between Mind Maps ↔ the Feynman Method, refinements to the linked-files experience (preview, opening and linking), increased robustness of Mind Map persistence/backup and safe cleanup of threads/resources in the Feynman module. Defensive protections, UX improvements (richer tooltips, disconnectable handlers) and adjustments for compatibility across varied PySide6 environments were added.
+
+Main improvements
+1. Linked files — preview and opening
+   - Enriched contextual preview:
+     - Implemented a tooltip widget that composes sections (Concept / Explain / Gaps / Review / 📎 Linked File) with separators and automatic size adjustment.
+     - Preview data exposed via Qt.UserRole+1 (PREVIEW_ROLE) and consumed by the tooltip display routine.
+     - Tooltip positioning considers available screen geometry to avoid being placed outside the visible area.
+   - Hover / event management:
+     - An event filter installed on the viewport hides the tooltip on Leave/FocusOut/Hide/Wheel/Resize and when moving the cursor away from an item.
+     - itemEntered -> show tooltip connection provides immediate feedback without blocking interactions.
+   - Robust file opening:
+     - File opening attempts QDesktopServices.openUrl and falls back to native platform mechanisms (os.startfile on Windows, open on macOS, xdg-open on Linux).
+     - Path existence is validated and a warning dialog is shown if the file is not found.
+     - Detailed logging on failures and exception handling to avoid crashes.
+
+2. Receiving concepts integration
+   - Normalization and merge:
+     - Incoming concepts are validated for title/explanation, fields normalized (explanation/notes, gaps, review, domain, linked_file) and merged with existing concepts (appending explanations when applicable).
+     - History is preserved and duplicates avoided; UI updated via save_concepts/update_list.
+   - Integration flow from Mind Map:
+     - Nodes provide an "➕ Integrate to Feynman Method" action that publishes data to the event bus (with local emit fallback) including linked_file.
+     - CTRL+double-click on a node opens the linked file directly via QDesktopServices when available.
+   - Disconnectable handlers:
+     - Open/link file buttons in dialogs disconnect previous handlers before reconnecting, preventing accumulation of connections.
+
+3. Mind Map persistence / backup
+   - Safe serialization:
+     - Map serialization converts complex attributes into safe payloads (primitives, lists, dicts) and includes layout metadata (sceneRect, grid, transform, zoom).
+     - Protections for optional attributes and safe reads of scene/view state.
+   - Automatic backup by hash:
+     - SHA256 of the ordered JSON avoids redundant writes; flags control backup pause and last-hash to manage I/O.
+     - Configurable timer connects to the automatic-save callback.
+   - Defensive loading:
+     - Map loading validates indices for nodes/connections/hierarchy, ignores invalid entries and restores as much as possible without aborting.
+     - Missing explicit connections are reconstructed from hierarchy when needed.
+
+4. UI / Palette and color application
+   - QPalette-based synchronization:
+     - Function applies a QPalette derived from QPalette.Window to QTextEdit/QListWidget/QComboBox, handling view()/viewport() with callable checks and try/except.
+     - Specific adjustments for QComboBox (Button color, popup and viewport palette) to maintain readability.
+   - Theme filter:
+     - An event filter installed on the QApplication reacts to ApplicationPaletteChange/PaletteChange/StyleChange and (when present) ColorSchemeChange, reapplying palettes without using stylesheets.
+   - Initial background update and exception protection across different Qt implementations.
+
+5. Thread management and cleanup
+   - Safe shutdown:
+     - Cleanup stops the Feynman worker with exception handling.
+     - Feynman thread/worker are initialized with protected signals; aboutToQuit is connected to stop to avoid orphaned threads.
+
+Bug fixes
+1. Tooltip/popup disappearing at invalid positions
+   - Tooltip positioning limited to the screen's availableGeometry to prevent overflow and tooltips outside the view.
+
+2. File opening failing silently
+   - Added cross-platform fallbacks and user warnings when the file does not exist; logs include exc_info for diagnosis.
+
+3. Duplicate handlers in node dialogs
+   - Previous handlers are removed/disconnected when updating dialog buttons, preventing multiple executions from repeated clicks.
+
+4. Redundant backup writes and unnecessary I/O
+   - SHA256 over ordered JSON prevents rewriting when there is no change in the map.
+
+5. Map loading breaking on invalid indices
+   - Defensive conversions and validations for parent/children/expanded sets; out-of-range entries are ignored without aborting load.
+
+Primary files changed / added in this release
+- source/modules/feynman/fey_03_setup_ui.py
+- source/modules/feynman/fey_05_novo_conceito.py
+- source/modules/feynman/fey_07_salvar_conceito_atual.py
+- source/modules/feynman/fey_10_atualizar_lista.py
+- source/modules/feynman/fey_13_receber_conceito_mapa_mental.py
+- source/modules/feynman/fey_16_cleanup.py
+- source/modules/feynman/fey_18_arquivo_vinculado.py
+- source/modules/mapa/NoConceito/nocon_04_mouseDoubleClickEvent.py
+- source/modules/mapa/MapaMental/mm_36_backup_runtime.py
+- source/modules/mapa/MapaMental/mm_18_carregar_mapa.py
+- source/modules/mod_05_metodo_feynman.py
+
+Validation recommendations (tests & verification)
+- Linked files / Tooltip:
+  1. Hover over items with PREVIEW_ROLE set and verify the tooltip shows sections correctly and does not exceed screen bounds.
+  2. CTRL+double-click a node with a linked file to open it on Windows/macOS/Linux.
+  3. Integrate a concept via the node action and confirm it arrives in the Feynman Method (list updated and linked_file preserved).
+
+- Backup / Loading:
+  1. Modify the map and verify creation of mapa_mental.json; re-run without changes and confirm no rewrite occurs (stable hash).
+  2. Provide JSON with invalid indices and confirm partial load without crashing.
+
+- Palette / Theme:
+  1. Switch the system theme and verify QPalette is reapplied to QTextEdit/QListWidget/QComboBox in the Feynman module.
+  2. Check absence of unwanted background rectangles in native widgets.
+
+- Robustness:
+  1. Force drops/mimeData with unexpected shapes in drag&drop components (when applicable) and confirm fallback to super() without exceptions.
+  2. Open/close the node dialog repeatedly and verify handlers do not accumulate connections.
+
+Technical notes
+- Preference for QPalette (QPalette.Window/Base) instead of setStyleSheet to preserve native appearance and reduce visual regressions.
+- Sensitive operations use try/except with logger.error/debug/exception (exc_info=True) for diagnostics without interrupting the UI.
+- Event filters on the QApplication are used to centralize palette synchronization.
+- Preview tooltip is built dynamically from UserRole data and shown as a Qt.ToolTip-compatible widget for cross-platform compatibility.
+- Map serialization prioritizes interoperability (simple payloads, explicit version) and tolerance for unknown attributes.
+- File opening attempts QDesktopServices.openUrl and falls back to native platform commands, validating file existence before attempting to open.
+
+Next suggested steps
+1. Add automated tests for file preview (mocking events / itemEntered) and for Map→Feynman integration.
+2. Expose UX preferences: default preview behavior (enabled/disabled) and confirmation when linking files via drag&drop.
+3. Cover the Feynman worker flow with integration tests (load/save via thread) to validate asynchronous signals.
+4. Evaluate visual tests (pixel-diff) to ensure no palette regressions in dark/light themes.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.13.0
 Date: February 13, 2026
 Author: Fernando Nillsson Cidade

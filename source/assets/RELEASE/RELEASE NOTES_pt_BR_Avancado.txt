@@ -1,4 +1,123 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.16.0
+Data: 16 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em maior integração entre Mapa Mental ↔ Método Feynman, refinamentos na experiência de arquivos vinculados (preview, abertura e vinculação), robustez no persistente/backup do Mapa Mental e limpeza segura de threads/recursos do módulo Feynman. Foram adicionadas proteções defensivas, melhorias de UX (tooltips ricos, handlers desconectáveis) e ajustes para compatibilidade em ambientes PySide6 variados.
+
+Melhorias principais
+1. Arquivos vinculados — preview e abertura (fey_18_arquivo_vinculado.py / fey_10_atualizar_lista.py)
+   - Preview contextual enriquecido:
+     - Implementado widget de tooltip (_FeynmanTooltipArquivoVinculado) que monta seções (Conceito / Explique / Lacunas / Revisão / 📎 Arquivo Vinculado) com separadores e ajuste de tamanho.
+     - Dados de preview expostos por Qt.UserRole+1 (PREVIEW_ROLE) e utilizados por mostrar_tooltip_arquivo_vinculado.
+     - Posicionamento do tooltip considera a tela disponível (screen.availableGeometry), evitando sair da área visível.
+   - Hover/gestão de eventos:
+     - Filtro de eventos (_ListaConceitosHoverFilter) instalado na viewport para esconder tooltip em Leave/FocusOut/Hide/Wheel/Resize e ao mover o mouse fora de um item.
+     - Conexão itemEntered -> mostrar_tooltip_arquivo_vinculado para feedback imediato sem bloquear interações.
+   - Abertura robusta de arquivos:
+     - abrir_arquivo_conceito tenta QDesktopServices.openUrl e, em fallback, usa os mecanismos nativos por plataforma (os.startfile no Windows, open no macOS, xdg-open em Linux).
+     - Validação de existência do caminho e diálogo de aviso para arquivo não encontrado.
+     - Logging detalhado em falhas e tratamento de exceções para evitar crashes.
+
+2. Integração recebimento de conceitos (fey_13_receber_conceito_mapa_mental.py / mod_05_metodo_feynman.py / nocon_04_mouseDoubleClickEvent.py)
+   - Normalização e merge:
+     - receber_conceito_mapa_mental valida título/explicação, normaliza campos (explicacao/notas, lacunas, revisao, dominio, arquivo_vinculado) e faz merge com conceitos existentes (append de explicações quando aplicável).
+     - Preserva histórico e evita duplicatas; atualiza UI via salvar_conceitos/atualizar_lista.
+   - Fluxo de integração a partir do Mapa Mental:
+     - NoConceito fornece botão "➕ Integrar ao Método Feynman" que publica dados no event_bus (com fallback emit local) incluindo arquivo_vinculado.
+     - Suporte a CTRL+duplo-clique no nó para abrir arquivo vinculado diretamente via QDesktopServices.
+   - Handlers desconectáveis:
+     - Botões de abrir/vincular arquivo no diálogo desconectam handlers anteriores antes de reconectar, evitando acúmulo de conexões.
+
+3. Persistência / Backup do Mapa Mental (mm_36_backup_runtime.py / mm_18_carregar_mapa.py)
+   - Serialização segura:
+     - _serializar_mapa converte atributos complexos em payloads seguros (primitivos, listas, dicts) e inclui metadados de layout (sceneRect, grid, transform, zoom).
+     - Proteção para atributos opcionais (_lumen_*) e leitura segura de scene/view.
+   - Backup automático por hash:
+     - SHA256 do JSON ordenado evita gravações redundantes; flags _lumen_backup_paused e _lumen_backup_last_hash controlam I/O.
+     - Timer configurável (_configurar_backup_automatico) com timeout conectado a _salvar_backup_automatico.
+   - Carregamento defensivo:
+     - _carregar_mapa_de_arquivo valida índices de nós/conexões/hierarquia, ignora entradas inválidas e restaura o máximo possível sem abortar.
+     - Reconstrução de conexões faltantes a partir da hierarquia quando conexões explícitas ausentes.
+
+4. UI / Paleta e aplicação de cores (fey_03_setup_ui.py)
+   - Sincronização baseada em QPalette:
+     - Função _apply_window_as_base aplica QPalette derivada de QPalette.Window a QTextEdit/QListWidget/QComboBox, tratando view()/viewport() com verificações callable e try/except.
+     - Ajustes específicos para QComboBox (cor de Button, paleta do popup e viewport) para manter legibilidade.
+   - Filtro de tema:
+     - _PaletteThemeSyncFilter instalado na QApplication para reagir a ApplicationPaletteChange/PaletteChange/StyleChange e (quando presente) ColorSchemeChange, reaplicando paletas sem usar stylesheets.
+   - Atualização inicial de fundos e proteção contra exceções em diferentes implementações do Qt.
+
+5. Gerenciamento de threads e cleanup (fey_16_cleanup.py / mod_05_metodo_feynman.py)
+   - Encerramento seguro:
+     - cleanup executa parada do worker Feynman com tratamento de exceções.
+     - Thread/worker do Feynman inicializados com sinais protegidos; aboutToQuit conecta-se ao stop para evitar threads órfãs.
+
+Correções de bugs
+1. Tooltip/popup desaparecendo em posições inválidas
+   - Posicionamento do tooltip limitado à availableGeometry da tela para prevenir overflow e tooltips fora da view.
+
+2. Abertura de arquivos falhando silenciosamente
+   - Fallbacks multiplataforma adicionados e mensagens de aviso quando o arquivo não existe; logs com exc_info para diagnóstico.
+
+3. Handlers duplicados em diálogos de nó
+   - Remoção/desconexão de handlers antigos ao atualizar botões, evitando múltiplas execuções por cliques repetidos.
+
+4. Escrita de backup redundante e I/O desnecessário
+   - SHA256 sobre JSON ordenado impede regravações quando não há alteração no mapa.
+
+5. Carregamento de mapas quebrando com índices inválidos
+   - Conversões e validações defensivas em parent/children/expandidos; entradas fora do intervalo são ignoradas sem abortar o carregamento.
+
+Arquivos principais alterados / adicionados nesta entrega
+- source/modules/feynman/fey_03_setup_ui.py
+- source/modules/feynman/fey_05_novo_conceito.py
+- source/modules/feynman/fey_07_salvar_conceito_atual.py
+- source/modules/feynman/fey_10_atualizar_lista.py
+- source/modules/feynman/fey_13_receber_conceito_mapa_mental.py
+- source/modules/feynman/fey_16_cleanup.py
+- source/modules/feynman/fey_18_arquivo_vinculado.py
+- source/modules/mapa/NoConceito/nocon_04_mouseDoubleClickEvent.py
+- source/modules/mapa/MapaMental/mm_36_backup_runtime.py
+- source/modules/mapa/MapaMental/mm_18_carregar_mapa.py
+- source/modules/mod_05_metodo_feynman.py
+
+Recomendações de validação (tests & verificação)
+- Arquivos vinculados / Tooltip:
+  1. Pairar sobre itens com PREVIEW_ROLE definido e validar que o tooltip exibe seções corretamente e não ultrapassa bordas da tela.
+  2. CTRL+duplo-clique em nó com arquivo vinculado abre o arquivo em Windows/macOS/Linux.
+  3. Integrar conceito via botão do NoConceito e confirmar chegada no Método Feynman (lista atualizada e arquivo_vinculado preservado).
+
+- Backup / Carregamento:
+  1. Modificar mapa e validar criação de mapa_mental.json; reexecutar sem alterações e confirmar que não houve regravação (hash estável).
+  2. Fornecer JSON com índices inválidos e confirmar carregamento parcial sem crash.
+
+- Paleta / Tema:
+  1. Alternar tema do sistema e verificar reaplicação de QPalette em QTextEdit/QListWidget/QComboBox do Feynman.
+  2. Conferir ausência de retângulos de fundo indesejados em widgets nativos.
+
+- Robustez:
+  1. Forçar drops/mimeData inesperados nos componentes de drag&drop (quando aplicável) e confirmar fallback para super() sem exceções.
+  2. Abrir/fechar diálogo de nó repetidamente e verificar que handlers não acumulam conexões.
+
+Notas técnicas
+- Preferência por QPalette (QPalette.Window/Base) em vez de setStyleSheet para preservar aparência nativa e reduzir regressões visuais.
+- Operações sensíveis envolvem try/except com logger.error/debug/exception (exc_info=True) para diagnóstico sem interromper UI.
+- Uso de event filters na QApplication para sincronizar paletas de forma centralizada.
+- Tooltip de preview construído dinamicamente a partir de dados em UserRole e exibido com widget do tipo Qt.ToolTip para compatibilidade cross-platform.
+- Serialização do mapa prioriza interoperabilidade (payloads simples, versão explícita) e tolerância a atributos desconhecidos.
+- Abertura de arquivos tenta QDesktopServices.openUrl e recorre a comandos nativos por plataforma como fallback, com validação de existência de arquivo prévia.
+
+Próximos passos sugeridos
+1. Adicionar testes automatizados para preview de arquivos (mock de eventos / itemEntered) e para integração Mapa→Feynman.
+2. Expor preferências de UX: comportamento padrão do preview (ativado/desativado) e confirmação ao vincular arquivos via drag&drop.
+3. Cobrir com testes de integração o fluxo de worker Feynman (carregar/salvar via thread) para validar sinais assíncronos.
+4. Avaliar testes visuais (pixel-diff) para garantir ausência de regressões de paleta em temas escuros/claro.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.13.0
 Data: 13 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

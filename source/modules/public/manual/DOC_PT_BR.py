@@ -218,6 +218,64 @@ _DOC_PT_BR: tuple[ManualSection, ...] = (
         ),
     ),
     ManualSection(
+        id="novas-funcionalidades",
+        title="Novas funcionalidades (como usar)",
+        details=(
+            ManualDetails(
+                summary="Integração Mapa Mental -> Método Feynman",
+                bullets=(
+                    "No Mapa Mental, dê duplo clique em um nó para abrir a edição e preencher notas/revisão do conceito.",
+                    "Clique em '➕ Integrar ao Método Feynman' para enviar o conteúdo do nó automaticamente.",
+                    "Abra a aba Método Feynman e confirme o conceito na lista; se já existir, o app faz merge de conteúdo sem duplicar título.",
+                    "Ao atualizar um nó e reintegrar, a revisão e campos complementares são preservados no conceito existente.",
+                ),
+            ),
+            ManualDetails(
+                summary="Arquivos vinculados no Feynman (preview e abertura)",
+                bullets=(
+                    "Vincule um arquivo ao conceito (na edição do nó ou no fluxo do conceito) para manter material de apoio junto ao estudo.",
+                    "Passe o mouse sobre o conceito na lista para ver preview estruturado (Conceito, Explique, Lacunas, Revisão e arquivo vinculado).",
+                    "Use CTRL + duplo clique no nó (Mapa Mental) para abrir rapidamente o arquivo vinculado.",
+                    "Se o arquivo tiver sido movido/excluído, o app mostra aviso em vez de falhar silenciosamente; relacione novamente o caminho correto.",
+                ),
+            ),
+            ManualDetails(
+                summary="Gestão de Tempo com drag and drop aprimorado",
+                bullets=(
+                    "Arraste tarefas entre colunas e também sobre as abas: a aba de destino pode abrir automaticamente durante o arraste.",
+                    "Solte a tarefa sobre o cabeçalho da aba para mover sem perder o item, inclusive quando houver seleção simples.",
+                    "No campo de nova tarefa, você pode pressionar Enter para adicionar imediatamente.",
+                    "Também é possível usar arrastar e soltar de arquivos/texto no campo de tarefa quando suportado pelo sistema.",
+                ),
+            ),
+            ManualDetails(
+                summary="Painel de Calendário recolhível (Eisenhower)",
+                bullets=(
+                    "Na Matriz de Eisenhower, use o botão de calendário para alternar entre 'Mostrar Calendário' e 'Recolher Calendário'.",
+                    "Com o painel aberto, selecione uma data para listar tarefas vinculadas ao dia.",
+                    "Com o painel recolhido, sobra mais espaço para priorizar tarefas nos quadrantes.",
+                ),
+            ),
+            ManualDetails(
+                summary="Som do Pomodoro configurável",
+                bullets=(
+                    "Acesse Configurações -> Som para escolher a campainha do Pomodoro.",
+                    "Use '▶️ Tocar' para testar o áudio antes de salvar.",
+                    "Ajuste o intervalo entre repetições; ao finalizar ciclo, o alerta toca imediatamente e repete até você fechar a janela.",
+                    "As preferências de som e intervalo ficam salvas para os próximos ciclos.",
+                ),
+            ),
+            ManualDetails(
+                summary="Backup automático do Mapa Mental",
+                bullets=(
+                    "Edite normalmente o mapa e salve seu projeto; o backup automático passa a proteger alterações em segundo plano.",
+                    "Se não houver mudança real no mapa, o app evita regravações desnecessárias automaticamente.",
+                    "Ao carregar mapas com dados parciais/inválidos, o sistema tenta recuperar o máximo possível em vez de abortar tudo.",
+                ),
+            ),
+        ),
+    ),
+    ManualSection(
         id="solucao-de-problemas",
         title="Solução de problemas",
         details=(

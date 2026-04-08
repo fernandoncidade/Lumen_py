@@ -30,6 +30,7 @@
   - [Matriz de Eisenhower — Aba 5](#matriz-de-eisenhower---aba-5)
 - [Menus e ações rápidas](#menus-e-ações-rápidas)
 - [Sugestões de uso combinadas](#sugestões-de-uso-combinadas)
+- [Novas funcionalidades (como usar)](#novas-funcionalidades-como-usar)
 - [Solução de problemas (Troubleshooting)](#solução-de-problemas-troubleshooting)
 - [Logs e diagnóstico](#logs-e-diagnóstico)
 - [Armazenamento / Arquivos persistentes (resumo)](#armazenamento--arquivos-persistentes-resumo)
@@ -258,6 +259,42 @@ Dicas práticas
 - Mapas + Feynman: crie nós e registre explicações no Feynman para revisão.
 - Eisenhower para priorizar semanalmente e planejar pomodoros.
 
+## <a id="novas-funcionalidades-como-usar"></a>Novas funcionalidades (como usar)
+
+### Integração Mapa Mental -> Método Feynman
+- No Mapa Mental, dê duplo clique em um nó para abrir a edição e preencher notas/revisão do conceito.
+- Clique em `➕ Integrar ao Método Feynman` para enviar o conteúdo do nó automaticamente.
+- Abra a aba Método Feynman e confirme o conceito na lista; se já existir, o app faz merge de conteúdo sem duplicar título.
+- Ao atualizar um nó e reintegrar, a revisão e campos complementares são preservados no conceito existente.
+
+### Arquivos vinculados no Feynman (preview e abertura)
+- Vincule um arquivo ao conceito (na edição do nó ou no fluxo do conceito) para manter material de apoio junto ao estudo.
+- Passe o mouse sobre o conceito na lista para ver preview estruturado (Conceito, Explique, Lacunas, Revisão e arquivo vinculado).
+- Use `CTRL + duplo clique` no nó (Mapa Mental) para abrir rapidamente o arquivo vinculado.
+- Se o arquivo tiver sido movido/excluído, o app mostra aviso em vez de falhar silenciosamente; relacione novamente o caminho correto.
+
+### Gestão de Tempo com drag and drop aprimorado
+- Arraste tarefas entre colunas e também sobre as abas: a aba de destino pode abrir automaticamente durante o arraste.
+- Solte a tarefa sobre o cabeçalho da aba para mover sem perder o item, inclusive quando houver seleção simples.
+- No campo de nova tarefa, você pode pressionar `Enter` para adicionar imediatamente.
+- Também é possível usar arrastar e soltar de arquivos/texto no campo de tarefa quando suportado pelo sistema.
+
+### Painel de Calendário recolhível (Eisenhower)
+- Na Matriz de Eisenhower, use o botão de calendário para alternar entre `Mostrar Calendário` e `Recolher Calendário`.
+- Com o painel aberto, selecione uma data para listar tarefas vinculadas ao dia.
+- Com o painel recolhido, sobra mais espaço para priorizar tarefas nos quadrantes.
+
+### Som do Pomodoro configurável
+- Acesse `Configurações -> Som` para escolher a campainha do Pomodoro.
+- Use `▶️ Tocar` para testar o áudio antes de salvar.
+- Ajuste o intervalo entre repetições; ao finalizar ciclo, o alerta toca imediatamente e repete até você fechar a janela.
+- As preferências de som e intervalo ficam salvas para os próximos ciclos.
+
+### Backup automático do Mapa Mental
+- Edite normalmente o mapa e salve seu projeto; o backup automático passa a proteger alterações em segundo plano.
+- Se não houver mudança real no mapa, o app evita regravações desnecessárias automaticamente.
+- Ao carregar mapas com dados parciais/inválidos, o sistema tenta recuperar o máximo possível em vez de abortar tudo.
+
 ## <a id="solução-de-problemas-troubleshooting"></a>Solução de problemas (Troubleshooting)
 - Sem som:
   - Verificar volume do sistema e do app.
@@ -338,6 +375,7 @@ Dicas práticas
   - [Eisenhower Matrix — Tab 5](#eisenhower-matrix---tab-5)
 - [Menus and Quick Actions](#menus-and-quick-actions)
 - [Combined Usage Suggestions](#combined-usage-suggestions)
+- [New Features (How to Use)](#new-features-how-to-use)
 - [Troubleshooting](#troubleshooting)
 - [Logs and Diagnostics](#logs-and-diagnostics)
 - [Storage / Persistent Files (Summary)](#storage--persistent-files-summary)
@@ -565,6 +603,42 @@ Practical tips
 - Reading + Pomodoro: open material in the Reader, enable focus ruler, link a task to Pomodoro, and start a session.
 - Mind Maps + Feynman: create nodes and record explanations in Feynman for review.
 - Eisenhower to prioritize weekly and plan Pomodoros.
+
+## <a id="new-features-how-to-use"></a>New Features (How to Use)
+
+### Mind Map Integration -> Feynman Method
+- In Mind Maps, double-click a node to open editing and fill in concept notes/review.
+- Click `➕ Integrate into Feynman Method` to send the node content automatically.
+- Open the Feynman Method tab and confirm the concept in the list; if it already exists, the app merges content without duplicating the title.
+- When you update a node and integrate again, review and complementary fields are preserved in the existing concept.
+
+### Linked Files in Feynman (Preview and Open)
+- Link a file to the concept (in node editing or in the concept flow) to keep supporting material with your study.
+- Hover over the concept in the list to see a structured preview (Concept, Explain, Gaps, Review, and linked file).
+- Use `CTRL + double-click` on the node (Mind Maps) to quickly open the linked file.
+- If the file was moved/deleted, the app shows a warning instead of failing silently; relink the correct path.
+
+### Time Management with Enhanced Drag and Drop
+- Drag tasks between columns and also over tabs: the destination tab can open automatically during drag.
+- Drop the task on the tab header to move it without losing the item, including when there is a single selection.
+- In the new task field, you can press `Enter` to add immediately.
+- You can also drag and drop files/text into the task field when supported by the system.
+
+### Collapsible Calendar Panel (Eisenhower)
+- In the Eisenhower Matrix, use the calendar button to switch between `Show Calendar` and `Collapse Calendar`.
+- With the panel open, select a date to list tasks linked to that day.
+- With the panel collapsed, you get more space to prioritize tasks in the quadrants.
+
+### Configurable Pomodoro Sound
+- Go to `Settings -> Sound` to choose the Pomodoro bell.
+- Use `▶️ Play` to test the audio before saving.
+- Adjust the interval between repeats; when a cycle ends, the alert plays immediately and repeats until you close the window.
+- Sound and interval preferences are saved for upcoming cycles.
+
+### Automatic Mind Map Backup
+- Edit your map normally and save your project; automatic backup starts protecting changes in the background.
+- If there is no real change in the map, the app automatically avoids unnecessary rewrites.
+- When loading maps with partial/invalid data, the system tries to recover as much as possible instead of aborting everything.
 
 ## <a id="troubleshooting"></a>Troubleshooting
 - No sound:

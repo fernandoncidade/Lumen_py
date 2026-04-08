@@ -14,6 +14,7 @@ from .fey_13_receber_conceito_mapa_mental import receber_conceito_mapa_mental
 from .fey_14_on_conceitos_loaded import _on_conceitos_loaded
 from .fey_15_stop_feynman_thread import _stop_feynman_thread
 from .fey_16_cleanup import cleanup
+from .fey_18_arquivo_vinculado import abrir_arquivo_conceito, on_lista_conceitos_double_click
 
 __all__ = [
     "FeynmanWorker",
@@ -33,4 +34,6 @@ __all__ = [
     "_on_conceitos_loaded",
     "_stop_feynman_thread",
     "cleanup",
+    "abrir_arquivo_conceito",
+    "on_lista_conceitos_double_click",
 ]

@@ -16,6 +16,7 @@ def receber_conceito_mapa_mental(self, dados: dict):
         revisao_in = revisao_in.strip()
 
         dominio_in = int(dados.get('dominio', 0) or 0)
+        arquivo_vinculado_in = (dados.get('arquivo_vinculado') or '').strip() or None
 
         if not titulo:
             logger.warning("Título vazio recebido do Mapa Mental, ignorando")
@@ -49,6 +50,9 @@ def receber_conceito_mapa_mental(self, dados: dict):
             except Exception:
                 pass
 
+            if arquivo_vinculado_in:
+                existente['arquivo_vinculado'] = arquivo_vinculado_in
+
             logger.info(f"Conceito '{titulo}' atualizado com notas do Mapa Mental (merge/append)")
 
         else:
@@ -57,7 +61,8 @@ def receber_conceito_mapa_mental(self, dados: dict):
                 'explicacao': explicacao_in,
                 'lacunas': lacunas_in,
                 'revisao': revisao_in,
-                'dominio': dominio_in
+                'dominio': dominio_in,
+                'arquivo_vinculado': arquivo_vinculado_in
             }
             self.conceitos.append(novo)
             logger.info(f"Novo conceito '{titulo}' criado a partir do Mapa Mental")

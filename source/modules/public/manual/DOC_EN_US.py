@@ -218,6 +218,64 @@ _DOC_EN_US: tuple[ManualSection, ...] = (
         ),
     ),
     ManualSection(
+        id="new-features",
+        title="New Features (How to Use)",
+        details=(
+            ManualDetails(
+                summary="Mind Map Integration -> Feynman Method",
+                bullets=(
+                    "In Mind Maps, double-click a node to open editing and fill in concept notes/review.",
+                    "Click '➕ Integrate into Feynman Method' to send the node content automatically.",
+                    "Open the Feynman Method tab and confirm the concept in the list; if it already exists, the app merges content without duplicating the title.",
+                    "When you update a node and integrate again, review and complementary fields are preserved in the existing concept.",
+                ),
+            ),
+            ManualDetails(
+                summary="Linked Files in Feynman (Preview and Open)",
+                bullets=(
+                    "Link a file to the concept (in node editing or in the concept flow) to keep supporting material with your study.",
+                    "Hover over the concept in the list to see a structured preview (Concept, Explain, Gaps, Review, and linked file).",
+                    "Use CTRL + double-click on the node (Mind Maps) to quickly open the linked file.",
+                    "If the file was moved/deleted, the app shows a warning instead of failing silently; relink the correct path.",
+                ),
+            ),
+            ManualDetails(
+                summary="Time Management with Enhanced Drag and Drop",
+                bullets=(
+                    "Drag tasks between columns and also over tabs: the destination tab can open automatically during drag.",
+                    "Drop the task on the tab header to move it without losing the item, including when there is a single selection.",
+                    "In the new task field, you can press Enter to add immediately.",
+                    "You can also drag and drop files/text into the task field when supported by the system.",
+                ),
+            ),
+            ManualDetails(
+                summary="Collapsible Calendar Panel (Eisenhower)",
+                bullets=(
+                    "In the Eisenhower Matrix, use the calendar button to switch between 'Show Calendar' and 'Collapse Calendar'.",
+                    "With the panel open, select a date to list tasks linked to that day.",
+                    "With the panel collapsed, you get more space to prioritize tasks in the quadrants.",
+                ),
+            ),
+            ManualDetails(
+                summary="Configurable Pomodoro Sound",
+                bullets=(
+                    "Go to Settings -> Sound to choose the Pomodoro bell.",
+                    "Use '▶️ Play' to test the audio before saving.",
+                    "Adjust the interval between repeats; when a cycle ends, the alert plays immediately and repeats until you close the window.",
+                    "Sound and interval preferences are saved for upcoming cycles.",
+                ),
+            ),
+            ManualDetails(
+                summary="Automatic Mind Map Backup",
+                bullets=(
+                    "Edit your map normally and save your project; automatic backup starts protecting changes in the background.",
+                    "If there is no real change in the map, the app automatically avoids unnecessary rewrites.",
+                    "When loading maps with partial/invalid data, the system tries to recover as much as possible instead of aborting everything.",
+                ),
+            ),
+        ),
+    ),
+    ManualSection(
         id="troubleshooting",
         title="Troubleshooting",
         details=(

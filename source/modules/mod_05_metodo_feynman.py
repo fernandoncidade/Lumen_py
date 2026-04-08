@@ -9,7 +9,8 @@ from source.modules.feynman import (FeynmanWorker, carregar_conceitos, setup_ui,
                                     selecionar_conceito, deletar_conceito, atualizar_lista, 
                                     salvar_conceitos, mostrar_menu_contexto, redefinir_dominio,
                                     receber_conceito_mapa_mental, _on_conceitos_loaded, 
-                                    _stop_feynman_thread, cleanup)
+                                    _stop_feynman_thread, cleanup, abrir_arquivo_conceito,
+                                    on_lista_conceitos_double_click)
 
 
 class MetodoFeynman(QWidget):
@@ -119,3 +120,9 @@ class MetodoFeynman(QWidget):
 
     def cleanup(self):
         cleanup(self)
+
+    def abrir_arquivo_conceito(self, item):
+        abrir_arquivo_conceito(self, item)
+
+    def on_lista_conceitos_double_click(self, item):
+        on_lista_conceitos_double_click(self, item)
