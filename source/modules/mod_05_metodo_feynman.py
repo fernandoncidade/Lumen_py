@@ -10,6 +10,7 @@ from source.modules.feynman import (FeynmanWorker, carregar_conceitos, setup_ui,
                                     salvar_conceitos, mostrar_menu_contexto, redefinir_dominio,
                                     receber_conceito_mapa_mental, _on_conceitos_loaded, 
                                     _stop_feynman_thread, cleanup, abrir_arquivo_conceito,
+                                    vincular_arquivo_conceito, remover_arquivo_vinculado,
                                     on_lista_conceitos_double_click)
 
 
@@ -111,6 +112,12 @@ class MetodoFeynman(QWidget):
 
     def redefinir_dominio(self, item, novo_nivel):
         redefinir_dominio(self, item, novo_nivel)
+
+    def vincular_arquivo_conceito(self, item):
+        vincular_arquivo_conceito(self, item)
+
+    def remover_arquivo_vinculado(self, item):
+        remover_arquivo_vinculado(self, item)
 
     def _on_conceitos_loaded(self, conceitos):
         _on_conceitos_loaded(self, conceitos)

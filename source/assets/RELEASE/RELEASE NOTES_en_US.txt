@@ -1,4 +1,50 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.17.0
+Date: February 17, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Delivery focused on reinforcements and fixes for the Pomodoro flow, greater integration with the task manager, runtime translation updates, and refinements in theme application to avoid invalid states and visual artifacts.
+
+Main improvements
+- Pomodoro: more robust and predictable
+  - Start blocked when the cycle limit has been reached, with an informative alert.
+  - Buttons display text and emoji according to the state (▶️ Start, ⏸️ Pause, ▶️ Continue).
+  - Reset and skip cycle correctly update remaining time, the progress bar, and the display in all states.
+- Preservation of progress when changing settings
+  - When changing durations or the number of cycles, elapsed time is taken into account and remaining time is adjusted to preserve the user's progress.
+  - Minimal validations prevent invalid values.
+- Runtime translations
+  - Button texts, titles, and placeholders update without restarting the interface, preserving selections when possible.
+- Theme and appearance
+  - Safe application of the system palette to labels, lists, and selectors to maintain native appearance and avoid undesired rectangles.
+  - Reactive reapplication when switching themes preserves legibility.
+- Pomodoro ↔ Tasks integration
+  - Completed cycles automatically increment the pomodoro counter for tasks in progress.
+  - Tasks that reach the configured limit can be marked as completed automatically (when enabled).
+  - The sidebar "⚙️ In Progress" column improves visibility of tasks in progress with a dynamically translated title and minimum width adjustment for consistent layout.
+
+Fixes and protections
+- Prevent starting the timer in invalid states when the cycle limit has been reached.
+- Prevent negative remaining time values when updating settings.
+- Safe handling when applying the palette to widgets that do not support certain operations, reducing visual artifacts.
+- Prevent accumulation of duplicate handlers/connections when opening/closing/updating components, reducing exceptions and unexpected behaviors.
+
+Quick validation
+1. Start/pause/continue the Pomodoro and confirm label changes (▶️ / ⏸️).
+2. Change focus/break durations and verify preservation of current progress.
+3. Reach the cycle limit and confirm the alert and blocking of new focus.
+4. Complete a focus cycle and verify increment of pomodoros on tasks in progress.
+5. Switch the system theme and confirm that labels, lists, and selectors remain legible and free of artifacts.
+
+Next suggested steps
+- Add automated tests for progress preservation when updating settings.
+- Cover the Pomodoro → Task Manager flow with integration tests.
+- Expand visual checks of palette application for light/dark themes.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.16.0
 Date: 16 February 2026
 Author: Fernando Nillsson Cidade

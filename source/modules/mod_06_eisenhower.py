@@ -53,7 +53,7 @@ class MatrizEisenhower(QWidget):
             self.gerenciador_traducao.idioma_alterado.connect(self.atualizar_textos)
             self.gerenciador_traducao.aplicar_traducao()
 
-        self.tasks_path = os.path.join(obter_caminho_persistente(), "tasks.json")
+        self.tasks_path = os.path.join(obter_caminho_persistente(), "eisenhower_tarefas.json")
 
         self.initUI()
         self.load_tasks()

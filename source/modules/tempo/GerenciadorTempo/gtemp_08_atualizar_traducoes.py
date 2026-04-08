@@ -15,5 +15,12 @@ def atualizar_traducoes(self):
         if hasattr(self, 'col_doing_timer_group') and self.col_doing_timer_group:
             self.col_doing_timer_group.setTitle(QCoreApplication.translate("App", "⚙️ Em Progresso"))
 
+        try:
+            if hasattr(self, "_ajustar_largura_minima_coluna_esquerda"):
+                self._ajustar_largura_minima_coluna_esquerda()
+
+        except Exception:
+            pass
+
     except Exception as e:
         logger.error(f"Erro ao atualizar traduções do GerenciadorTempo: {str(e)}", exc_info=True)

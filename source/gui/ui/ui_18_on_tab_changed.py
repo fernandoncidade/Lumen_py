@@ -1,10 +1,13 @@
 from PySide6.QtCore import QCoreApplication
 from source.utils.LogManager import LogManager
-
 logger = LogManager.get_logger()
 
 def on_tab_changed(self, index):
     try:
+        if hasattr(self, "_render_status_bar_content"):
+            self._render_status_bar_content()
+            return
+
         tab_name = self.tabs.tabText(index)
         self.status_bar.showMessage(QCoreApplication.translate("App", "Módulo ativo: {tab_name}").format(tab_name=tab_name))
 

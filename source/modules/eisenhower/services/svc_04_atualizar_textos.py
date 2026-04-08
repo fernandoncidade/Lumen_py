@@ -51,10 +51,10 @@ def atualizar_textos(app):
         except Exception:
             pass
 
-        app.quadrant1_completed_label.setText(get_text("Concluídas"))
-        app.quadrant2_completed_label.setText(get_text("Concluídas"))
-        app.quadrant3_completed_label.setText(get_text("Concluídas"))
-        app.quadrant4_completed_label.setText(get_text("Concluídas"))
+        app.quadrant1_completed_label.setText(get_text("🔴 Concluídas"))
+        app.quadrant2_completed_label.setText(get_text("🟠 Concluídas"))
+        app.quadrant3_completed_label.setText(get_text("🟡 Concluídas"))
+        app.quadrant4_completed_label.setText(get_text("🟢 Concluídas"))
 
         if app.quadrant1_list.count() == 0:
             app.add_placeholder(app.quadrant1_list, get_text("1º Quadrante"))

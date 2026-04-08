@@ -222,38 +222,79 @@ _DOC_PT_BR: tuple[ManualSection, ...] = (
         title="Novas funcionalidades (como usar)",
         details=(
             ManualDetails(
-                summary="Integração Mapa Mental -> Método Feynman",
+                summary="Pomodoro mais inteligente no dia a dia",
                 bullets=(
-                    "No Mapa Mental, dê duplo clique em um nó para abrir a edição e preencher notas/revisão do conceito.",
-                    "Clique em '➕ Integrar ao Método Feynman' para enviar o conteúdo do nó automaticamente.",
-                    "Abra a aba Método Feynman e confirme o conceito na lista; se já existir, o app faz merge de conteúdo sem duplicar título.",
-                    "Ao atualizar um nó e reintegrar, a revisão e campos complementares são preservados no conceito existente.",
+                    "Use o botão principal do timer normalmente: ele muda entre Iniciar, Pausar e Continuar conforme o momento do estudo.",
+                    "Se você atingir a meta de ciclos do dia, o aplicativo avisa e bloqueia novos ciclos de foco até você aumentar a meta.",
+                    "Você pode usar 'Pular' para encerrar o período atual e ir para o próximo, ou 'Resetar Relógio' para recomeçar o período do zero.",
+                    "Ao terminar um foco, você recebe confirmação de progresso com a contagem de ciclos concluídos.",
                 ),
             ),
             ManualDetails(
-                summary="Arquivos vinculados no Feynman (preview e abertura)",
+                summary="Alterar tempos sem perder o que já foi feito",
                 bullets=(
-                    "Vincule um arquivo ao conceito (na edição do nó ou no fluxo do conceito) para manter material de apoio junto ao estudo.",
-                    "Passe o mouse sobre o conceito na lista para ver preview estruturado (Conceito, Explique, Lacunas, Revisão e arquivo vinculado).",
-                    "Use CTRL + duplo clique no nó (Mapa Mental) para abrir rapidamente o arquivo vinculado.",
-                    "Se o arquivo tiver sido movido/excluído, o app mostra aviso em vez de falhar silenciosamente; relacione novamente o caminho correto.",
+                    "Durante o uso do timer, você pode ajustar minutos de foco, descanso e quantidade de ciclos.",
+                    "Ao mudar essas configurações, o tempo já cumprido no ciclo atual é preservado para você não perder andamento.",
+                    "Se necessário, ajuste para pelo menos 1 ciclo para manter o fluxo funcionando corretamente.",
                 ),
             ),
             ManualDetails(
-                summary="Gestão de Tempo com drag and drop aprimorado",
+                summary="Integração automática entre Pomodoro e tarefas",
                 bullets=(
-                    "Arraste tarefas entre colunas e também sobre as abas: a aba de destino pode abrir automaticamente durante o arraste.",
-                    "Solte a tarefa sobre o cabeçalho da aba para mover sem perder o item, inclusive quando houver seleção simples.",
-                    "No campo de nova tarefa, você pode pressionar Enter para adicionar imediatamente.",
-                    "Também é possível usar arrastar e soltar de arquivos/texto no campo de tarefa quando suportado pelo sistema.",
+                    "Mantenha a tarefa que você está executando na coluna 'Em Progresso'.",
+                    "Quando um ciclo de foco termina, o contador de Pomodoros dessa tarefa é atualizado automaticamente.",
+                    "Quando a tarefa atingir a meta de ciclos definida, ela pode ser concluída automaticamente, conforme seu fluxo.",
+                    "Use o botão de reset de contagem quando quiser zerar apenas os contadores, sem apagar tarefas.",
                 ),
             ),
             ManualDetails(
-                summary="Painel de Calendário recolhível (Eisenhower)",
+                summary="Mover tarefas com mais rapidez",
                 bullets=(
-                    "Na Matriz de Eisenhower, use o botão de calendário para alternar entre 'Mostrar Calendário' e 'Recolher Calendário'.",
-                    "Com o painel aberto, selecione uma data para listar tarefas vinculadas ao dia.",
-                    "Com o painel recolhido, sobra mais espaço para priorizar tarefas nos quadrantes.",
+                    "Arraste tarefas entre listas para atualizar o status com poucos cliques.",
+                    "Ao arrastar sobre as abas, a aba de destino pode abrir sozinha para facilitar a movimentação.",
+                    "Você também pode clicar com o botão direito e escolher para qual lista ou prioridade enviar a tarefa.",
+                    "Na criação de tarefas, pressione Enter para adicionar rapidamente.",
+                ),
+            ),
+            ManualDetails(
+                summary="Matriz de Eisenhower com uso mais prático",
+                bullets=(
+                    "No painel da matriz, use o botão de calendário para alternar entre mostrar e recolher o calendário lateral.",
+                    "Com o calendário aberto, selecione uma data para ver as tarefas daquele dia.",
+                    "Com o calendário recolhido, você ganha mais espaço para organizar os quadrantes.",
+                    "No menu da tarefa (clique com o botão direito), você pode mover rapidamente para outro quadrante.",
+                ),
+            ),
+            ManualDetails(
+                summary="Compartilhar tarefas da Matriz para o Pomodoro",
+                bullets=(
+                    "Na tarefa da matriz, abra o menu com clique direito e escolha compartilhar com a Gestão de Tempo.",
+                    "A tarefa aparece no fluxo de Pomodoro para você estudar com foco e registrar progresso.",
+                    "Você pode compartilhar uma tarefa por vez ou várias tarefas em sequência.",
+                ),
+            ),
+            ManualDetails(
+                summary="Método Feynman com material de apoio e visão rápida",
+                bullets=(
+                    "Vincule arquivos de apoio aos seus conceitos para manter tudo no mesmo lugar.",
+                    "Passe o mouse sobre um conceito para ver um resumo rápido antes de abrir.",
+                    "Se o arquivo tiver sido movido ou apagado, o aplicativo mostra um aviso para você corrigir o vínculo.",
+                ),
+            ),
+            ManualDetails(
+                summary="Mapa Mental -> Método Feynman sem retrabalho",
+                bullets=(
+                    "No Mapa Mental, preencha o conceito e use o botão de integração para enviar ao Método Feynman.",
+                    "Ao abrir o Método Feynman, o conteúdo já chega organizado para você revisar.",
+                    "Se o conceito já existir, o aplicativo atualiza o conteúdo em vez de criar duplicado.",
+                ),
+            ),
+            ManualDetails(
+                summary="Tema e idioma atualizados em tempo real",
+                bullets=(
+                    "Você pode trocar idioma e tema com o aplicativo aberto.",
+                    "Textos, títulos e botões são atualizados na hora, sem necessidade de reiniciar.",
+                    "As telas de tempo, tarefas, Pomodoro e matriz acompanham a mudança automaticamente.",
                 ),
             ),
             ManualDetails(
@@ -261,16 +302,16 @@ _DOC_PT_BR: tuple[ManualSection, ...] = (
                 bullets=(
                     "Acesse Configurações -> Som para escolher a campainha do Pomodoro.",
                     "Use '▶️ Tocar' para testar o áudio antes de salvar.",
-                    "Ajuste o intervalo entre repetições; ao finalizar ciclo, o alerta toca imediatamente e repete até você fechar a janela.",
-                    "As preferências de som e intervalo ficam salvas para os próximos ciclos.",
+                    "Ajuste o intervalo de repetição; ao fim do ciclo, o alerta toca na hora e repete até você fechar o aviso.",
+                    "As preferências ficam salvas para os próximos usos.",
                 ),
             ),
             ManualDetails(
-                summary="Backup automático do Mapa Mental",
+                summary="Proteção extra ao abrir e recuperar conteúdo",
                 bullets=(
-                    "Edite normalmente o mapa e salve seu projeto; o backup automático passa a proteger alterações em segundo plano.",
-                    "Se não houver mudança real no mapa, o app evita regravações desnecessárias automaticamente.",
-                    "Ao carregar mapas com dados parciais/inválidos, o sistema tenta recuperar o máximo possível em vez de abortar tudo.",
+                    "Ao abrir conteúdos com informações incompletas, o aplicativo tenta recuperar o máximo possível automaticamente.",
+                    "Em casos de inconsistência, você recebe aviso em vez de perder tudo sem perceber.",
+                    "Essa proteção reduz risco de interrupção durante estudo e organização.",
                 ),
             ),
         ),

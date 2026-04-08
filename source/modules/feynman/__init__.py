@@ -9,7 +9,12 @@ from .fey_08_selecionar_conceito import selecionar_conceito
 from .fey_09_deletar_conceito import deletar_conceito
 from .fey_10_atualizar_lista import atualizar_lista
 from .fey_11_salvar_conceitos import salvar_conceitos
-from .fey_12_menu_contexto import mostrar_menu_contexto, redefinir_dominio
+from .fey_12_menu_contexto import (
+    mostrar_menu_contexto,
+    redefinir_dominio,
+    vincular_arquivo_conceito,
+    remover_arquivo_vinculado,
+)
 from .fey_13_receber_conceito_mapa_mental import receber_conceito_mapa_mental
 from .fey_14_on_conceitos_loaded import _on_conceitos_loaded
 from .fey_15_stop_feynman_thread import _stop_feynman_thread
@@ -30,6 +35,8 @@ __all__ = [
     "salvar_conceitos",
     "mostrar_menu_contexto",
     "redefinir_dominio",
+    "vincular_arquivo_conceito",
+    "remover_arquivo_vinculado",
     "receber_conceito_mapa_mental",
     "_on_conceitos_loaded",
     "_stop_feynman_thread",

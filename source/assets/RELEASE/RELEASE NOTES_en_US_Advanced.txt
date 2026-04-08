@@ -1,4 +1,94 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.17.0
+Date: February 17, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Delivery focused on reinforcements and fixes for the Pomodoro flow, improvements in integration between Pomodoro ↔ Task Manager, refinements in dynamic theme/palette application and strengthened defensive protections at critical UI points. The goal of this release was to make the timer more robust in real usage scenarios, ensure consistent translation updates at runtime and prevent invalid states when switching themes or resizing panels.
+
+Main improvements
+1. Pomodoro robustness and UX (modules: pomo_04_toggle_timer.py, pomo_09_resetar_timer.py, pomo_11_pular_ciclo.py, pomo_08_finalizar_ciclo.py)
+   - Cycle control and execution limit:
+     - Check of allowed cycle limit before starting/continuing a focus period; prevents starting when the limit has been reached and notifies the user with an informative alert.
+   - Timer states and dynamic labels:
+     - `Start / Pause / Continue` buttons now have translated texts and dynamic icons (emoji) depending on the state (`▶️ Start`, `⏸️ Pause`, `▶️ Continue`).
+   - Reset and skip cycle:
+     - `resetar_timer` correctly resets `tempo_restante`, updates `progress` and the display across all states (focus/short break/long break).
+     - `pular_ciclo` stops the running timer, forces immediate end of the current period and delegates to `finalizar_ciclo` to perform transitions and notify other parts of the application.
+
+2. Configuration update and progress preservation (pomo_03_atualizar_configuracoes.py)
+   - Changing durations and cycles without losing progress:
+     - When reading new settings (focus, short break, cycles) the component calculates elapsed time and adjusts `tempo_restante` to preserve the user's current progress.
+     - Normalization of minimum values (at least 1 cycle) and coherence between old and new values to avoid negative values.
+
+3. Translations and dynamic text (pomo_02_atualizar_traducoes.py, gtemp_08_atualizar_traducoes.py, gtar_04_atualizar_traducoes.py)
+   - Centralized runtime translations:
+     - Button texts, group titles, labels and placeholders are updated via `QCoreApplication.translate("App", ...)`, ensuring language switch without restarting the UI.
+     - Preservation of state where applicable (for example, selected options in combos) when reloading texts.
+
+4. Dynamic theme application / palette sync (pomo_12_aplicar_tema_dinamico.py, gtemp_06_aplicar_tema_dinamico_inputs.py, gtemp_07_eventFilter.py, gtar_23_eventFilter.py)
+   - Robust synchronization with the application's `QPalette`:
+     - Determination of light/dark theme via `QPalette.Window` color and fine adjustments for labels and combos.
+     - Safe handling of `QComboBox` (popup palette and viewport) and widgets exposing `view()`/`viewport()` with checks and `try/except` for compatibility with different Qt builds.
+   - Event filters:
+     - `ApplicationPaletteChange`, `PaletteChange`, `StyleChange` and (when available) `ColorSchemeChange` events reapply palettes and perform visual adjustments without using inline styles, preserving native appearance.
+
+5. Pomodoro ↔ Task Manager integration (gtemp_01_setup_ui.py, gtemp_09_registrar_pomodoro.py)
+   - Signals and automatic registration:
+     - `PomodoroTimer.ciclo_completado` connected to the time worker (`_tempo_worker.on_pomodoro`) to trigger global application logic.
+     - When a focus cycle completes, tasks with status `Doing` have `pomodoros_completados` incremented automatically; when they exceed the configured limit (`ciclos_permitidos`), they can be marked as `Done` if the flow is active.
+   - "⚙️ In Progress" column:
+     - Integration of the side column to display tasks in progress, with dynamic translation of the title and minimum width adjustment for layout consistency.
+
+Bug fixes and protections
+1. Prevent invalid states when starting the timer with the limit reached — start is now blocked and a contextual alert is shown.
+2. Prevent negative `tempo_restante` values when updating settings — elapsed calculation and recalculation using max(0, new_total).
+3. Protections when applying palette to widgets without `viewport()` and protection against native widgets that do not accept `AutoFillBackground` (prevents undesired rectangles).
+4. Defensive handling in signal connections and filter installation — prevents handler accumulation and possible exceptions in sequences of opening/closing/updating components.
+
+Main files changed / added in this delivery
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_01_setup_ui.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_02_atualizar_traducoes.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_03_atualizar_configuracoes.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_04_toggle_timer.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_08_finalizar_ciclo.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_09_resetar_timer.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_11_pular_ciclo.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_12_aplicar_tema_dinamico.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_01_setup_ui.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_06_aplicar_tema_dinamico_inputs.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_07_eventFilter.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_08_atualizar_traducoes.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_09_registrar_pomodoro.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_13_ajustar_largura_minima_coluna_esquerda.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTarefas\gtar_03_setup_ui.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTarefas\gtar_04_atualizar_traducoes.py
+
+Validation recommendations (tests & verification)
+- Pomodoro flow:
+  1. Start/pause/continue cycles and confirm label changes (`▶️`, `⏸️`).
+  2. Configure new focus/break durations and validate preservation of elapsed time after change.
+  3. Force reaching `ciclos_permitidos` and verify alert and blocking of new focus until the limit is adjusted.
+- Task integration:
+  1. Complete a focus cycle and verify increment of `pomodoros_completados` on `Doing` tasks.
+  2. Enable the flow that marks tasks as `Done` when they reach `ciclos_permitidos` and validate persistence.
+- Theme and layout:
+  1. Toggle system theme and confirm reapplication of `QPalette` on labels, combos and lists.
+  2. Resize window and confirm `_ajustar_largura_minima_coluna_esquerda` preserves layout without overlap.
+
+Technical notes
+- Preference for `QPalette` and conditional application on views (avoid `setStyleSheet` when possible) to keep native appearance across platforms.
+- Consistent use of `try/except` with `logger` to capture `exc_info` without interrupting the UI.
+- Default values and defensive validations: `max(1, ciclos_permitidos)` and `max(0, tempo_restante)` to avoid invalid states.
+
+Next suggested steps
+1. Add automated tests for progress preservation when updating Pomodoro settings.
+2. Cover via integration tests the Pomodoro → Task Manager flow (mock signals) to prevent regressions.
+3. Expand palette application to other modules with visual coverage (pixel-diff) for light/dark themes.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.16.0
 Date: 16 February 2026
 Author: Fernando Nillsson Cidade

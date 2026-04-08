@@ -24,8 +24,12 @@ def atualizar_interface(self, codigo_idioma):
         self.atualizar_menu()
 
         if hasattr(self, 'status_bar'):
-            tab_name = self.tabs.tabText(self.tabs.currentIndex())
-            self.status_bar.showMessage(QCoreApplication.translate("App", "Módulo ativo: {tab_name}").format(tab_name=tab_name))
+            if hasattr(self, "_render_status_bar_content"):
+                self._render_status_bar_content()
+
+            else:
+                tab_name = self.tabs.tabText(self.tabs.currentIndex())
+                self.status_bar.showMessage(QCoreApplication.translate("App", "Módulo ativo: {tab_name}").format(tab_name=tab_name))
 
         if hasattr(self, 'menu_sobre'):
             self.menu_sobre.setTitle(QCoreApplication.translate("App", "ℹ️ Sobre"))

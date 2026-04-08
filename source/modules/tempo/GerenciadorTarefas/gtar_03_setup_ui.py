@@ -1,12 +1,34 @@
-from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QTabWidget
-from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QTabWidget, QCheckBox, QStyle, QStyleOptionButton, QSizePolicy, QLayout
+from PySide6.QtCore import Qt, QRect
 from .gtar_26_FileDropLineEdit import FileDropLineEdit
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
+
+class _IndicatorOnlyCheckBox(QCheckBox):
+    def hitButton(self, pos):
+        try:
+            opt = QStyleOptionButton()
+            self.initStyleOption(opt)
+            indicator_rect = self.style().subElementRect(QStyle.SE_CheckBoxIndicator, opt, self)
+            spacing = self.style().pixelMetric(QStyle.PM_CheckBoxLabelSpacing, opt, self)
+            text = self.text() or ""
+            text_width = self.fontMetrics().horizontalAdvance(text)
+            text_height = self.fontMetrics().height()
+            text_x = indicator_rect.right() + max(0, spacing)
+            text_y = int((self.height() - text_height) / 2)
+            text_rect = QRect(text_x, text_y, max(0, text_width), max(0, text_height))
+            clickable_rect = indicator_rect.united(text_rect)
+            return clickable_rect.contains(pos)
+
+        except Exception:
+            return super().hitButton(pos)
+
 def setup_ui(self):
     try:
         layout = QVBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSizeConstraint(QLayout.SetMinimumSize)
 
         linha_entrada = QHBoxLayout()
 
@@ -30,6 +52,7 @@ def setup_ui(self):
 
         linha_botoes = QHBoxLayout()
         linha_botoes.setAlignment(Qt.AlignLeft)
+        linha_botoes.setSizeConstraint(QLayout.SetMinimumSize)
 
         try:
             self.btn_adicionar = self.gerenciador_botoes.create_button()
@@ -66,7 +89,73 @@ def setup_ui(self):
 
         self.btn_resetar_contagem.clicked.connect(self.resetar_contagem_botao)
         linha_botoes.addWidget(self.btn_resetar_contagem)
+
+        self.chk_fluxo_tarefas_concluidas = _IndicatorOnlyCheckBox()
+        self.chk_fluxo_tarefas_concluidas.setChecked(False)
+        self.chk_fluxo_tarefas_concluidas.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+        linha_botoes.addWidget(self.chk_fluxo_tarefas_concluidas)
+
         linha_botoes.addStretch()
+        self._layout_linha_botoes = linha_botoes
+        self._botoes_linha_principal = [
+            self.btn_adicionar,
+            self.btn_mover,
+            self.btn_remover,
+            self.btn_resetar_contagem,
+        ]
+
+        def _ajustar_linha_botoes():
+            try:
+                botoes = getattr(self, "_botoes_linha_principal", None) or []
+
+                if not botoes:
+                    return
+
+                checkbox = getattr(self, "chk_fluxo_tarefas_concluidas", None)
+                layout_botoes = getattr(self, "_layout_linha_botoes", None)
+
+                if layout_botoes is None:
+                    return
+
+                spacing = layout_botoes.spacing()
+
+                if spacing < 0:
+                    spacing = 6
+
+                margins = layout_botoes.contentsMargins()
+                largura_checkbox = 0
+
+                if checkbox is not None:
+                    largura_checkbox = max(checkbox.minimumSizeHint().width(), checkbox.sizeHint().width())
+                    checkbox.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
+                    checkbox.setMinimumWidth(largura_checkbox)
+                    checkbox.setMaximumWidth(largura_checkbox)
+
+                largura_botoes = 0
+
+                for btn in botoes:
+                    largura_botoes += max(btn.minimumWidth(), btn.sizeHint().width())
+
+                total_widgets = len(botoes) + (1 if checkbox is not None else 0)
+                espacamentos = spacing * max(0, total_widgets - 1)
+                largura_requerida = (
+                    margins.left()
+                    + margins.right()
+                    + largura_botoes
+                    + largura_checkbox
+                    + espacamentos
+                )
+
+                largura_minima_atual = self.minimumWidth()
+                self.setMinimumWidth(max(0, largura_requerida))
+
+                if self.minimumWidth() != largura_minima_atual:
+                    self.updateGeometry()
+
+            except Exception:
+                pass
+
+        self._ajustar_linha_botoes = _ajustar_linha_botoes
 
         layout.addLayout(linha_botoes)
 
@@ -190,6 +279,7 @@ def setup_ui(self):
 
         self.setLayout(layout)
         self.atualizar_traducoes()
+        self._ajustar_linha_botoes()
         self.atualizar_listas()
 
     except Exception as e:

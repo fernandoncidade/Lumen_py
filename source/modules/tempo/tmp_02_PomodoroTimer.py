@@ -30,6 +30,7 @@ class PomodoroTimer(QWidget):
             self.tempo_foco = 25 * 60
             self.tempo_descanso_curto = 5 * 60
             self.tempo_descanso_longo = 15 * 60
+            self.ciclos_permitidos = 4
             self.tempo_restante = self.tempo_foco
             self.em_foco = True
             self.ciclos_completados = 0

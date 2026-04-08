@@ -166,6 +166,13 @@ def setup_ui(self) -> None:
             self.tabs.setCurrentIndex(index)
 
             try:
+                if hasattr(self, "_registrar_contadores_modulo"):
+                    self._registrar_contadores_modulo(key, real_widget)
+
+            except Exception:
+                pass
+
+            try:
                 _apply_tab_titles()
 
             except Exception:

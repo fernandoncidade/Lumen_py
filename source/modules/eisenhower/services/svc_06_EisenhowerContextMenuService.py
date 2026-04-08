@@ -49,7 +49,7 @@ class EisenhowerContextMenuService:
     def _quadrant_options(self):
         return _quadrant_options(self)
 
-    def _target_list_for_quadrant(self, quadrant_index: int, keep_completed: bool):
+    def _target_list_for_quadrant(self, quadrant_index: int, keep_completed: bool | None = False):
         return _target_list_for_quadrant(self, quadrant_index, keep_completed)
 
     def _find_source_item_for_calendar(self, task_dict):

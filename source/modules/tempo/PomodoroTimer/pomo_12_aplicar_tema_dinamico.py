@@ -70,6 +70,7 @@ def _aplicar_tema_dinamico(self):
 
         _apply_combo_base_as_window(getattr(self, "spin_foco", None))
         _apply_combo_base_as_window(getattr(self, "spin_descanso", None))
+        _apply_combo_base_as_window(getattr(self, "spin_ciclos", None))
 
         self.update()
 

@@ -14,7 +14,8 @@ from source.modules.tempo.GerenciadorTempo import (
     registrar_pomodoro,
     cleanup,
     __del__,
-    atualizar_coluna_doing_timer
+    atualizar_coluna_doing_timer,
+    _ajustar_largura_minima_coluna_esquerda
 )
 
 
@@ -77,3 +78,6 @@ class GerenciadorTempo(QWidget):
 
     def atualizar_coluna_doing_timer(self):
         atualizar_coluna_doing_timer(self)
+
+    def _ajustar_largura_minima_coluna_esquerda(self):
+        _ajustar_largura_minima_coluna_esquerda(self)

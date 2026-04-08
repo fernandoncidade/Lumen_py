@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QGroupBox, QSplitter, QWidget
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QTimer
 from source.utils.LogManager import LogManager
 from source.modules.tempo.tmp_02_PomodoroTimer import PomodoroTimer
 from source.modules.tempo.tmp_03_GerenciadorTarefas import GerenciadorTarefas
@@ -10,6 +10,7 @@ def setup_ui(self):
         layout = QVBoxLayout()
 
         left_col = QVBoxLayout()
+        left_col.setContentsMargins(0, 0, 0, 0)
 
         self.pomodoro = PomodoroTimer(self)
         self.pomodoro.ciclo_completado.connect(self._tempo_worker.on_pomodoro)
@@ -41,6 +42,7 @@ def setup_ui(self):
 
         left_widget = QWidget(self)
         left_widget.setLayout(left_col)
+        self.left_widget = left_widget
 
         self.main_splitter = QSplitter(Qt.Horizontal, self)
         self.main_splitter.setChildrenCollapsible(False)
@@ -52,7 +54,7 @@ def setup_ui(self):
         self.main_splitter.setStretchFactor(1, 1)
         self.main_splitter.setHandleWidth(6)
 
-        left_widget.setMinimumWidth(540)
+        self._ajustar_largura_minima_coluna_esquerda()
         self.col_doing_timer_group.setMinimumWidth(280)
         self.main_splitter.setSizes([1080, 360])
 
@@ -60,6 +62,8 @@ def setup_ui(self):
 
         self.setLayout(layout)
         self.atualizar_traducoes()
+        QTimer.singleShot(0, self._ajustar_largura_minima_coluna_esquerda)
+        QTimer.singleShot(50, self._ajustar_largura_minima_coluna_esquerda)
         self.atualizar_coluna_doing_timer()
 
     except Exception as e:

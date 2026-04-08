@@ -10,6 +10,15 @@ def toggle_timer(self):
             self.gerenciador_botoes.set_button_text(self.btn_iniciar, QCoreApplication.translate("App", "▶️ Continuar"))
 
         else:
+            ciclos_total = max(1, int(getattr(self, "ciclos_permitidos", 4)))
+            if self.em_foco and self.ciclos_completados >= ciclos_total:
+                self._executar_alerta(
+                    QCoreApplication.translate("App", "⛔ Limite de ciclos atingido"),
+                    QCoreApplication.translate("App", "Você atingiu {total}/{total} ciclos de foco.\nAumente o valor em \"Ciclo 1/{total}\" para continuar.").format(total=ciclos_total)
+                )
+                self.atualizar_traducoes()
+                return
+
             self.timer.start(1000)
             self.timer_ativo = True
             self.gerenciador_botoes.set_button_text(self.btn_iniciar, QCoreApplication.translate("App", "⏸️ Pausar"))

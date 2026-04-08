@@ -22,6 +22,13 @@ def eventFilter(self, obj, event):
 
         try:
             if event.type() == QEvent.Resize:
+                try:
+                    if hasattr(self, "_ajustar_linha_botoes") and callable(self._ajustar_linha_botoes):
+                        self._ajustar_linha_botoes()
+
+                except Exception:
+                    pass
+
                 if hasattr(obj, "_rounded_radius"):
                     self._update_rounded_mask(obj, getattr(obj, "_rounded_radius", 8))
 

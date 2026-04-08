@@ -222,38 +222,79 @@ _DOC_EN_US: tuple[ManualSection, ...] = (
         title="New Features (How to Use)",
         details=(
             ManualDetails(
-                summary="Mind Map Integration -> Feynman Method",
+                summary="Smarter Pomodoro in Daily Use",
                 bullets=(
-                    "In Mind Maps, double-click a node to open editing and fill in concept notes/review.",
-                    "Click '➕ Integrate into Feynman Method' to send the node content automatically.",
-                    "Open the Feynman Method tab and confirm the concept in the list; if it already exists, the app merges content without duplicating the title.",
-                    "When you update a node and integrate again, review and complementary fields are preserved in the existing concept.",
+                    "Use the timer's main button normally: it changes between Start, Pause, and Resume depending on your study moment.",
+                    "If you reach the day's cycle goal, the app warns you and blocks new focus cycles until you increase the goal.",
+                    "You can use 'Skip' to end the current period and move to the next one, or 'Reset Clock' to restart the current period from zero.",
+                    "When you finish a focus period, you get a progress confirmation with the number of completed cycles.",
                 ),
             ),
             ManualDetails(
-                summary="Linked Files in Feynman (Preview and Open)",
+                summary="Change Times Without Losing Current Progress",
                 bullets=(
-                    "Link a file to the concept (in node editing or in the concept flow) to keep supporting material with your study.",
-                    "Hover over the concept in the list to see a structured preview (Concept, Explain, Gaps, Review, and linked file).",
-                    "Use CTRL + double-click on the node (Mind Maps) to quickly open the linked file.",
-                    "If the file was moved/deleted, the app shows a warning instead of failing silently; relink the correct path.",
+                    "While using the timer, you can adjust focus minutes, break minutes, and cycle count.",
+                    "When you change these settings, elapsed time in the current cycle is preserved so you don't lose momentum.",
+                    "If needed, set at least 1 cycle to keep the flow working properly.",
                 ),
             ),
             ManualDetails(
-                summary="Time Management with Enhanced Drag and Drop",
+                summary="Automatic Integration Between Pomodoro and Tasks",
                 bullets=(
-                    "Drag tasks between columns and also over tabs: the destination tab can open automatically during drag.",
-                    "Drop the task on the tab header to move it without losing the item, including when there is a single selection.",
-                    "In the new task field, you can press Enter to add immediately.",
-                    "You can also drag and drop files/text into the task field when supported by the system.",
+                    "Keep the task you are currently working on in the 'In Progress' column.",
+                    "When a focus cycle ends, that task's Pomodoro counter is updated automatically.",
+                    "When the task reaches its defined cycle goal, it can be completed automatically, depending on your workflow.",
+                    "Use the counter reset button when you want to clear counters only, without deleting tasks.",
                 ),
             ),
             ManualDetails(
-                summary="Collapsible Calendar Panel (Eisenhower)",
+                summary="Move Tasks Faster",
                 bullets=(
-                    "In the Eisenhower Matrix, use the calendar button to switch between 'Show Calendar' and 'Collapse Calendar'.",
-                    "With the panel open, select a date to list tasks linked to that day.",
-                    "With the panel collapsed, you get more space to prioritize tasks in the quadrants.",
+                    "Drag tasks between lists to update status with fewer clicks.",
+                    "While dragging over tabs, the destination tab can open automatically to make moving easier.",
+                    "You can also right-click and choose which list or priority to send the task to.",
+                    "When creating tasks, press Enter to add quickly.",
+                ),
+            ),
+            ManualDetails(
+                summary="Eisenhower Matrix with More Practical Use",
+                bullets=(
+                    "In the matrix panel, use the calendar button to switch between showing and collapsing the side calendar.",
+                    "With the calendar open, select a date to view that day's tasks.",
+                    "With the calendar collapsed, you get more space to organize quadrants.",
+                    "In the task menu (right-click), you can quickly move the task to another quadrant.",
+                ),
+            ),
+            ManualDetails(
+                summary="Share Matrix Tasks with Pomodoro",
+                bullets=(
+                    "On a matrix task, open the right-click menu and choose to share it with Time Management.",
+                    "The task appears in the Pomodoro flow so you can study with focus and log progress.",
+                    "You can share one task at a time or several tasks in sequence.",
+                ),
+            ),
+            ManualDetails(
+                summary="Feynman Method with Supporting Material and Quick View",
+                bullets=(
+                    "Link supporting files to your concepts to keep everything in one place.",
+                    "Hover over a concept to see a quick preview before opening it.",
+                    "If the file was moved or deleted, the app shows a warning so you can fix the link.",
+                ),
+            ),
+            ManualDetails(
+                summary="Mind Map -> Feynman Method Without Rework",
+                bullets=(
+                    "In Mind Maps, fill in the concept and use the integration button to send it to the Feynman Method.",
+                    "When you open the Feynman Method, the content already arrives organized for review.",
+                    "If the concept already exists, the app updates content instead of creating a duplicate.",
+                ),
+            ),
+            ManualDetails(
+                summary="Theme and Language Updated in Real Time",
+                bullets=(
+                    "You can change language and theme while the app is open.",
+                    "Texts, titles, and buttons update immediately, without restarting.",
+                    "Time, tasks, Pomodoro, and matrix screens follow the change automatically.",
                 ),
             ),
             ManualDetails(
@@ -261,16 +302,16 @@ _DOC_EN_US: tuple[ManualSection, ...] = (
                 bullets=(
                     "Go to Settings -> Sound to choose the Pomodoro bell.",
                     "Use '▶️ Play' to test the audio before saving.",
-                    "Adjust the interval between repeats; when a cycle ends, the alert plays immediately and repeats until you close the window.",
-                    "Sound and interval preferences are saved for upcoming cycles.",
+                    "Adjust the repeat interval; at cycle end, the alert plays immediately and repeats until you close the warning.",
+                    "Preferences are saved for future uses.",
                 ),
             ),
             ManualDetails(
-                summary="Automatic Mind Map Backup",
+                summary="Extra Protection When Opening and Recovering Content",
                 bullets=(
-                    "Edit your map normally and save your project; automatic backup starts protecting changes in the background.",
-                    "If there is no real change in the map, the app automatically avoids unnecessary rewrites.",
-                    "When loading maps with partial/invalid data, the system tries to recover as much as possible instead of aborting everything.",
+                    "When opening content with incomplete information, the app automatically tries to recover as much as possible.",
+                    "In inconsistent cases, you get a warning instead of losing everything without noticing.",
+                    "This protection reduces the risk of interruption during study and organization.",
                 ),
             ),
         ),

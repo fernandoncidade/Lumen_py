@@ -145,12 +145,12 @@ def mostrar_menu_contexto(self, point, list_widget):
                         try:
                             moved = False
                             for source_list, source_item in _resolved_selection():
-                                keep_completed = self._is_completed_list(source_list)
-                                target = self._target_list_for_quadrant(i, keep_completed=keep_completed)
+                                target = self._target_list_for_quadrant(i, keep_completed=None)
                                 if target is None or target is source_list:
                                     continue
 
-                                new_state = Qt.Checked if keep_completed else Qt.Unchecked
+                                target_is_completed = self._is_completed_list(target)
+                                new_state = Qt.Checked if target_is_completed else Qt.Unchecked
                                 source_list.blockSignals(True)
                                 target.blockSignals(True)
 

@@ -32,6 +32,9 @@ def atualizar_traducoes(self):
             else:
                 self.btn_resetar_contagem.setText(QCoreApplication.translate("App", "🔄 Resetar Contagem"))
 
+        if hasattr(self, 'chk_fluxo_tarefas_concluidas') and self.chk_fluxo_tarefas_concluidas is not None:
+            self.chk_fluxo_tarefas_concluidas.setText(QCoreApplication.translate("App", "Fluxo Tarefas Concluídas"))
+
         self.col_todo.setTitle(QCoreApplication.translate("App", "📋 A Fazer"))
         self.col_doing.setTitle(QCoreApplication.translate("App", "⚙️ Em Progresso"))
         self.col_done.setTitle(QCoreApplication.translate("App", "✅ Concluído"))
@@ -51,6 +54,13 @@ def atualizar_traducoes(self):
 
         except Exception as e:
             logger.error(f"Erro ao atualizar listas: {str(e)}", exc_info=True)
+
+        try:
+            if hasattr(self, "_ajustar_linha_botoes") and callable(self._ajustar_linha_botoes):
+                self._ajustar_linha_botoes()
+
+        except Exception:
+            pass
 
     except Exception as e:
         logger.error(f"Erro ao atualizar traduções do GerenciadorTarefas: {str(e)}", exc_info=True)

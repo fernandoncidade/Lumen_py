@@ -484,13 +484,18 @@ Ex: 'Shear Stress', 'Bending Moment'</translation>
     </message>
 
     <message>
-      <source>🎯 Modo: Foco | Ciclo: {ciclo}/4</source>
-      <translation>🎯 Mode: Focus | Cycle: {ciclo}/4</translation>
+      <source>🎯 Modo: Foco | Ciclo: {ciclo}/{total}</source>
+      <translation>🎯 Mode: Focus | Cycle: {ciclo}/{total}</translation>
     </message>
 
     <message>
-      <source>☕ Modo: Descanso {tipo} | Ciclo: {ciclo}/4</source>
-      <translation>☕ Mode: Break {tipo} | Cycle: {ciclo}/4</translation>
+      <source>☕ Modo: Descanso {tipo} | Ciclo: {ciclo}/{total}</source>
+      <translation>☕ Mode: Break {tipo} | Cycle: {ciclo}/{total}</translation>
+    </message>
+
+    <message>
+      <source>✅ Meta concluída | Ciclo: {ciclo}/{total}</source>
+      <translation>✅ Meta completed | Cycle: {ciclo}/{total}</translation>
     </message>
 
     <message>
@@ -541,6 +546,28 @@ Ex: 'Shear Stress', 'Bending Moment'</translation>
     <message>
       <source>Descanso (min):</source>
       <translation>Break (min):</translation>
+    </message>
+
+    <message>
+      <source>Fluxo Tarefas Concluídas</source>
+      <translation>Completed Tasks Flow</translation>
+    </message>
+
+    <message>
+      <source>Ciclo 1/{total}:</source>
+      <translation>Cycle 1/{total}:</translation>
+    </message>
+
+    <message>
+      <source>⛔ Limite de ciclos atingido</source>
+      <translation>⛔ Limit of cycles reached</translation>
+    </message>
+
+    <message>
+      <source>Você atingiu {total}/{total} ciclos de foco.
+Aumente o valor em "Ciclo 1/{total}" para continuar.</source>
+      <translation>You have reached {total}/{total} focus cycles.
+Increase the value in "Cycle 1/{total}" to continue.</translation>
     </message>
 
     <message>
@@ -1262,6 +1289,26 @@ This may take a few minutes.</translation>
     <message>
         <source>Concluídas</source>
         <translation>Completed</translation>
+    </message>
+
+    <message>
+        <source>🔴 Concluídas</source>
+        <translation>🔴 Completed</translation>
+    </message>
+
+    <message>
+        <source>🟠 Concluídas</source>
+        <translation>🟠 Completed</translation>
+    </message>
+
+    <message>
+        <source>🟡 Concluídas</source>
+        <translation>🟡 Completed</translation>
+    </message>
+
+    <message>
+        <source>🟢 Concluídas</source>
+        <translation>🟢 Completed</translation>
     </message>
 
     <message>
@@ -2532,6 +2579,86 @@ Do you want to continue?</translation>
     <message>
       <source>Não foi possível abrir o arquivo vinculado.</source>
       <translation>Could not open the linked file.</translation>
+    </message>
+
+    <message>
+      <source>Arquivo desvinculado</source>
+      <translation>File unlinked</translation>
+    </message>
+
+    <message>
+      <source>O arquivo vinculado foi removido do conceito.</source>
+      <translation>The linked file was removed from the concept.</translation>
+    </message>
+
+    <message>
+      <source>Selecionar arquivo para vincular</source>
+      <translation>Select file to link</translation>
+    </message>
+
+    <message>
+      <source>Todos os arquivos (*)</source>
+      <translation>All files (*)</translation>
+    </message>
+
+    <message>
+      <source>📎 Vincular Arquivo</source>
+      <translation>📎 Link File</translation>
+    </message>
+
+    <message>
+      <source>🗑️ Remover Arquivo Vinculado</source>
+      <translation>🗑️ Remove Linked File</translation>
+    </message>
+
+    <message>
+      <source>📂 Abrir Arquivo Vinculado</source>
+      <translation>📂 Open Linked File</translation>
+    </message>
+
+    <message>
+      <source>Selecionados: {count} {nome}</source>
+      <translation>Selected: {count} {nome}</translation>
+    </message>
+
+    <message>
+      <source>tarefa</source>
+      <translation>task</translation>
+    </message>
+
+    <message>
+      <source>tarefas</source>
+      <translation>tasks</translation>
+    </message>
+
+    <message>
+      <source>conceito</source>
+      <translation>concept</translation>
+    </message>
+
+    <message>
+      <source>conceitos</source>
+      <translation>concepts</translation>
+    </message>
+
+    <message>
+      <source>nó</source>
+      <translation>node</translation>
+    </message>
+
+    <message>
+      <source>nós</source>
+      <translation>nodes</translation>
+    </message>
+
+    <message>
+      <source>item</source>
+      <translation>item</translation>
+    </message>
+
+    <message>
+      <source>itens</source>
+      <translation>items</translation>
     </message>
 
   </context>

@@ -1,6 +1,6 @@
+import os
 from PySide6.QtWidgets import QWidget, QComboBox
 from PySide6.QtCore import Signal, QCoreApplication
-import os
 from source.utils.LogManager import LogManager
 from source.utils.CaminhoPersistenteUtils import obter_caminho_persistente
 from source.utils.GerenciadorBotoesUI import GerenciadorBotoesUI
@@ -41,7 +41,7 @@ class GerenciadorTarefas(QWidget):
         self.logger = LogManager.get_logger()
         try:
             caminho_persistente = obter_caminho_persistente()
-            self.arquivo_tarefas = os.path.join(caminho_persistente, "tarefas.json")
+            self.arquivo_tarefas = os.path.join(caminho_persistente, "tarefas_pomodoro.json")
             self.tarefas = self.carregar_tarefas()
             self.gerenciador_botoes = GerenciadorBotoesUI(self)
             self.setup_ui()

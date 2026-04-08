@@ -1,7 +1,6 @@
 from source.utils.LogManager import LogManager
 from PySide6.QtGui import QIcon, QFont
 from PySide6.QtWidgets import QHBoxLayout, QLabel, QPushButton
-from PySide6.QtCore import QTimer
 from source.utils.IconUtils import get_icon_path
 logger = LogManager.get_logger()
 
@@ -51,8 +50,6 @@ class GerenciadorBotoesUI:
                 'button': button,
                 'min_padding': min_padding
             })
-
-            button.textChanged = lambda: self._resize_button(button, min_padding)
 
             if text:
                 self._resize_button(button, min_padding)
@@ -115,7 +112,8 @@ class GerenciadorBotoesUI:
                     min_padding = button_data['min_padding']
                     break
 
-            QTimer.singleShot(0, lambda: self._resize_button(button, min_padding))
+            self._resize_button(button, min_padding)
+            button.updateGeometry()
 
         except Exception as e:
             logger.error(f"Erro ao definir texto do botão: {e}", exc_info=True)

@@ -1,4 +1,94 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.17.0
+Data: 17 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em reforços e correções do fluxo Pomodoro, melhorias de integração entre Pomodoro ↔ Gerenciador de Tarefas, refinamentos na aplicação dinâmica de tema/paleta e reforço de proteções defensivas em pontos críticos da UI. O objetivo desta versão foi tornar o timer mais robusto em cenários de uso real, garantir atualizações de traduções consistentes em runtime e prevenir estados inválidos ao alternar temas ou redimensionar painéis.
+
+Melhorias principais
+1. Robustez e UX do Pomodoro (módulos: pomo_04_toggle_timer.py, pomo_09_resetar_timer.py, pomo_11_pular_ciclo.py, pomo_08_finalizar_ciclo.py)
+   - Controle de ciclo e limite de execução:
+     - Verificação de limite de ciclos permitidos antes de iniciar/continuar um período de foco; evita iniciar quando o limite foi atingido e notifica o usuário com alerta informativo.
+   - Estados do timer e rótulos dinâmicos:
+     - Botões `Iniciar / Pausar / Continuar` agora possuem textos traduzidos e ícones (emoji) dinâmicos dependendo do estado (`▶️ Iniciar`, `⏸️ Pausar`, `▶️ Continuar`).
+   - Reset e pular ciclo:
+     - `resetar_timer` redefine corretamente `tempo_restante`, atualiza `progress` e o display em todos os estados (foco/descanso curto/descanso longo).
+     - `pular_ciclo` interrompe o timer em andamento, força término imediato do período atual e delega para `finalizar_ciclo` para executar transições e notificar outras partes da aplicação.
+
+2. Atualização de configurações e preservação de progresso (pomo_03_atualizar_configuracoes.py)
+   - Alteração de durações e ciclos sem perder o progresso:
+     - Ao ler novas configurações (foco, descanso curto, ciclos) o componente calcula o tempo decorrido e ajusta `tempo_restante` para preservar o progresso atual do usuário.
+     - Normalização de valores mínimos (pelo menos 1 ciclo) e coerência entre valores antigos e novos para evitar valores negativos.
+
+3. Traduções e texto dinâmico (pomo_02_atualizar_traducoes.py, gtemp_08_atualizar_traducoes.py, gtar_04_atualizar_traducoes.py)
+   - Centralização de traduções em runtime:
+     - Textos de botões, títulos de grupos, labels e placeholders são atualizados através de `QCoreApplication.translate("App", ...)`, garantindo troca de idioma sem reiniciar a UI.
+     - Preservação de estado onde aplicável (por exemplo, opções selecionadas em combos) ao recarregar textos.
+
+4. Aplicação dinâmica de tema / sincronia de paleta (pomo_12_aplicar_tema_dinamico.py, gtemp_06_aplicar_tema_dinamico_inputs.py, gtemp_07_eventFilter.py, gtar_23_eventFilter.py)
+   - Sincronização robusta com `QPalette` da aplicação:
+     - Determinação de tema claro/escuro via cor de `QPalette.Window` e ajustes finos para labels e combos.
+     - Tratamento seguro de `QComboBox` (paleta do popup e do viewport) e widgets que expõem `view()`/`viewport()` com checagens e `try/except` para compatibilidade com diferentes builds do Qt.
+   - Event filters:
+     - Eventos de `ApplicationPaletteChange`, `PaletteChange`, `StyleChange` e (quando disponível) `ColorSchemeChange` reaplicam paletas e executam ajustes visuais sem usar estilos inline, preservando aparência nativa.
+
+5. Integração Pomodoro ↔ Gerenciador de Tarefas (gtemp_01_setup_ui.py, gtemp_09_registrar_pomodoro.py)
+   - Sinais e registro automático:
+     - `PomodoroTimer.ciclo_completado` conectado ao worker de tempo (`_tempo_worker.on_pomodoro`) para acionar lógica de aplicação global.
+     - Ao completar um ciclo de foco, tarefas com status `Doing` têm `pomodoros_completados` incrementados automaticamente; quando ultrapassam o limite configurado (`ciclos_permitidos`), podem ser marcadas como `Done` se o fluxo estiver ativo.
+   - Coluna “⚙️ Em Progresso”:
+     - Integração da coluna lateral para exibir tarefas em andamento, com tradução dinâmica do título e ajuste de largura mínima para consistência de layout.
+
+Correções de bugs e proteções
+1. Evitar estados inválidos ao iniciar timer com limite atingido — agora o início é barrado e exibido um alerta contextual.
+2. Prevenção de valores negativos de `tempo_restante` ao atualizar configurações — cálculo de decorrido e recálculo do máximo entre 0 e novo total.
+3. Proteções na aplicação de paleta para widgets sem `viewport()` e proteção contra widgets nativos que não aceitam `AutoFillBackground` (evita retângulos indesejados).
+4. Tratamento defensivo em conexões de sinais e instalação de filtros — evita acúmulo de handlers e possíveis exceções em sequência de abrir/fechar/atualizar componentes.
+
+Arquivos principais alterados / adicionados nesta entrega
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_01_setup_ui.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_02_atualizar_traducoes.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_03_atualizar_configuracoes.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_04_toggle_timer.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_08_finalizar_ciclo.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_09_resetar_timer.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_11_pular_ciclo.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\PomodoroTimer\pomo_12_aplicar_tema_dinamico.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_01_setup_ui.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_06_aplicar_tema_dinamico_inputs.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_07_eventFilter.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_08_atualizar_traducoes.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_09_registrar_pomodoro.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTempo\gtemp_13_ajustar_largura_minima_coluna_esquerda.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTarefas\gtar_03_setup_ui.py
+- c:\Users\ferna\DEV\Python_GitHub_Privado\Lumen_Privado\source\modules\tempo\GerenciadorTarefas\gtar_04_atualizar_traducoes.py
+
+Recomendações de validação (tests & verificação)
+- Fluxo Pomodoro:
+  1. Iniciar/pausar/continuar ciclos e confirmar mudança de rótulos (`▶️`, `⏸️`).
+  2. Configurar novo tempo de foco/descanso e validar preservação do tempo decorrido após alteração.
+  3. Forçar alcançar `ciclos_permitidos` e verificar alerta e bloqueio de novo foco até ajuste do limite.
+- Integração com tarefas:
+  1. Completar um ciclo de foco e verificar incremento de `pomodoros_completados` nas tarefas `Doing`.
+  2. Habilitar fluxo que marca tarefas como `Done` quando atingem `ciclos_permitidos` e validar persistência.
+- Tema e layout:
+  1. Alternar tema do sistema e confirmar reaplicação de `QPalette` em labels, combos e listas.
+  2. Redimensionar janela e confirmar que `_ajustar_largura_minima_coluna_esquerda` preserva layout sem sobreposição.
+
+Notas técnicas
+- Preferência por `QPalette` e aplicação condicional nas views (evitar `setStyleSheet` quando possível) para manter aparência nativa across-plataforms.
+- Uso consistente de `try/except` com `logger` para capturar `exc_info` sem interromper a UI.
+- Valores padrão e validações defensivas: `max(1, ciclos_permitidos)` e `max(0, tempo_restante)` para evitar estados inválidos.
+
+Próximos passos sugeridos
+1. Adicionar testes automatizados para preservação de progresso ao atualizar configurações do Pomodoro.
+2. Cobrir via testes de integração o fluxo Pomodoro → GerenciadorTarefas (mock de sinais) para evitar regressões.
+3. Expandir aplicação de paleta para outros módulos com cobertura visual (pixel-diff) em temas claro/escuro.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.16.0
 Data: 16 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

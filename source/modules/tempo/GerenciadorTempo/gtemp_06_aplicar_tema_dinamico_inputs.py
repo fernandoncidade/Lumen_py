@@ -27,6 +27,13 @@ def _aplicar_tema_dinamico_inputs(self):
         self.col_doing_timer_list.setPalette(pal)
         self.col_doing_timer_list.viewport().setAutoFillBackground(True)
 
+        try:
+            if hasattr(self, "_ajustar_largura_minima_coluna_esquerda"):
+                self._ajustar_largura_minima_coluna_esquerda()
+
+        except Exception:
+            pass
+
         self.update()
 
     except Exception as e:

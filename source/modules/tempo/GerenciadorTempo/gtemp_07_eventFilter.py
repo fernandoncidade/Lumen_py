@@ -20,6 +20,21 @@ def eventFilter(self, obj, event):
         if event.type() in tipos:
             self._aplicar_tema_dinamico_inputs()
 
+            try:
+                if hasattr(self, "_ajustar_largura_minima_coluna_esquerda"):
+                    self._ajustar_largura_minima_coluna_esquerda()
+
+            except Exception:
+                pass
+
+        if event.type() == QEvent.Resize:
+            try:
+                if hasattr(self, "_ajustar_largura_minima_coluna_esquerda"):
+                    self._ajustar_largura_minima_coluna_esquerda()
+
+            except Exception:
+                pass
+
     except Exception as e:
         logger.error(f"Erro no eventFilter do GerenciadorTempo: {str(e)}", exc_info=True)
 

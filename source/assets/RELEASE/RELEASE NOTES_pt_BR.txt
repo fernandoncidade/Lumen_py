@@ -1,4 +1,50 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.17.0
+Data: 17 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em reforços e correções do Pomodoro, maior integração com o gerenciador de tarefas, atualizações de tradução em tempo de execução e refinamentos na aplicação de tema para evitar estados inválidos e artefatos visuais.
+
+Melhorias principais
+- Pomodoro: mais robusto e previsível
+  - Bloqueio ao iniciar quando o limite de ciclos foi atingido, com alerta informativo.
+  - Botões exibem texto e emoji conforme o estado (▶️ Iniciar, ⏸️ Pausar, ▶️ Continuar).
+  - Reset e pular ciclo atualizam corretamente o tempo restante, a barra de progresso e o display em todos os estados.
+- Preservação de progresso ao alterar configurações
+  - Ao mudar tempos ou número de ciclos, o tempo já decorrido é levado em conta e o tempo restante é ajustado para preservar o progresso do usuário.
+  - Validações mínimas evitam valores inválidos.
+- Traduções em runtime
+  - Textos de botões, títulos e placeholders atualizam sem reiniciar a interface, preservando seleções quando possível.
+- Tema e aparência
+  - Aplicação da paleta do sistema de forma segura em labels, listas e seletores para manter aparência nativa e evitar retângulos indesejados.
+  - Reaplicação reativa ao alternar tema preserva legibilidade.
+- Integração Pomodoro ↔ Tarefas
+  - Ciclos concluídos incrementam automaticamente o contador de pomodoros das tarefas em andamento.
+  - Tarefas que atingem o limite configurado podem ser marcadas como concluídas automaticamente (quando habilitado).
+  - Coluna lateral “⚙️ Em Progresso” melhora a visibilidade das tarefas em andamento com título traduzido dinamicamente e ajuste de largura para layout consistente.
+
+Correções e proteções
+- Prevenção de início do timer em estados inválidos quando o limite de ciclos foi alcançado.
+- Evita valores negativos no tempo restante ao atualizar configurações.
+- Tratamento seguro ao aplicar paleta em widgets que não suportam certas operações, reduzindo artefatos visuais.
+- Evita acúmulo de handlers/conexões duplicadas ao abrir/fechar/atualizar componentes, reduzindo exceções e comportamentos inesperados.
+
+O que validar rapidamente
+1. Iniciar/pausar/continuar o Pomodoro e confirmar mudança de rótulos (▶️ / ⏸️).
+2. Alterar tempos de foco/descanso e verificar preservação do progresso atual.
+3. Atingir o limite de ciclos e confirmar alerta e bloqueio de novo foco.
+4. Completar um ciclo de foco e verificar incremento de pomodoros nas tarefas em andamento.
+5. Alternar o tema do sistema e confirmar que labels, listas e seletores permanecem legíveis e sem artefatos.
+
+Próximos passos sugeridos
+- Incluir testes automatizados para preservação de progresso ao atualizar configurações.
+- Cobrir via testes de integração o fluxo Pomodoro → Gerenciador de Tarefas.
+- Ampliar verificações visuais da aplicação de paleta para temas claro/escuro.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.16.0
 Data: 16 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

@@ -23,12 +23,12 @@ def _move_to_quadrant(self, item, source_list):
         except ValueError:
             return
 
-        keep_completed = self._is_completed_list(source_list)
-        target = self._target_list_for_quadrant(idx, keep_completed=keep_completed)
+        target = self._target_list_for_quadrant(idx, keep_completed=None)
         if target is None or target is source_list:
             return
 
-        new_state = Qt.Checked if keep_completed else Qt.Unchecked
+        target_is_completed = self._is_completed_list(target)
+        new_state = Qt.Checked if target_is_completed else Qt.Unchecked
 
         source_list.blockSignals(True)
         target.blockSignals(True)

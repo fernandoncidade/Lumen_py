@@ -4,6 +4,8 @@ logger = LogManager.get_logger()
 
 def finalizar_ciclo(self):
     try:
+        ciclos_total = max(1, int(getattr(self, "ciclos_permitidos", 4)))
+
         if self.em_foco:
             self.ciclos_completados += 1
             self.ciclo_completado.emit("foco")
@@ -17,22 +19,30 @@ def finalizar_ciclo(self):
                 ).format(ciclos=self.ciclos_completados)
             )
 
-            if self.ciclos_completados % 4 == 0:
-                self.tempo_restante = self.tempo_descanso_longo
-                tipo_descanso = QCoreApplication.translate("App", "Longo")
+            if self.ciclos_completados >= ciclos_total:
+                self.em_foco = True
+                self.tempo_restante = self.tempo_foco
+                self.label_status.setText(QCoreApplication.translate("App", "✅ Meta concluída | Ciclo: {ciclo}/{total}").format(ciclo=ciclos_total, total=ciclos_total))
+                self.progress.setMaximum(self.tempo_foco)
+                self.progress.setValue(self.tempo_foco)
 
             else:
-                self.tempo_restante = self.tempo_descanso_curto
-                tipo_descanso = QCoreApplication.translate("App", "Curto")
+                if self.ciclos_completados % ciclos_total == 0:
+                    self.tempo_restante = self.tempo_descanso_longo
+                    tipo_descanso = QCoreApplication.translate("App", "Longo")
 
-            self.em_foco = False
-            ciclo_concluido = self.ciclos_completados % 4
-            if ciclo_concluido == 0:
-                ciclo_concluido = 4
+                else:
+                    self.tempo_restante = self.tempo_descanso_curto
+                    tipo_descanso = QCoreApplication.translate("App", "Curto")
 
-            self.label_status.setText(QCoreApplication.translate("App", "☕ Modo: Descanso {tipo} | Ciclo: {ciclo}/4").format(tipo=tipo_descanso, ciclo=ciclo_concluido))
-            self.progress.setMaximum(self.tempo_restante)
-            self.progress.setValue(self.tempo_restante)
+                self.em_foco = False
+                ciclo_concluido = self.ciclos_completados % ciclos_total
+                if ciclo_concluido == 0:
+                    ciclo_concluido = ciclos_total
+
+                self.label_status.setText(QCoreApplication.translate("App", "☕ Modo: Descanso {tipo} | Ciclo: {ciclo}/{total}").format(tipo=tipo_descanso, ciclo=ciclo_concluido, total=ciclos_total))
+                self.progress.setMaximum(self.tempo_restante)
+                self.progress.setValue(self.tempo_restante)
 
         else:
             self.ciclo_completado.emit("descanso")
@@ -47,8 +57,13 @@ def finalizar_ciclo(self):
 
             self.em_foco = True
             self.tempo_restante = self.tempo_foco
-            ciclo_atual = (self.ciclos_completados % 4) + 1
-            self.label_status.setText(QCoreApplication.translate("App", "🎯 Modo: Foco | Ciclo: {ciclo}/4").format(ciclo=ciclo_atual))
+            if self.ciclos_completados >= ciclos_total:
+                self.label_status.setText(QCoreApplication.translate("App", "✅ Meta concluída | Ciclo: {ciclo}/{total}").format(ciclo=ciclos_total, total=ciclos_total))
+
+            else:
+                ciclo_atual = (self.ciclos_completados % ciclos_total) + 1
+                self.label_status.setText(QCoreApplication.translate("App", "🎯 Modo: Foco | Ciclo: {ciclo}/{total}").format(ciclo=ciclo_atual, total=ciclos_total))
+
             self.progress.setMaximum(self.tempo_foco)
             self.progress.setValue(self.tempo_foco)
 

@@ -484,13 +484,18 @@ Ex: 'Tensão de Cisalhamento', 'Momento Fletor'</translation>
     </message>
 
     <message>
-      <source>🎯 Modo: Foco | Ciclo: {ciclo}/4</source>
-      <translation>🎯 Modo: Foco | Ciclo: {ciclo}/4</translation>
+      <source>🎯 Modo: Foco | Ciclo: {ciclo}/{total}</source>
+      <translation>🎯 Modo: Foco | Ciclo: {ciclo}/{total}</translation>
     </message>
 
     <message>
-      <source>☕ Modo: Descanso {tipo} | Ciclo: {ciclo}/4</source>
-      <translation>☕ Modo: Descanso {tipo} | Ciclo: {ciclo}/4</translation>
+      <source>☕ Modo: Descanso {tipo} | Ciclo: {ciclo}/{total}</source>
+      <translation>☕ Modo: Descanso {tipo} | Ciclo: {ciclo}/{total}</translation>
+    </message>
+
+    <message>
+      <source>✅ Meta concluída | Ciclo: {ciclo}/{total}</source>
+      <translation>✅ Meta concluída | Ciclo: {ciclo}/{total}</translation>
     </message>
 
     <message>
@@ -541,6 +546,28 @@ Ex: 'Tensão de Cisalhamento', 'Momento Fletor'</translation>
     <message>
       <source>Descanso (min):</source>
       <translation>Descanso (min):</translation>
+    </message>
+
+    <message>
+      <source>Fluxo Tarefas Concluídas</source>
+      <translation>Fluxo Tarefas Concluídas</translation>
+    </message>
+
+    <message>
+      <source>Ciclo 1/{total}:</source>
+      <translation>Ciclo 1/{total}:</translation>
+    </message>
+
+    <message>
+      <source>⛔ Limite de ciclos atingido</source>
+      <translation>⛔ Limite de ciclos atingido</translation>
+    </message>
+
+    <message>
+      <source>Você atingiu {total}/{total} ciclos de foco.
+Aumente o valor em "Ciclo 1/{total}" para continuar.</source>
+      <translation>Você atingiu {total}/{total} ciclos de foco.
+Aumente o valor em "Ciclo 1/{total}" para continuar.</translation>
     </message>
 
     <message>
@@ -1262,6 +1289,26 @@ Isso pode levar alguns minutos.</translation>
     <message>
         <source>Concluídas</source>
         <translation>Concluídas</translation>
+    </message>
+
+    <message>
+        <source>🔴 Concluídas</source>
+        <translation>🔴 Concluídas</translation>
+    </message>
+
+    <message>
+        <source>🟠 Concluídas</source>
+        <translation>🟠 Concluídas</translation>
+    </message>
+
+    <message>
+        <source>🟡 Concluídas</source>
+        <translation>🟡 Concluídas</translation>
+    </message>
+
+    <message>
+        <source>🟢 Concluídas</source>
+        <translation>🟢 Concluídas</translation>
     </message>
 
     <message>
@@ -2532,6 +2579,86 @@ Deseja continuar?</translation>
     <message>
       <source>Não foi possível abrir o arquivo vinculado.</source>
       <translation>Não foi possível abrir o arquivo vinculado.</translation>
+    </message>
+
+    <message>
+      <source>Arquivo desvinculado</source>
+      <translation>Arquivo desvinculado</translation>
+    </message>
+
+    <message>
+      <source>O arquivo vinculado foi removido do conceito.</source>
+      <translation>O arquivo vinculado foi removido do conceito.</translation>
+    </message>
+
+    <message>
+      <source>Selecionar arquivo para vincular</source>
+      <translation>Selecionar arquivo para vincular</translation>
+    </message>
+
+    <message>
+      <source>Todos os arquivos (*)</source>
+      <translation>Todos os arquivos (*)</translation>
+    </message>
+
+    <message>
+      <source>📎 Vincular Arquivo</source>
+      <translation>📎 Vincular Arquivo</translation>
+    </message>
+
+    <message>
+      <source>🗑️ Remover Arquivo Vinculado</source>
+      <translation>🗑️ Remover Arquivo Vinculado</translation>
+    </message>
+
+    <message>
+      <source>📂 Abrir Arquivo Vinculado</source>
+      <translation>📂 Abrir Arquivo Vinculado</translation>
+    </message>
+
+    <message>
+      <source>Selecionados: {count} {nome}</source>
+      <translation>Selecionados: {count} {nome}</translation>
+    </message>
+
+    <message>
+      <source>tarefa</source>
+      <translation>tarefa</translation>
+    </message>
+
+    <message>
+      <source>tarefas</source>
+      <translation>tarefas</translation>
+    </message>
+
+    <message>
+      <source>conceito</source>
+      <translation>conceito</translation>
+    </message>
+
+    <message>
+      <source>conceitos</source>
+      <translation>conceitos</translation>
+    </message>
+
+    <message>
+      <source>nó</source>
+      <translation>nó</translation>
+    </message>
+
+    <message>
+      <source>nós</source>
+      <translation>nós</translation>
+    </message>
+
+    <message>
+      <source>item</source>
+      <translation>item</translation>
+    </message>
+
+    <message>
+      <source>itens</source>
+      <translation>itens</translation>
     </message>
 
   </context>
