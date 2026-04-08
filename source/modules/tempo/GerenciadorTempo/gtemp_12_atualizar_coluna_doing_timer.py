@@ -1,5 +1,6 @@
 from PySide6.QtCore import QCoreApplication, QDate, QLocale, Qt
 from PySide6.QtWidgets import QListWidgetItem
+from PySide6.QtGui import QFont
 from source.utils.LogManager import LogManager
 from source.modules.tempo.tmp_01_Tarefa import Tarefa
 from source.modules.tempo.GerenciadorTarefas.gtar_25_prioridade_display import prioridade_para_texto
@@ -75,6 +76,7 @@ def atualizar_coluna_doing_timer(self):
 
             texto = f"{emoji} {t.titulo} — 🍅 {t.pomodoros_completados}"
             item = QListWidgetItem(texto)
+            item.setData(Qt.UserRole, getattr(t, 'id', None))
 
             tooltip_lines = []
             date_iso = getattr(t, 'date', None)
@@ -113,6 +115,15 @@ def atualizar_coluna_doing_timer(self):
             file_path = getattr(t, 'file_path', None)
 
             if file_path:
+                try:
+                    font = item.font() or QFont()
+                    font.setBold(True)
+                    item.setFont(font)
+                    item.setForeground(Qt.blue)
+
+                except Exception as e:
+                    logger.error(f"Erro ao destacar tarefa com arquivo vinculado na coluna lateral: {str(e)}", exc_info=True)
+
                 tooltip_lines.append(f"{QCoreApplication.translate('App', 'Arquivo') or 'Arquivo'}: {file_path}")
 
             desc = getattr(t, 'descricao', None)

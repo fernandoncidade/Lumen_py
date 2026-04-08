@@ -1,4 +1,67 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.21.0
+Date: February 21, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+This update brought important improvements in usability, visual organization, and the quality of AI results. The focus was to make the experience smoother in the calendar, more practical in task management, and smarter in content generation in the Mind Map.
+
+Main improvements
+
+1. Eisenhower Matrix Calendar
+- The calendar is now more responsive and adapts better to the available screen space.
+- Monthly and yearly views are now more stable and consistent.
+- Navigation between dates is smoother, with better synchronization across different views.
+- Visual performance was optimized to avoid unnecessary updates.
+
+2. Time Management
+- The side column for ongoing tasks is now more interactive.
+- It is now easier to select multiple tasks.
+- Double-clicking to open a linked file is now more practical.
+- The side-column context menu was improved.
+- Tasks with linked files now have visual highlighting for quick identification.
+
+3. Status Bar
+- The selected-item count is now more accurate.
+- The issue of duplicate counting of the same task in mirrored lists was fixed.
+- The selection indicator now updates better in real time.
+
+4. Feynman Method
+- Opening linked files is now simpler: a double-click is enough.
+- Visual instructions were updated to reflect this new behavior.
+- Visual highlighting of items with linked files is now clearer.
+
+5. Mind Map with AI
+- Automatic language detection was improved and is now more reliable.
+- Contextual summary generation became more relevant and less repetitive.
+- Concept and main-idea extraction became more accurate.
+- Relationships between concepts are now identified with higher quality.
+- Overall processing is now more robust, including difficult or incomplete texts.
+
+Bug fixes
+
+1. Duplicate selection count
+- Fixed an issue that could count the same task more than once.
+
+2. Excessive visual updates in the calendar
+- Unnecessary repaints and recalculations were fixed to improve smoothness.
+
+3. Loss of date reference
+- Fixed inconsistency when switching between monthly and yearly modes.
+
+4. AI robustness in limited scenarios
+- Improved behavior when text is short, ambiguous, or has incomplete structure.
+
+Recommended validation (quick)
+1. Test the calendar on screens with different widths and switch between monthly and yearly views.
+2. Select tasks in the side column and verify synchronization with the main area.
+3. Open linked files with double-click in Time Management and Feynman.
+4. Process Portuguese and English texts in Mind Map to validate summaries, concepts, and ideas.
+5. Confirm that the status bar does not duplicate the count of selected tasks.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.20.0
 Date: February 20, 2026
 Author: Fernando Nillsson Cidade

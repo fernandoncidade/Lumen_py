@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QGroupBox, QSplitter, QWidget
+from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QGroupBox, QSplitter, QWidget, QAbstractItemView
 from PySide6.QtCore import Qt, QTimer
 from source.utils.LogManager import LogManager
 from source.modules.tempo.tmp_02_PomodoroTimer import PomodoroTimer
@@ -36,6 +36,18 @@ def setup_ui(self):
         self.col_doing_timer_group = QGroupBox()
         doing_timer_layout = QVBoxLayout()
         self.col_doing_timer_list = QListWidget()
+        self.col_doing_timer_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.col_doing_timer_list.setSelectionBehavior(QAbstractItemView.SelectItems)
+
+        try:
+            self.col_doing_timer_list.setSelectionRectVisible(True)
+
+        except Exception:
+            pass
+
+        self.col_doing_timer_list.setContextMenuPolicy(Qt.CustomContextMenu)
+        self.col_doing_timer_list.itemDoubleClicked.connect(self._abrir_arquivo_vinculado_coluna_doing_timer)
+        self.col_doing_timer_list.customContextMenuRequested.connect(self._mostrar_menu_contexto_coluna_doing_timer)
         self.col_doing_timer_list.setDragDropMode(QListWidget.NoDragDrop)
         doing_timer_layout.addWidget(self.col_doing_timer_list)
         self.col_doing_timer_group.setLayout(doing_timer_layout)

@@ -2525,11 +2525,6 @@ Do you want to continue?</translation>
     </message>
 
     <message>
-      <source>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</source>
-      <translation>To open the linked file, press CTRL+double click with the left mouse button on the node.</translation>
-    </message>
-
-    <message>
       <source>🗑️ Remover Arquivo:</source>
       <translation>🗑️ Remove File:</translation>
     </message>
@@ -2570,8 +2565,8 @@ Do you want to continue?</translation>
     </message>
 
     <message>
-      <source>(Para abrir o arquivo vinculado: CTRL + duplo clique)</source>
-      <translation>(To open the linked file: CTRL + double click)</translation>
+      <source>(Para abrir o arquivo vinculado: duplo clique com botão esquerdo)</source>
+      <translation>(To open the linked file: double click with left mouse button)</translation>
     </message>
 
     <message>

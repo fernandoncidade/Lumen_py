@@ -11,6 +11,11 @@ from .gtemp_10_cleanup import cleanup
 from .gtemp_11_del import __del__
 from .gtemp_12_atualizar_coluna_doing_timer import atualizar_coluna_doing_timer
 from .gtemp_13_ajustar_largura_minima_coluna_esquerda import _ajustar_largura_minima_coluna_esquerda
+from .gtemp_14_interacoes_coluna_doing_timer import (
+    _abrir_arquivo_vinculado_coluna_doing_timer,
+    _sincronizar_estado_coluna_doing_timer,
+    _mostrar_menu_contexto_coluna_doing_timer,
+)
 
 __all__ = [
     "setup_ui",
@@ -25,5 +30,8 @@ __all__ = [
     "cleanup",
     "__del__",
     "atualizar_coluna_doing_timer",
-    "_ajustar_largura_minima_coluna_esquerda"
+    "_ajustar_largura_minima_coluna_esquerda",
+    "_abrir_arquivo_vinculado_coluna_doing_timer",
+    "_sincronizar_estado_coluna_doing_timer",
+    "_mostrar_menu_contexto_coluna_doing_timer",
 ]

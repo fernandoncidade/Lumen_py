@@ -1,4 +1,112 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.21.0
+Data: 21 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em três frentes: escalabilidade e responsividade do Calendário da Matriz Eisenhower, robustez semântica do pipeline de IA do Mapa Mental e evolução de usabilidade/integridade entre Gestão de Tempo, Feynman e Status Bar global.
+
+Melhorias principais
+
+1. Matriz Eisenhower — Calendário responsivo multi-instância (mensal e anual)
+- Arquivos: source/modules/eisenhower/interface/ui_07_Calendar.py, source/modules/eisenhower/interface/ui_12_CalendarPanel.py, source/modules/eisenhower/interface/ui_13_YearCalendarWidget.py
+- Evoluções:
+  - CalendarPanel passou a operar com largura de conteúdo controlada (`set_calendar_content_width`) e atualização reativa por `resizeEvent`/`showEvent`.
+  - Nova arquitetura com containers dedicados para modo mensal e anual, permitindo múltiplos calendários lado a lado conforme largura disponível.
+  - Criação/remoção dinâmica de calendários extras mensais e anuais, com pool de reutilização para reduzir churn de widgets no modo anual.
+  - Sincronização entre calendário principal e calendários extras: página, seleção, contagens, tooltips e highlights.
+  - Controle de sincronização defensiva com flags para evitar loops de eventos e repinturas redundantes.
+  - `ui_07_Calendar.py` recebeu largura mínima técnica unificada (`CALENDAR_PANEL_MIN_WIDTH = 400`) e disparo assíncrono de recálculo quando expandido.
+  - `YearCalendarWidget` ganhou short-circuit para evitar refresh desnecessário quando ano/mês/dados não mudam, além de `set_month_data()` para atualização conjunta de contagens e tooltips.
+
+2. Gestão de Tempo — Coluna lateral “Doing Timer” com interação completa
+- Arquivos: source/modules/tempo/GerenciadorTempo/__init__.py, source/modules/tempo/GerenciadorTempo/gtemp_01_setup_ui.py, source/modules/tempo/GerenciadorTempo/gtemp_12_atualizar_coluna_doing_timer.py, source/modules/tempo/GerenciadorTempo/gtemp_14_interacoes_coluna_doing_timer.py, source/modules/tempo/tmp_05_GerenciadorTempo.py
+- Evoluções:
+  - Novo módulo `gtemp_14_interacoes_coluna_doing_timer.py` para abrir arquivo vinculado, sincronizar seleção com coluna central e encaminhar menu de contexto.
+  - Coluna lateral passou a suportar seleção estendida, duplo clique para abrir arquivo e menu contextual customizado.
+  - Cada item da coluna lateral agora carrega `Qt.UserRole` com ID da tarefa para resolução estável de entidade.
+  - Tarefas com arquivo vinculado na coluna lateral passaram a ser destacadas em negrito e azul.
+  - Exportação e encadeamento dos novos handlers concluídos em `__init__.py` e no wrapper `tmp_05_GerenciadorTempo.py`.
+
+3. Status Bar — contagem de seleção sem duplicidade entre listas espelhadas
+- Arquivo: source/gui/ui/ui_16_setup_statusbar.py
+- Evoluções:
+  - Contagem de itens selecionados agora deduplica por chave estável (ID da tarefa ou título normalizado), evitando inflação quando a mesma tarefa aparece em múltiplas listas.
+  - Inclusão da coluna lateral `col_doing_timer_list` no cálculo consolidado.
+  - Conexão explícita de `itemSelectionChanged` da coluna lateral para manter contador global sincronizado em tempo real.
+
+4. Método Feynman — simplificação do fluxo de abertura de arquivo vinculado
+- Arquivos: source/modules/feynman/fey_10_atualizar_lista.py, source/modules/feynman/fey_18_arquivo_vinculado.py
+- Evoluções:
+  - Abertura de arquivo vinculado por duplo clique passou a ser direta (remoção da exigência de `CTRL`).
+  - Texto instrucional atualizado para refletir o novo gesto.
+  - Padronização visual do destaque para arquivo vinculado com `Qt.blue`.
+
+5. Mapa Mental (IA) — refatoração semântica de ponta a ponta
+- Arquivos: source/modules/mapa/ProcessadorIA/pia_02_detectar_idioma_texto.py, pia_22_gerar_resumo_contextual.py, pia_23_extrair_conceitos_semanticos.py, pia_24_extrair_ideias_principais.py, pia_25_aplicar_tfidf_global.py, pia_26_identificar_relacoes_semanticas.py, pia_28_extrair_conceitos_tfidf.py, pia_29_identificar_relacoes_avancadas.py, pia_32_util_texto.py
+- Evoluções:
+  - Novo utilitário transversal `pia_32_util_texto.py` com normalização textual, remoção de acentos, stopwords PT/EN, tokenização significativa, filtro de ruído e similaridade Jaccard.
+  - Detecção de idioma reescrita com scoring híbrido (palavras funcionais + marcadores estruturais + acentuação + pista do modelo NLP), com fallback robusto para textos curtos/ambíguos.
+  - Resumo contextual migrado para seleção por MMR (relevância x redundância), com sinais combinados (posição, TF-IDF, densidade sintática, overlap com título, cue words) e fallback seguro.
+  - Extração de conceitos semânticos expandida com estratégia parser-aware + fallback lexical, score composto (frequência, contexto, TF-IDF, tipo, especificidade) e deduplicação semântica.
+  - Extração de ideias principais evoluída para ranking por cobertura de keywords, cues discursivas, densidade sintática e remoção de redundância por similaridade.
+  - TF-IDF global reformulado para aplicar reforço de importância por correspondência multi-token e frequência em árvore hierárquica.
+  - Identificação de relações semânticas/avançadas redesenhada para combinar:
+    - extração sujeito-verbo-objeto via dependências (quando parser disponível);
+    - fallback por coocorrência conceitual em sentenças;
+    - ranqueamento por score acumulado e corte por limite.
+
+Correções de bugs
+
+1. Correção de contagem inflada de seleção no Status Bar
+- Sintoma: mesma tarefa selecionada em listas espelhadas sendo contada múltiplas vezes.
+- Correção: deduplicação por chave semântica (ID/título normalizado) e integração da lista lateral no agregador.
+
+2. Correção de repinturas e atualizações redundantes no calendário anual
+- Sintoma: refresh excessivo e custo visual ao repetir `set*` com dados idênticos.
+- Correção: guards de igualdade em `YearCalendarWidget` (ano, mês, contagens, tooltips) e atualização incremental de propriedades visuais.
+
+3. Correção de inconsistência de referência de data ao alternar modos mês/ano
+- Sintoma: perda do contexto selecionado em trocas de visualização.
+- Correção: introdução de `_selected_reference_date` e sincronização explícita entre calendários principal/extras e modo anual/mensal.
+
+4. Correção de robustez do pipeline IA para documentos sem parser/sentenças completas
+- Sintoma: queda de qualidade ou retorno frágil em cenários com NLP reduzido.
+- Correção: múltiplos fallbacks defensivos (tokenização própria, sentenças sintéticas, score por coocorrência e normalização textual unificada).
+
+Arquivos principais impactados nesta entrega
+- source/gui/ui/ui_16_setup_statusbar.py
+- source/modules/eisenhower/interface/ui_07_Calendar.py
+- source/modules/eisenhower/interface/ui_12_CalendarPanel.py
+- source/modules/eisenhower/interface/ui_13_YearCalendarWidget.py
+- source/modules/feynman/fey_10_atualizar_lista.py
+- source/modules/feynman/fey_18_arquivo_vinculado.py
+- source/modules/mapa/ProcessadorIA/pia_02_detectar_idioma_texto.py
+- source/modules/mapa/ProcessadorIA/pia_22_gerar_resumo_contextual.py
+- source/modules/mapa/ProcessadorIA/pia_23_extrair_conceitos_semanticos.py
+- source/modules/mapa/ProcessadorIA/pia_24_extrair_ideias_principais.py
+- source/modules/mapa/ProcessadorIA/pia_25_aplicar_tfidf_global.py
+- source/modules/mapa/ProcessadorIA/pia_26_identificar_relacoes_semanticas.py
+- source/modules/mapa/ProcessadorIA/pia_28_extrair_conceitos_tfidf.py
+- source/modules/mapa/ProcessadorIA/pia_29_identificar_relacoes_avancadas.py
+- source/modules/mapa/ProcessadorIA/pia_32_util_texto.py
+- source/modules/tempo/tmp_05_GerenciadorTempo.py
+- source/modules/tempo/GerenciadorTempo/__init__.py
+- source/modules/tempo/GerenciadorTempo/gtemp_01_setup_ui.py
+- source/modules/tempo/GerenciadorTempo/gtemp_12_atualizar_coluna_doing_timer.py
+- source/modules/tempo/GerenciadorTempo/gtemp_14_interacoes_coluna_doing_timer.py
+
+Validação recomendada (rápida)
+1. Eisenhower: redimensionar painel em modo mês e ano; validar criação/remoção dinâmica de calendários extras e sincronização de seleção/tooltips/contagens.
+2. Gestão de Tempo: selecionar tarefas na coluna lateral e abrir menu de contexto; validar espelhamento de seleção na coluna central.
+3. Gestão de Tempo: duplo clique em tarefa com arquivo vinculado na coluna lateral; validar abertura de arquivo e destaque visual.
+4. Feynman: duplo clique em conceito com arquivo vinculado sem `CTRL`; validar abertura imediata.
+5. Mapa IA: processar documentos PT e EN; verificar qualidade de idioma detectado, resumo contextual, conceitos, ideias e relações.
+6. Status Bar: selecionar itens em listas diferentes que representam a mesma tarefa; confirmar que a contagem final não duplica.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.20.0
 Data: 20 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

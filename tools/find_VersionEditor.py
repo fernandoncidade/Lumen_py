@@ -1,6 +1,7 @@
 import sys
 import re
 from pathlib import Path
+from datetime import date
 
 # garante que a raiz do projeto esteja no sys.path quando o script for executado diretamente
 # (resolve o erro "ModuleNotFoundError: No module named 'source'")
@@ -19,6 +20,7 @@ logger = LogManager.get_logger()
 BASE_DIR = Path(__file__).resolve().parent.parent  # usar a raiz do projeto (um nível acima de tools)
 
 FILES_REL = {
+    "readme": Path("README.md"),
     "privacy_pt": Path("source") / "assets" / "PRIVACY_POLICY" / "Privacy_Policy_pt_BR.txt",
     "privacy_en": Path("source") / "assets" / "PRIVACY_POLICY" / "Privacy_Policy_en_US.txt",
     "notice_pt": Path("source") / "assets" / "NOTICES" / "NOTICE_pt_BR.txt",
@@ -103,6 +105,9 @@ PT_MONTHS = ["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agos
 PT_MONTHS_LOWER = [m.lower() for m in PT_MONTHS]
 EN_MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"]
 
+def build_version_from_date(year: int, month: int, day: int) -> str:
+    return f"{year}.{month}.{day}.0"
+
 def read_file(path: Path):
     try:
         # tenta várias decodificações para evitar problemas com BOM/encodings diferentes
@@ -121,6 +126,12 @@ def read_file(path: Path):
 
 # padrões para extrair o que realmente está nos arquivos (não comparar com EXPECTED)
 PATTERNS = {
+    "readme": [
+        r'^(> \*\*Observação:\*\*.*)$',
+        r'^(Versão:\s*.*)$',
+        r'^(> \*\*Note:\*\*.*)$',
+        r'^(Version:\s*.*)$'
+    ],
     "privacy_pt": [
         r'^(Versão:\s*.*)$',
         r'^(Última atualização:\s*.*)$'
@@ -223,7 +234,33 @@ def apply_updates(pt_version, pt_day, pt_month_index, pt_year, en_version, en_da
         new_txt = txt
 
         try:
-            if key == "privacy_pt":
+            if key == "readme":
+                new_txt = re.sub(
+                    r'^(> \*\*Observação:\*\*.*?\*\*)v\d+\.\d+\.\d+\.\d+(\*\*.*)$',
+                    rf'\1v{pt_version}\2',
+                    new_txt,
+                    flags=re.MULTILINE,
+                )
+                new_txt = re.sub(
+                    r'^(Versão:\s*)v\d+\.\d+\.\d+\.\d+\s*$',
+                    rf'\1v{pt_version}',
+                    new_txt,
+                    flags=re.MULTILINE,
+                )
+                new_txt = re.sub(
+                    r'^(> \*\*Note:\*\*.*?\*\*)v\d+\.\d+\.\d+\.\d+(\*\*.*)$',
+                    rf'\1v{en_version}\2',
+                    new_txt,
+                    flags=re.MULTILINE,
+                )
+                new_txt = re.sub(
+                    r'^(Version:\s*)v\d+\.\d+\.\d+\.\d+\s*$',
+                    rf'\1v{en_version}',
+                    new_txt,
+                    flags=re.MULTILINE,
+                )
+
+            elif key == "privacy_pt":
                 new_txt = re.sub(r'^(Versão:\s*).*$',lambda m: m.group(1) + pt_version, new_txt, flags=re.MULTILINE)
                 new_txt = re.sub(r'^(Última atualização:\s*).*$',lambda m: m.group(1) + pt_date, new_txt, flags=re.MULTILINE)
 
@@ -273,6 +310,8 @@ class VersionEditor(QWidget):
         super().__init__()
         self.setWindowTitle("Editor de Versões / Datas - Lúmen (PT/EN)")
         self.resize(820, 520)
+        today = date.today()
+        today_version = build_version_from_date(today.year, today.month, today.day)
 
         try:
             icon_path = get_icon_path("autismo.ico")
@@ -304,25 +343,25 @@ class VersionEditor(QWidget):
         pt_group.setLayout(pt_layout)
 
         pt_layout.addWidget(QLabel("Versão:"))
-        self.pt_version = QLineEdit("2025.11.26.0")
+        self.pt_version = QLineEdit(today_version)
         pt_layout.addWidget(self.pt_version)
 
         pt_layout.addWidget(QLabel("Dia:"))
         self.pt_day = QSpinBox()
         self.pt_day.setRange(1, 31)
-        self.pt_day.setValue(26)
+        self.pt_day.setValue(today.day)
         pt_layout.addWidget(self.pt_day)
 
         pt_layout.addWidget(QLabel("Mês:"))
         self.pt_month = QComboBox()
         self.pt_month.addItems(PT_MONTHS)
-        self.pt_month.setCurrentIndex(10)  # Novembro
+        self.pt_month.setCurrentIndex(today.month - 1)
         pt_layout.addWidget(self.pt_month)
 
         pt_layout.addWidget(QLabel("Ano:"))
         self.pt_year = QSpinBox()
         self.pt_year.setRange(1900, 3000)
-        self.pt_year.setValue(2025)
+        self.pt_year.setValue(today.year)
         pt_layout.addWidget(self.pt_year)
 
         layout.addWidget(pt_group)
@@ -333,25 +372,25 @@ class VersionEditor(QWidget):
         en_group.setLayout(en_layout)
 
         en_layout.addWidget(QLabel("Version:"))
-        self.en_version = QLineEdit("2025.11.26.0")
+        self.en_version = QLineEdit(today_version)
         en_layout.addWidget(self.en_version)
 
         en_layout.addWidget(QLabel("Day:"))
         self.en_day = QSpinBox()
         self.en_day.setRange(1, 31)
-        self.en_day.setValue(26)
+        self.en_day.setValue(today.day)
         en_layout.addWidget(self.en_day)
 
         en_layout.addWidget(QLabel("Month:"))
         self.en_month = QComboBox()
         self.en_month.addItems(EN_MONTHS)
-        self.en_month.setCurrentIndex(10)  # November
+        self.en_month.setCurrentIndex(today.month - 1)
         en_layout.addWidget(self.en_month)
 
         en_layout.addWidget(QLabel("Year:"))
         self.en_year = QSpinBox()
         self.en_year.setRange(1900, 3000)
-        self.en_year.setValue(2025)
+        self.en_year.setValue(today.year)
         en_layout.addWidget(self.en_year)
 
         layout.addWidget(en_group)
@@ -376,7 +415,31 @@ class VersionEditor(QWidget):
         self.status.setReadOnly(True)
         layout.addWidget(self.status)
 
+        self.pt_day.valueChanged.connect(self.sync_pt_version_with_date)
+        self.pt_month.currentIndexChanged.connect(self.sync_pt_version_with_date)
+        self.pt_year.valueChanged.connect(self.sync_pt_version_with_date)
+
+        self.en_day.valueChanged.connect(self.sync_en_version_with_date)
+        self.en_month.currentIndexChanged.connect(self.sync_en_version_with_date)
+        self.en_year.valueChanged.connect(self.sync_en_version_with_date)
+
         self.on_check()
+
+    def sync_pt_version_with_date(self):
+        version = build_version_from_date(
+            self.pt_year.value(),
+            self.pt_month.currentIndex() + 1,
+            self.pt_day.value(),
+        )
+        self.pt_version.setText(version)
+
+    def sync_en_version_with_date(self):
+        version = build_version_from_date(
+            self.en_year.value(),
+            self.en_month.currentIndex() + 1,
+            self.en_day.value(),
+        )
+        self.en_version.setText(version)
 
     def on_select_folder(self):
         dir_path = QFileDialog.getExistingDirectory(self, "Selecione a pasta onde os arquivos estão", str(self.selected_base_dir))

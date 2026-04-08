@@ -88,7 +88,12 @@ class YearCalendarWidget(QWidget):
 
     def setYear(self, year: int):
         try:
-            self._year = int(year)
+            target_year = int(year)
+
+            if int(self._year) == target_year:
+                return
+
+            self._year = target_year
             self._refresh_header()
             self._refresh_month_buttons()
             self.monthSelected.emit(self.selectedDate())
@@ -102,8 +107,14 @@ class YearCalendarWidget(QWidget):
     def setSelectedDate(self, qdate: QDate):
         try:
             if isinstance(qdate, QDate) and qdate.isValid():
-                self._year = qdate.year()
-                self._selected_month = qdate.month()
+                target_year = int(qdate.year())
+                target_month = int(qdate.month())
+
+                if int(self._year) == target_year and int(self._selected_month) == target_month:
+                    return
+
+                self._year = target_year
+                self._selected_month = target_month
                 self._refresh_header()
                 self._refresh_month_buttons()
 
@@ -115,7 +126,12 @@ class YearCalendarWidget(QWidget):
 
     def set_month_counts(self, month_counts: dict):
         try:
-            self._month_counts = dict(month_counts or {})
+            new_counts = dict(month_counts or {})
+
+            if self._month_counts == new_counts:
+                return
+
+            self._month_counts = new_counts
             self._refresh_month_buttons()
 
         except Exception as e:
@@ -123,11 +139,31 @@ class YearCalendarWidget(QWidget):
 
     def set_month_tooltip_map(self, month_tooltips: dict):
         try:
-            self._month_tooltips = dict(month_tooltips or {})
+            new_tooltips = dict(month_tooltips or {})
+
+            if self._month_tooltips == new_tooltips:
+                return
+
+            self._month_tooltips = new_tooltips
             self._refresh_month_buttons()
 
         except Exception as e:
             logger.error(f"Erro ao definir tooltips mensais no calendário anual: {e}", exc_info=True)
+
+    def set_month_data(self, month_counts: dict, month_tooltips: dict):
+        try:
+            new_counts = dict(month_counts or {})
+            new_tooltips = dict(month_tooltips or {})
+
+            if self._month_counts == new_counts and self._month_tooltips == new_tooltips:
+                return
+
+            self._month_counts = new_counts
+            self._month_tooltips = new_tooltips
+            self._refresh_month_buttons()
+
+        except Exception as e:
+            logger.error(f"Erro ao definir dados mensais no calendário anual: {e}", exc_info=True)
 
     def eventFilter(self, watched, event):
         try:
@@ -420,7 +456,10 @@ class YearCalendarWidget(QWidget):
             logger.error(f"Erro ao selecionar mês no calendário anual: {e}", exc_info=True)
 
     def _refresh_header(self):
-        self.year_label.setText(str(self._year))
+        text = str(self._year)
+
+        if self.year_label.text() != text:
+            self.year_label.setText(text)
 
     def _refresh_month_buttons(self):
         for idx, button in enumerate(self._month_buttons, start=1):
@@ -435,19 +474,27 @@ class YearCalendarWidget(QWidget):
             if count > 0:
                 label = f"{label}\n{count}"
 
-            button.setText(label)
-            button.setChecked(idx == self._selected_month)
-            button.setProperty("hasTasks", count > 0)
+            if button.text() != label:
+                button.setText(label)
+
+            should_be_checked = idx == self._selected_month
+
+            if button.isChecked() != should_be_checked:
+                button.setChecked(should_be_checked)
+
+            has_tasks = bool(count > 0)
+            current_has_tasks = bool(button.property("hasTasks"))
+
+            if current_has_tasks != has_tasks:
+                button.setProperty("hasTasks", has_tasks)
+                button.style().unpolish(button)
+                button.style().polish(button)
+
             lines = self._month_tooltips.get((self._year, idx), []) or []
+            tooltip_text = "\n".join(lines) if lines else ""
 
-            if lines:
-                button.setToolTip("\n".join(lines))
-
-            else:
-                button.setToolTip("")
-
-            button.style().unpolish(button)
-            button.style().polish(button)
+            if button.toolTip() != tooltip_text:
+                button.setToolTip(tooltip_text)
 
     def _apply_palette_style(self):
         try:

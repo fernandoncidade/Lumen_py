@@ -1,6 +1,6 @@
 from functools import partial
 from PySide6.QtWidgets import QStatusBar, QLabel
-from PySide6.QtCore import QCoreApplication
+from PySide6.QtCore import QCoreApplication, Qt
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -100,6 +100,38 @@ def setup_statusbar(self):
             except Exception as e:
                 logger.error(f"Erro ao definir contagem de seleção: {e}", exc_info=True)
 
+        def _task_selection_key(item):
+            try:
+                if item is None:
+                    return None
+
+                tarefa_id = item.data(Qt.UserRole)
+
+                if tarefa_id is not None and str(tarefa_id).strip() != "":
+                    return ("id", str(tarefa_id))
+
+                titulo = ((item.text() or "").split("\n")[0] or "")
+
+                if "—" in titulo:
+                    titulo = titulo.split("—")[0]
+
+                titulo = (
+                    titulo
+                    .replace("🔴 ", "")
+                    .replace("🟠 ", "")
+                    .replace("🟡 ", "")
+                    .replace("🟢 ", "")
+                    .strip()
+                )
+
+                if titulo:
+                    return ("titulo", titulo)
+
+                return ("item", str(id(item)))
+
+            except Exception:
+                return ("item", str(id(item)))
+
         def _count_selected_tempo(tempo_widget):
             try:
                 tarefas = getattr(tempo_widget, "tarefas", None)
@@ -117,7 +149,24 @@ def setup_statusbar(self):
                     if lst is not None:
                         listas.append(lst)
 
-                total = sum(len(lst.selectedItems() or []) for lst in listas)
+                lista_doing_lateral = getattr(tempo_widget, "col_doing_timer_list", None)
+
+                if lista_doing_lateral is not None:
+                    listas.append(lista_doing_lateral)
+
+                selecionadas = set()
+                total = 0
+
+                for lst in listas:
+                    for item in (lst.selectedItems() or []):
+                        chave = _task_selection_key(item)
+
+                        if chave in selecionadas:
+                            continue
+
+                        selecionadas.add(chave)
+                        total += 1
+
                 _set_selection_count("gerenciador", "tarefas", total)
 
             except Exception as e:
@@ -217,6 +266,11 @@ def setup_statusbar(self):
 
                             if lst is not None:
                                 lst.itemSelectionChanged.connect(partial(_count_selected_tempo, widget))
+
+                        lista_doing_lateral = getattr(widget, "col_doing_timer_list", None)
+
+                        if lista_doing_lateral is not None:
+                            lista_doing_lateral.itemSelectionChanged.connect(partial(_count_selected_tempo, widget))
 
                         _count_selected_tempo(widget)
 

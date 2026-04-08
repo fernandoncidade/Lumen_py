@@ -15,7 +15,10 @@ from source.modules.tempo.GerenciadorTempo import (
     cleanup,
     __del__,
     atualizar_coluna_doing_timer,
-    _ajustar_largura_minima_coluna_esquerda
+    _ajustar_largura_minima_coluna_esquerda,
+    _abrir_arquivo_vinculado_coluna_doing_timer,
+    _sincronizar_estado_coluna_doing_timer,
+    _mostrar_menu_contexto_coluna_doing_timer,
 )
 
 
@@ -81,3 +84,12 @@ class GerenciadorTempo(QWidget):
 
     def _ajustar_largura_minima_coluna_esquerda(self):
         _ajustar_largura_minima_coluna_esquerda(self)
+
+    def _abrir_arquivo_vinculado_coluna_doing_timer(self, item):
+        _abrir_arquivo_vinculado_coluna_doing_timer(self, item)
+
+    def _sincronizar_estado_coluna_doing_timer(self):
+        _sincronizar_estado_coluna_doing_timer(self)
+
+    def _mostrar_menu_contexto_coluna_doing_timer(self, pos):
+        _mostrar_menu_contexto_coluna_doing_timer(self, pos)

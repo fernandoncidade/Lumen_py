@@ -1,3 +1,111 @@
+RELEASE NOTES — Lúmen
+Version: 2026.2.21.0
+Date: February 21, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Delivery focused on three fronts: scalability and responsiveness of the Eisenhower Matrix Calendar, semantic robustness of the Mind Map AI pipeline, and evolution of usability/integrity across Time Management, Feynman, and the global Status Bar.
+
+Main improvements
+
+1. Eisenhower Matrix — responsive multi-instance calendar (monthly and yearly)
+- Files: source/modules/eisenhower/interface/ui_07_Calendar.py, source/modules/eisenhower/interface/ui_12_CalendarPanel.py, source/modules/eisenhower/interface/ui_13_YearCalendarWidget.py
+- Evolutions:
+  - CalendarPanel now operates with controlled content width (`set_calendar_content_width`) and reactive updates through `resizeEvent`/`showEvent`.
+  - New architecture with dedicated containers for monthly and yearly modes, allowing multiple calendars side by side according to available width.
+  - Dynamic creation/removal of extra monthly and yearly calendars, with a reuse pool to reduce widget churn in yearly mode.
+  - Synchronization between the main calendar and extra calendars: page, selection, counts, tooltips, and highlights.
+  - Defensive synchronization control with flags to prevent event loops and redundant repaints.
+  - `ui_07_Calendar.py` received a unified technical minimum width (`CALENDAR_PANEL_MIN_WIDTH = 400`) and asynchronous recalculation trigger when expanded.
+  - `YearCalendarWidget` gained short-circuit logic to avoid unnecessary refresh when year/month/data do not change, in addition to `set_month_data()` for joint update of counts and tooltips.
+
+2. Time Management — “Doing Timer” side column with full interaction
+- Files: source/modules/tempo/GerenciadorTempo/__init__.py, source/modules/tempo/GerenciadorTempo/gtemp_01_setup_ui.py, source/modules/tempo/GerenciadorTempo/gtemp_12_atualizar_coluna_doing_timer.py, source/modules/tempo/GerenciadorTempo/gtemp_14_interacoes_coluna_doing_timer.py, source/modules/tempo/tmp_05_GerenciadorTempo.py
+- Evolutions:
+  - New module `gtemp_14_interacoes_coluna_doing_timer.py` to open linked files, synchronize selection with the central column, and forward the context menu.
+  - The side column now supports extended selection, double-click to open file, and customized context menu.
+  - Each side-column item now carries `Qt.UserRole` with the task ID for stable entity resolution.
+  - Tasks with linked files in the side column are now highlighted in bold and blue.
+  - Export and chaining of the new handlers completed in `__init__.py` and in the `tmp_05_GerenciadorTempo.py` wrapper.
+
+3. Status Bar — selection count without duplication across mirrored lists
+- File: source/gui/ui/ui_16_setup_statusbar.py
+- Evolutions:
+  - Selected-item count now deduplicates by stable key (task ID or normalized title), preventing inflation when the same task appears in multiple lists.
+  - Inclusion of the `col_doing_timer_list` side column in consolidated calculation.
+  - Explicit `itemSelectionChanged` connection for the side column to keep the global counter synchronized in real time.
+
+4. Feynman Method — simplified linked-file opening flow
+- Files: source/modules/feynman/fey_10_atualizar_lista.py, source/modules/feynman/fey_18_arquivo_vinculado.py
+- Evolutions:
+  - Opening linked file by double-click is now direct (removal of the `CTRL` requirement).
+  - Instructional text updated to reflect the new gesture.
+  - Visual standardization of linked-file highlight with `Qt.blue`.
+
+5. Mind Map (AI) — end-to-end semantic refactor
+- Files: source/modules/mapa/ProcessadorIA/pia_02_detectar_idioma_texto.py, pia_22_gerar_resumo_contextual.py, pia_23_extrair_conceitos_semanticos.py, pia_24_extrair_ideias_principais.py, pia_25_aplicar_tfidf_global.py, pia_26_identificar_relacoes_semanticas.py, pia_28_extrair_conceitos_tfidf.py, pia_29_identificar_relacoes_avancadas.py, pia_32_util_texto.py
+- Evolutions:
+  - New cross-cutting utility `pia_32_util_texto.py` with text normalization, accent removal, PT/EN stopwords, meaningful tokenization, noise filtering, and Jaccard similarity.
+  - Language detection rewritten with hybrid scoring (function words + structural markers + accentuation + NLP model hint), with robust fallback for short/ambiguous texts.
+  - Contextual summary migrated to MMR-based selection (relevance x redundancy), with combined signals (position, TF-IDF, syntactic density, title overlap, cue words) and safe fallback.
+  - Semantic concept extraction expanded with parser-aware strategy + lexical fallback, composite score (frequency, context, TF-IDF, type, specificity), and semantic deduplication.
+  - Main-idea extraction evolved to ranking by keyword coverage, discourse cues, syntactic density, and similarity-based redundancy removal.
+  - Global TF-IDF reformulated to apply importance reinforcement by multi-token matching and frequency in hierarchical tree.
+  - Semantic/advanced relation identification redesigned to combine:
+    - subject-verb-object extraction via dependencies (when parser is available);
+    - fallback by conceptual co-occurrence in sentences;
+    - ranking by accumulated score and limit cutoff.
+
+Bug fixes
+
+1. Fix for inflated selection count in the Status Bar
+- Symptom: same selected task in mirrored lists being counted multiple times.
+- Fix: deduplication by semantic key (ID/normalized title) and integration of side list into aggregator.
+
+2. Fix for repaints and redundant updates in yearly calendar
+- Symptom: excessive refresh and visual cost when repeating `set*` with identical data.
+- Fix: equality guards in `YearCalendarWidget` (year, month, counts, tooltips) and incremental visual-property update.
+
+3. Fix for date-reference inconsistency when switching month/year modes
+- Symptom: loss of selected context during view switching.
+- Fix: introduction of `_selected_reference_date` and explicit synchronization between main/extra calendars and yearly/monthly mode.
+
+4. Fix for AI pipeline robustness for documents without parser/full sentences
+- Symptom: quality drop or fragile output in reduced NLP scenarios.
+- Fix: multiple defensive fallbacks (own tokenization, synthetic sentences, co-occurrence scoring, and unified text normalization).
+
+Main files impacted in this delivery
+- source/gui/ui/ui_16_setup_statusbar.py
+- source/modules/eisenhower/interface/ui_07_Calendar.py
+- source/modules/eisenhower/interface/ui_12_CalendarPanel.py
+- source/modules/eisenhower/interface/ui_13_YearCalendarWidget.py
+- source/modules/feynman/fey_10_atualizar_lista.py
+- source/modules/feynman/fey_18_arquivo_vinculado.py
+- source/modules/mapa/ProcessadorIA/pia_02_detectar_idioma_texto.py
+- source/modules/mapa/ProcessadorIA/pia_22_gerar_resumo_contextual.py
+- source/modules/mapa/ProcessadorIA/pia_23_extrair_conceitos_semanticos.py
+- source/modules/mapa/ProcessadorIA/pia_24_extrair_ideias_principais.py
+- source/modules/mapa/ProcessadorIA/pia_25_aplicar_tfidf_global.py
+- source/modules/mapa/ProcessadorIA/pia_26_identificar_relacoes_semanticas.py
+- source/modules/mapa/ProcessadorIA/pia_28_extrair_conceitos_tfidf.py
+- source/modules/mapa/ProcessadorIA/pia_29_identificar_relacoes_avancadas.py
+- source/modules/mapa/ProcessadorIA/pia_32_util_texto.py
+- source/modules/tempo/tmp_05_GerenciadorTempo.py
+- source/modules/tempo/GerenciadorTempo/__init__.py
+- source/modules/tempo/GerenciadorTempo/gtemp_01_setup_ui.py
+- source/modules/tempo/GerenciadorTempo/gtemp_12_atualizar_coluna_doing_timer.py
+- source/modules/tempo/GerenciadorTempo/gtemp_14_interacoes_coluna_doing_timer.py
+
+Recommended validation (quick)
+1. Eisenhower: resize panel in month and year mode; validate dynamic creation/removal of extra calendars and synchronization of selection/tooltips/counts.
+2. Time Management: select tasks in side column and open context menu; validate mirrored selection in central column.
+3. Time Management: double-click task with linked file in side column; validate file opening and visual highlight.
+4. Feynman: double-click concept with linked file without `CTRL`; validate immediate opening.
+5. Mind Map AI: process PT and EN documents; verify quality of detected language, contextual summary, concepts, ideas, and relations.
+6. Status Bar: select items in different lists representing the same task; confirm final count does not duplicate.
+
+_________________________________________________
+
 RELEASE NOTES — Lúmen  
 Version: 2026.2.20.0  
 Date: February 20, 2026  

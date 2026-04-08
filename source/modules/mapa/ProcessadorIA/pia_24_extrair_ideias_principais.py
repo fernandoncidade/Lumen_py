@@ -1,72 +1,164 @@
-from typing import List, Dict
+from typing import Any, Dict, List, Set
+from collections import Counter
 from source.utils.LogManager import LogManager
+from .pia_32_util_texto import (
+    jaccard_tokens,
+    obter_stopwords,
+    tokenizar_significativo,
+)
 logger = LogManager.get_logger()
+
+def _sentencas_doc(doc: Any) -> List[Any]:
+    try:
+        sents = list(getattr(doc, "sents", []) or [])
+
+        if sents:
+            return sents
+
+    except Exception:
+        pass
+
+    return [doc]
 
 def _extrair_ideias_principais(self, doc, texto: str, nivel: int) -> List[Dict]:
     try:
-        ideias = []
-        palavras_indicadoras_pt = {
-            'importante', 'fundamental', 'essencial', 'principal', 'crucial', 
-            'necessário', 'deve', 'pode', 'permite', 'define', 'caracteriza'
+        idioma = (getattr(self, "idioma_detectado", "pt") or "pt").lower()
+        stopwords = obter_stopwords(idioma, nlp=getattr(self, "nlp", None))
+        sentencas = _sentencas_doc(doc)
+        total_sentencas = len(sentencas)
+
+        if not sentencas:
+            return []
+
+        cue_pt = {
+            "portanto", "assim", "logo", "resumindo", "fundamental",
+            "essencial", "importante", "principal", "conclui", "define",
         }
 
-        palavras_indicadoras_en = {
-            'important', 'fundamental', 'essential', 'main', 'crucial',
-            'necessary', 'must', 'can', 'allows', 'defines', 'characterizes'
+        cue_en = {
+            "therefore", "thus", "in summary", "important", "main",
+            "fundamental", "essential", "concludes", "defines",
         }
 
-        palavras_indicadoras = palavras_indicadoras_pt | palavras_indicadoras_en
-        paragrafos = texto.split('\n\n')
+        cue_words = cue_en if idioma.startswith("en") else cue_pt
+        freq_tokens: Counter = Counter()
 
-        for para_idx, paragrafo in enumerate(paragrafos):
-            if len(paragrafo.strip()) < 50:
+        for sent in sentencas:
+            sent_text = getattr(sent, "text", "")
+
+            for tok in set(tokenizar_significativo(sent_text, idioma=idioma, stopwords=stopwords)):
+                freq_tokens[tok] += 1
+
+        keywords = {t for t, f in freq_tokens.items() if f >= 2}
+
+        if not keywords:
+            keywords = {t for t, _ in freq_tokens.most_common(25)}
+
+        ideias: List[Dict] = []
+
+        for idx, sent in enumerate(sentencas):
+            sent_texto = getattr(sent, "text", "").strip()
+
+            if not (25 <= len(sent_texto) <= 360):
                 continue
 
-            doc_para = self.nlp(paragrafo[:10000])
-            sentencas = list(doc_para.sents)
+            tokens = tokenizar_significativo(sent_texto, idioma=idioma, stopwords=stopwords)
 
-            for sent_idx, sent in enumerate(sentencas):
-                sent_texto = sent.text.strip()
+            if len(tokens) < 5:
+                continue
 
-                if not (20 <= len(sent_texto) <= 300):
-                    continue
+            tokens_set: Set[str] = set(tokens)
+            score = 0.0
 
-                score = 0.0
+            pos_rel = idx / max(total_sentencas - 1, 1)
 
-                if sent_idx == 0:
-                    score += 0.3
+            if idx <= 1:
+                score += 0.22
 
-                elif sent_idx == len(sentencas) - 1:
-                    score += 0.2
+            if pos_rel >= 0.85:
+                score += 0.16
 
-                comp_ideal = 100
-                dif_comp = abs(len(sent_texto) - comp_ideal)
-                score += max(0, 0.2 - (dif_comp / 500))
+            score += max(0.12 - abs(0.40 - pos_rel) * 0.22, 0.01)
+            hits_keywords = len(tokens_set & keywords)
+            score += min((hits_keywords / max(len(tokens_set), 1)) * 0.42, 0.28)
+            sent_lower = sent_texto.lower()
 
-                substantivos = [t for t in sent if t.pos_ in ['NOUN', 'PROPN']]
-                verbos = [t for t in sent if t.pos_ == 'VERB']
+            if any(cue in sent_lower for cue in cue_words):
+                score += 0.13
+
+            if any(ch.isdigit() for ch in sent_texto):
+                score += 0.05
+
+            try:
+                substantivos = [
+                    t for t in sent
+                    if getattr(t, "pos_", "") in ("NOUN", "PROPN")
+                    and not getattr(t, "is_stop", False)
+                ]
+
+                verbos = [
+                    t for t in sent
+                    if getattr(t, "pos_", "") in ("VERB", "AUX")
+                    and not getattr(t, "is_stop", False)
+                ]
+
                 densidade = (len(substantivos) + len(verbos)) / max(len(sent), 1)
-                score += min(densidade * 0.3, 0.3)
+                score += min(densidade * 0.34, 0.24)
 
-                texto_lower = sent_texto.lower()
-                indicadores_presentes = sum(1 for p in palavras_indicadoras if p in texto_lower)
-                score += min(indicadores_presentes * 0.15, 0.3)
+            except Exception:
+                pass
 
-                pos_doc = 1.0 - (para_idx / max(len(paragrafos), 1))
-                score += pos_doc * 0.2
+            tam = len(sent_texto)
 
-                ideias.append({
-                    'texto': sent_texto,
-                    'tipo': 'ideia_principal',
-                    'importancia': min(score, 1.0),
-                    'paragrafo': para_idx,
-                    'posicao_sentenca': sent_idx
-                })
+            if 70 <= tam <= 220:
+                score += 0.12
 
-        ideias = sorted(ideias, key=lambda i: i['importancia'], reverse=True)
-        limite = {0: 8, 1: 6, 2: 5, 3: 4, 4: 3}.get(nivel, 3)
+            elif tam < 35 or tam > 320:
+                score -= 0.10
 
-        return ideias[:limite]
+            paragrafo_idx = 0
+
+            try:
+                start_char = int(getattr(sent, "start_char", 0))
+                paragrafo_idx = (texto[:start_char].count("\n\n") if texto else 0)
+
+            except Exception:
+                paragrafo_idx = 0
+
+            ideias.append(
+                {
+                    "texto": sent_texto,
+                    "tipo": "ideia_principal",
+                    "importancia": float(min(score, 1.0)),
+                    "paragrafo": paragrafo_idx,
+                    "posicao_sentenca": idx,
+                }
+            )
+
+        ideias.sort(key=lambda x: x["importancia"], reverse=True)
+
+        sem_redundancia: List[Dict] = []
+
+        for ideia in ideias:
+            redundante = False
+
+            for escolhida in sem_redundancia:
+                sim = jaccard_tokens(
+                    ideia["texto"],
+                    escolhida["texto"],
+                    idioma=idioma,
+                    stopwords=stopwords,
+                )
+
+                if sim >= 0.74:
+                    redundante = True
+                    break
+
+            if not redundante:
+                sem_redundancia.append(ideia)
+
+        limite = {0: 9, 1: 7, 2: 6, 3: 5, 4: 4}.get(nivel, 4)
+        return sem_redundancia[:limite]
 
     except Exception as e:
         logger.error(f"Erro ao extrair ideias principais: {e}", exc_info=True)

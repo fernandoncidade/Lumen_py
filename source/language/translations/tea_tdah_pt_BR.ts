@@ -2525,11 +2525,6 @@ Deseja continuar?</translation>
     </message>
 
     <message>
-      <source>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</source>
-      <translation>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</translation>
-    </message>
-
-    <message>
       <source>🗑️ Remover Arquivo:</source>
       <translation>🗑️ Remover Arquivo:</translation>
     </message>
@@ -2570,8 +2565,8 @@ Deseja continuar?</translation>
     </message>
 
     <message>
-      <source>(Para abrir o arquivo vinculado: CTRL + duplo clique)</source>
-      <translation>(Para abrir o arquivo vinculado: CTRL + duplo clique)</translation>
+      <source>(Para abrir o arquivo vinculado: duplo clique com botão esquerdo)</source>
+      <translation>(Para abrir o arquivo vinculado: duplo clique com botão esquerdo)</translation>
     </message>
 
     <message>

@@ -1,7 +1,7 @@
 import html
 from PySide6.QtWidgets import QListWidgetItem
 from PySide6.QtCore import QCoreApplication, Qt
-from PySide6.QtGui import QColor, QFont
+from PySide6.QtGui import QFont
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -33,7 +33,7 @@ def atualizar_lista(self):
             arquivo_vinculado = (conceito.get('arquivo_vinculado') or '').strip()
 
             if arquivo_vinculado:
-                item.setForeground(QColor("#1E64DC"))
+                item.setForeground(Qt.blue)
                 fonte = QFont(item.font())
                 fonte.setBold(True)
                 item.setFont(fonte)
@@ -62,7 +62,7 @@ def atualizar_lista(self):
 
             if arquivo_vinculado:
                 arquivo_vinculado_titulo = QCoreApplication.translate("App", "📎 Arquivo Vinculado")
-                arquivo_vinculado_instrucao = QCoreApplication.translate("App", "(Para abrir o arquivo vinculado: CTRL + duplo clique)")
+                arquivo_vinculado_instrucao = QCoreApplication.translate("App", "(Para abrir o arquivo vinculado: duplo clique com botão esquerdo)")
                 arquivo_vinculado_titulo_negrito = f"<b>{arquivo_vinculado_titulo}</b>"
                 arquivo_vinculado_cabecalho = f"{arquivo_vinculado_titulo_negrito} {arquivo_vinculado_instrucao}"
                 parts.append(arquivo_vinculado_cabecalho + ":" + "\n" + arquivo_vinculado)

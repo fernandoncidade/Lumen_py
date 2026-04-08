@@ -1,9 +1,11 @@
 from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QSizePolicy
-from PySide6.QtCore import Qt, QCoreApplication
+from PySide6.QtCore import Qt, QCoreApplication, QTimer
 from .ui_11_RotatedTabButton import RotatedTabButton
 from .ui_12_CalendarPanel import CalendarPanel
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
+
+CALENDAR_PANEL_MIN_WIDTH = 400
 
 def get_text(text):
     return QCoreApplication.translate("App", text)
@@ -15,7 +17,7 @@ class Calendar(QWidget):
         try:
             self.app = app
             self._expanded = False
-            self._panel_width = 360
+            self._panel_width = CALENDAR_PANEL_MIN_WIDTH
             self._layout_margins = (0, 11, 0, 0)
 
             layout = QHBoxLayout(self)
@@ -44,7 +46,8 @@ class Calendar(QWidget):
             layout.addLayout(self.side_tabs_layout, 0)
 
             self.calendar_panel = CalendarPanel(app, self)
-            self.calendar_panel.setMinimumWidth(max(self.calendar_panel.minimumSizeHint().width(), 300))
+            self.calendar_panel.set_calendar_content_width(CALENDAR_PANEL_MIN_WIDTH)
+            self.calendar_panel.setMinimumWidth(max(self.calendar_panel.minimumSizeHint().width(), CALENDAR_PANEL_MIN_WIDTH))
             self.calendar_panel.setMaximumWidth(16777215)
             self.calendar_panel.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
             layout.addWidget(self.calendar_panel, 1)
@@ -156,7 +159,7 @@ class Calendar(QWidget):
             self.calendar_panel.setVisible(self._expanded)
 
             if self._expanded:
-                hint_w = max(self.calendar_panel.sizeHint().width(), self.calendar_panel.minimumSizeHint().width(), 300)
+                hint_w = max(self.calendar_panel.sizeHint().width(), self.calendar_panel.minimumSizeHint().width(), CALENDAR_PANEL_MIN_WIDTH)
                 self._panel_width = max(self._panel_width, hint_w)
                 self.toggle_button.setText(get_text("Recolher Calendário"))
 
@@ -167,6 +170,21 @@ class Calendar(QWidget):
             self.updateGeometry()
             self._sync_splitter_sizes_after_toggle()
             self._update_splitter_interaction()
+
+            if self._expanded and self.calendar_panel is not None:
+                try:
+                    if hasattr(self.calendar_panel, "_is_month_view_active") and self.calendar_panel._is_month_view_active():
+                        QTimer.singleShot(0, self.calendar_panel._update_month_calendars_for_width)
+
+                except Exception:
+                    pass
+
+                try:
+                    if hasattr(self.calendar_panel, "_is_year_view_active") and self.calendar_panel._is_year_view_active():
+                        QTimer.singleShot(0, self.calendar_panel._update_year_calendars_for_width)
+
+                except Exception:
+                    pass
 
         except Exception as e:
             logger.error(f"Erro ao alternar painel de calendário: {e}", exc_info=True)

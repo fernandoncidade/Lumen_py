@@ -154,8 +154,7 @@ def abrir_arquivo_conceito(self, item):
 
 def on_lista_conceitos_double_click(self, item):
     try:
-        if QApplication.keyboardModifiers() & Qt.ControlModifier:
-            self.abrir_arquivo_conceito(item)
+        self.abrir_arquivo_conceito(item)
 
     except Exception as e:
         logger.error(f"Erro ao processar duplo clique na lista de conceitos: {e}", exc_info=True)

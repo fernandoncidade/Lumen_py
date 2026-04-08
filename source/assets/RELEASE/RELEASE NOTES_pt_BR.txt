@@ -1,3 +1,66 @@
+NOTAS DE LANÇAMENTO — Lúmen  
+Versão: 2026.2.21.0  
+Data: 21 de fevereiro de 2026  
+Autor: Fernando Nillsson Cidade
+
+Visão Geral  
+Esta atualização trouxe melhorias importantes de usabilidade, organização visual e qualidade dos resultados de IA. O foco foi deixar a experiência mais fluida no calendário, mais prática no gerenciamento de tarefas e mais inteligente na geração de conteúdos no Mapa Mental.
+
+Melhorias principais
+
+1. Calendário da Matriz Eisenhower
+- O calendário ficou mais responsivo e se adapta melhor ao espaço disponível na tela.
+- A visualização mensal e anual está mais estável e consistente.
+- A navegação entre datas ficou mais fluida, com melhor sincronização entre diferentes visões.
+- O desempenho visual foi otimizado para evitar atualizações desnecessárias.
+
+2. Gestão de Tempo
+- A coluna lateral de tarefas em andamento ficou mais interativa.
+- Agora é possível selecionar várias tarefas com mais facilidade.
+- O duplo clique para abrir arquivo vinculado ficou mais prático.
+- O menu de contexto da coluna lateral foi aprimorado.
+- Tarefas com arquivo vinculado ganharam destaque visual para identificação rápida.
+
+3. Barra de Status
+- A contagem de itens selecionados ficou mais precisa.
+- Foi corrigido o problema de contagem duplicada da mesma tarefa em listas espelhadas.
+- O indicador de seleção atualiza melhor em tempo real.
+
+4. Método Feynman
+- A abertura de arquivos vinculados ficou mais simples: agora basta duplo clique.
+- As instruções visuais foram atualizadas para refletir esse novo comportamento.
+- O destaque visual de itens com arquivo vinculado ficou mais claro.
+
+5. Mapa Mental com IA
+- A detecção automática de idioma foi aprimorada e está mais confiável.
+- A geração de resumo contextual ficou mais relevante e menos repetitiva.
+- A extração de conceitos e ideias principais ficou mais precisa.
+- As relações entre conceitos passaram a ser identificadas com maior qualidade.
+- O processamento geral está mais robusto, inclusive em textos difíceis ou incompletos.
+
+Correções de bugs
+
+1. Contagem duplicada de seleção
+- Corrigido problema que podia contar a mesma tarefa mais de uma vez.
+
+2. Atualizações visuais excessivas no calendário
+- Corrigidas repinturas e recálculos desnecessários para melhorar fluidez.
+
+3. Perda de referência de data
+- Corrigida inconsistência ao alternar entre modos mensal e anual.
+
+4. Robustez da IA em cenários limitados
+- Melhorado o comportamento quando o texto é curto, ambíguo ou com estrutura incompleta.
+
+Validação recomendada (rápida)
+1. Testar o calendário em telas com diferentes larguras e alternar entre visão mensal e anual.  
+2. Selecionar tarefas na coluna lateral e verificar sincronização com a área principal.  
+3. Abrir arquivos vinculados por duplo clique em Gestão de Tempo e Feynman.  
+4. Processar textos em português e inglês no Mapa Mental para validar resumos, conceitos e ideias.  
+5. Confirmar que a barra de status não duplica a contagem de tarefas selecionadas.
+
+_________________________________________________
+
 NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.20.0
 Data: 20 de fevereiro de 2026
