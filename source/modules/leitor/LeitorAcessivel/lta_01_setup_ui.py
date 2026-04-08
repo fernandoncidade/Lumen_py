@@ -35,6 +35,10 @@ def setup_ui(self):
         self.btn_stop.clicked.connect(self.parar_leitura)
         controles.addWidget(self.btn_stop)
 
+        self.btn_limpar = QPushButton()
+        self.btn_limpar.clicked.connect(self.limpar_painel)
+        controles.addWidget(self.btn_limpar)
+
         controles.addStretch()
         layout.addLayout(controles)
 

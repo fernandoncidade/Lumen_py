@@ -143,6 +143,7 @@ from source.modules.leitor.LeitorAcessivel import (
     toggle_pdf_speech_highlight,
     set_pdf_speech_highlight_mode,
     is_pdf_speech_highlight_enabled,
+    limpar_painel,
 )
 
 LeitorAcessivel.setup_ui = setup_ui
@@ -230,3 +231,4 @@ LeitorAcessivel._stop_pdf_speech_highlight = _stop_pdf_speech_highlight
 LeitorAcessivel.toggle_pdf_speech_highlight = toggle_pdf_speech_highlight
 LeitorAcessivel.set_pdf_speech_highlight_mode = set_pdf_speech_highlight_mode
 LeitorAcessivel.is_pdf_speech_highlight_enabled = is_pdf_speech_highlight_enabled
+LeitorAcessivel.limpar_painel = limpar_painel

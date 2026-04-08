@@ -2295,5 +2295,19 @@ Defina 0 para repetir imediatamente após o áudio terminar.</translation>
       <translation>Pomodoros concluídos:</translation>
     </message>
 
+    <message>
+      <source>Limpar conteúdo</source>
+      <translation>Limpar conteúdo</translation>
+    </message>
+
+    <message>
+      <source>Esta ação irá limpar o conteúdo das abas "Texto" e "PDF".
+
+Deseja continuar?</source>
+      <translation>Esta ação irá limpar o conteúdo das abas "Texto" e "PDF".
+
+Deseja continuar?</translation>
+    </message>
+
   </context>
 </TS>

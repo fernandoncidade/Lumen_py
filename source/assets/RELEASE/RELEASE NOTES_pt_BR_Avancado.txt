@@ -1,4 +1,100 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.2.0
+Data: 2 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em hardening e polimento do módulo Leitor Acessível: limpeza de estado/recursos, consolidação de traduções, reforço na sincronização de paleta/tema, integração defensiva com gerenciador de botões e FontManager, e robustez geral nas interações com PDF (toolbar/find bars/seleção). Foram adicionados fallbacks, logs detalhados e proteções extensivas para evitar crashes em pontos de integração externa.
+
+Melhorias principais
+1. Limpeza/Reset do Painel (limpar_painel)
+   - Nova rotina limpar_painel com múltiplos blocos try/except para limpar conteúdo de Texto e PDF, paralisar leituras em andamento, resetar estados (pdf_doc, _last_pdf_path, _pdf_current_page, _pdf_zoom_special, _current_reading_pdf_path) e restaurar controles de UI (spin_page, combo_zoom, botões de modo/zoom).
+   - Limpeza defensiva de barras de busca (TextFindBar / PDFFindBar), handlers de mouse PDF, toolbar e highlights de fala; logs de debug para falhas não bloqueantes.
+   - Confirmação ao usuário via QMessageBox (com tradução) envolvendo fluxo de confirmação protegido por try/except.
+
+2. Internacionalização e centralização de textos
+   - atualizar_traducoes consolidado para todos os rótulos, tooltips e textos visíveis do Leitor: botões principais, toolbar de texto, toolbar de PDF, labels de velocidade/volume/fonte e nomes de abas.
+   - Preservação de estado em widgets ao retranslate (ex.: currentIndex do combo_modo_leitura e do combo_zoom quando aplicável).
+   - Re-tradução de FindBars via chamada a retranslate quando disponível; tratamento de exceções com logger.debug.
+
+3. Sincronização de Paleta / Tema
+   - Aplicação consistente de QPalette.Window como Base/AlternateBase ao QTextEdit (texto_area) e propagação de cores para comboboxes, spinboxes e viewports.
+   - Implementação de filtro local _PaletteThemeSyncFilter instalado no QApplication para reagir a ApplicationPaletteChange / PaletteChange / ThemeChange; rotina idempotente com flag _palette_sync_in_progress para evitar reentrância.
+   - Ajustes finos no cálculo de tons (is_dark/lightness) e aplicação de cores mais escuras/claras para manter contraste em modos claro/escuro.
+
+4. Fallbacks e integração defensiva
+   - Uso de GerenciadorBotoesUI quando disponível (create_button, set_button_text); fallback para QPushButton com medidas de estilo mínimas quando ausente.
+   - Uso de FontManager para carregar fonte padrão do editor; fallback com log em caso de falha.
+   - Proteções amplas ao conectar signals (ex.: current_page_changed) e ao chamar métodos opcionais do host via getattr/hasattr.
+
+5. UX PDF / Find Bars / Shortcuts
+   - Integração e retranslate de PDFFindBar e TextFindBar com handlers protegidos.
+   - Atalho Ctrl+F com comportamento inteligente de toggle entre barras de busca dependendo da aba ativa; contexto ApplicationShortcut para permitir ativação global.
+   - Atalho Ctrl+C com contexto WidgetWithChildrenShortcut que tenta copiar seleção do PDF via handler.copy_selection com logs explicativos em debug.
+
+6. Logging e observabilidade
+   - Uso consistente de LogManager.get_logger() para logger.debug / logger.error com exc_info nas rotinas críticas: limpeza, carregamento de fonte, aplicação de paleta, conexão de signals, retranslate, e operações com PDF.
+   - Mensagens de debug detalhadas em blocos except para facilitar diagnóstico sem interromper fluxo do usuário.
+
+Correções de bugs
+1. Evitar crashes por Ausência de Componentes
+   - Proteções para operar sem gerenciador_botoes, sem QCoreApplication.instance() ou sem handlers de PDF; UI ainda opera com fallbacks funcionais.
+
+2. Estados inconsistentes após limpar conteúdo
+   - Garantia de reset completo de variáveis internas e widgets (incluindo spin_page, label_total_pages, zoom e modos), evitando estados residuais que impediam novo carregamento.
+
+3. Problemas de tradução em runtime
+   - Preservação de índices e textos especiais do combo_zoom (tratamento de "largura"/"página" e percentuais) para não perder seleção do usuário ao retranslate.
+
+4. Sincronização de paleta parcial em viewports
+   - Aplicação de setAutoFillBackground(True) e propagação da paleta para view()/viewport() de combobox/listviews para manter contraste consistente.
+
+Detalhes de implementação (pontos relevantes)
+- Arquitetura de limpeza:
+  - limpar_painel realiza vários passos sequenciais: confirmação do usuário, parada de leitura, limpeza de QTextEdit, reset de PDFView e estado, esconder/limpar FindBars, reset de toolbar PDF, reset de controls (spin/combos), desativação de highlights de leitura.
+  - Cada operação rodeada por try/except para evitar propagação de exceções.
+
+- Internacionalização:
+  - atualizar_traducoes utiliza QCoreApplication.translate("App", ...) para todos os textos e labels; blocos try/except locais garantem que falhas em um grupo de controles não prejudiquem o restante.
+
+- Paleta / Tema:
+  - _sync_texto_area_background e _sync_widgets_darker_palette encapsulam lógica de adaptação das cores e são invocados na criação e via filtro de evento.
+  - Flag self._palette_sync_in_progress evita loops quando a aplicação altera paleta durante a aplicação de cores.
+
+- Integração com host:
+  - lt_03_LeitorAcessivel atribui todas as funções do módulo LeitorAcessivel (setup_ui, atualizar_traducoes, limpar_painel, controles de leitura etc.) à classe LeitorAcessivel via binding dinâmico, permitindo modularização sem alterar a classe original.
+  - Exportações e __all__ atualizados para incluir limpar_painel.
+
+Arquivos alterados / principais
+- source/modules/leitor/LeitorAcessivel/lta_01_setup_ui.py
+- source/modules/leitor/LeitorAcessivel/lta_02_atualizar_traducoes.py
+- source/modules/leitor/LeitorAcessivel/lta_36_limpeza_painel.py
+- source/modules/leitor/LeitorAcessivel/__init__.py
+- source/modules/leitor/lt_03_LeitorAcessivel.py
+
+Testes e verificação
+- Limpeza:
+  - Carregar texto e PDF, iniciar leitura, executar Limpar -> confirmar parada da leitura, área de texto vazia, PDFView resetado, spin_page/label_total_pages restaurados, highlights desligados.
+- Tradução:
+  - Trocar idioma em runtime e verificar atualização de todos os rótulos (botões, tooltips, abas); confirmar que combo_modo_leitura e combo_zoom preservam seleção.
+- Paleta / Tema:
+  - Alternar temas (claro/escuro) e confirmar que QTextEdit, QComboBox, QListWidget e viewports adotam QPalette.Window/Base coerentes.
+- PDF:
+  - Testar Ctrl+F toggle entre barras de busca; Ctrl+C em aba PDF com seleção ativa deve acionar handler.copy_selection sem crash.
+- Fallbacks:
+  - Remover ou substituir por None o gerenciador_botoes e FontManager (simular falha) e verificar que UI continua utilizável com logs de erro apropriados.
+
+Notas de migração e compatibilidade
+- Atribuição dinâmica das funções ao LeitorAcessivel (lt_03_LeitorAcessivel.py) exige que integrações externas usem os métodos disponibilizados por nome; não há alteração da API pública da classe além da inclusão de limpar_painel.
+- Recomenda-se reiniciar a aplicação após alterações de paleta/tema para validar comportamento em plataformas com suporte parcial a ColorSchemeChange.
+- Para aproveitar fully os recursos visuais e de botões, mantenha GerenciadorBotoesUI e FontManager inicializados no host.
+
+Observações finais
+- Esta release prioriza estabilidade das interações do Leitor Acessível em cenários reais, reduzindo risco de crashes por integrações ausentes e melhorando a consistência visual durante mudanças de tema e idioma. Logs detalhados facilitam diagnóstico e testes automatizados.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.1.0
 Data: 1 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

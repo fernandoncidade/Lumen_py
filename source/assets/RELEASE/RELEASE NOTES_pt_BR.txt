@@ -1,4 +1,39 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.2.0
+Data: 2 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Atualização voltada para maior estabilidade e polimento do Leitor Acessível. Inclui limpeza segura de conteúdo, centralização das traduções, melhor alinhamento de cores entre temas, proteções contra falhas quando componentes opcionais não estão disponíveis e melhorias na experiência com PDFs (barra de ferramentas, busca e seleção). Logs foram ampliados para facilitar diagnóstico.
+
+Principais novidades
+- Limpar conteúdo: ação de limpeza pede confirmação, para a leitura em andamento, esvazia a área de texto e reseta o visualizador de PDF e controles de página/zoom, evitando estados residuais.
+- Traduções centralizadas: todos os rótulos, tooltips e nomes de abas atualizam em tempo real preservando seleções do usuário.
+- Melhor adaptação a temas: cores de áreas de edição, listas e controles foram ajustadas para manter contraste em modos claro/escuro.
+- Fallbacks visuais e fontes: quando componentes extras não estiverem presentes, a interface usa alternativas que mantêm a usabilidade sem travar.
+- Experiência com PDF: busca integrada com comportamento inteligente ao alternar abas, cópia de seleção em PDF mais confiável e botões/controles de zoom e navegação restaurados corretamente.
+- Logs e proteções: mensagens de erro e debug mais detalhadas; várias operações protegidas para evitar quedas em pontos de integração externa.
+
+Correções de bugs
+- Evita travamentos quando componentes opcionais não existem; a interface continua utilizável.
+- Corrige estados inconsistentes após limpar conteúdo, garantindo que página, total de páginas, zoom e modos retornem a valores padrão.
+- Mantém seleções de zoom e modos ao trocar idioma, evitando perda de escolha do usuário.
+- Melhora aplicação de cores em áreas internas (viewports) para preservar contraste consistente.
+
+O que muda no uso diário
+- Usar "Limpar" interrompe leituras e deixa o painel pronto para novo carregamento sem comportamentos estranhos.
+- Ao trocar o idioma, os textos mudam na hora sem perder suas seleções.
+- Alternar o tema mantém legibilidade das áreas de edição e listas.
+- Buscar em texto/PDF e copiar trechos em PDFs está mais estável e menos propenso a erros.
+
+Recomendações rápidas
+- Teste o botão Limpar após carregar texto/PDF e iniciar leitura para verificar parada e reset.
+- Troque idioma e tema para confirmar atualização imediata de textos e cores.
+- Se algo não funcionar por falta de um recurso opcional, verifique os logs antes de reportar.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.1.0
 Data: 1 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

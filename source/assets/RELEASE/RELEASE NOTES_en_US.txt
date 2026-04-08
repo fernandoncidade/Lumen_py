@@ -1,4 +1,39 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.2.0
+Date: February 2, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Update focused on greater stability and polish for the Accessible Reader. Includes safe content clearing, centralized translations, better color alignment across themes, protections against failures when optional components are unavailable, and improvements to the PDF experience (toolbar, search and selection). Logs have been expanded to facilitate diagnosis.
+
+Key highlights
+- Clear content: the clear action asks for confirmation, stops any ongoing reading, empties the text area and resets the PDF viewer and page/zoom controls, preventing residual states.
+- Centralized translations: all labels, tooltips and tab names update in real time while preserving user selections.
+- Better theme adaptation: colors for edit areas, lists and controls have been adjusted to maintain contrast in light/dark modes.
+- Visual and font fallbacks: when extra components are not present, the interface uses alternatives that keep usability without crashing.
+- PDF experience: integrated search with intelligent behavior when switching tabs, more reliable copy of PDF selections, and proper restoration of zoom/navigation buttons and controls.
+- Logs and protections: more detailed error and debug messages; several operations are protected to avoid crashes at external integration points.
+
+Bug fixes
+- Prevents crashes when optional components are missing; the interface remains usable.
+- Fixes inconsistent states after clearing content, ensuring page, total pages, zoom and modes return to default values.
+- Preserves zoom and mode selections when changing language, avoiding loss of user choice.
+- Improves application of colors in internal areas (viewports) to maintain consistent contrast.
+
+What changes in daily use
+- Using "Clear" stops readings and leaves the panel ready for new loading without strange behavior.
+- When changing the language, texts update immediately without losing selections.
+- Switching the theme keeps edit areas and lists readable.
+- Searching in text/PDF and copying excerpts in PDFs is more stable and less error-prone.
+
+Quick recommendations
+- Test the Clear button after loading text/PDF and starting a reading to verify stop and reset.
+- Change language and theme to confirm immediate update of texts and colors.
+- If something does not work due to a missing optional feature, check the logs before reporting.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.1.0
 Date: February 1, 2026
 Author: Fernando Nillsson Cidade

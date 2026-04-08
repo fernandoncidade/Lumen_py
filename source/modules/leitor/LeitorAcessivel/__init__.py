@@ -116,6 +116,7 @@ from .lta_35_pdf_speech_highlight_controls import (
     set_pdf_speech_highlight_mode,
     is_pdf_speech_highlight_enabled,
 )
+from .lta_36_limpeza_painel import limpar_painel
 
 __all__ = [
     "setup_ui",
@@ -218,4 +219,5 @@ __all__ = [
     "toggle_pdf_speech_highlight",
     "set_pdf_speech_highlight_mode",
     "is_pdf_speech_highlight_enabled",
+    "limpar_painel",
 ]

@@ -11,6 +11,9 @@ def atualizar_traducoes(self):
         if self.btn_stop is not None:
             self.btn_stop.setText(QCoreApplication.translate("App", "⏹️ Parar"))
 
+        if hasattr(self, "btn_limpar") and self.btn_limpar is not None:
+            self.btn_limpar.setText(QCoreApplication.translate("App", "🧽 Limpar"))
+
         self.label_velocidade_titulo.setText(QCoreApplication.translate("App", "Velocidade:"))
         self.label_volume.setText(QCoreApplication.translate("App", "Volume:"))
         self.label_fonte.setText(QCoreApplication.translate("App", "Fonte:"))
