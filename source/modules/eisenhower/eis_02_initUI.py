@@ -1,5 +1,5 @@
 from PySide6.QtCore import Qt
-from PySide6.QtWidgets import QHBoxLayout
+from PySide6.QtWidgets import QHBoxLayout, QSplitter
 from .services import init_ui
 from .interface import Calendar
 from source.utils.LogManager import LogManager
@@ -14,8 +14,21 @@ def initUI(self):
             outer_layout.setSpacing(0)
 
             self.calendar_pane = Calendar(self)
-            outer_layout.addWidget(self.calendar_pane, 0, Qt.AlignLeft)
-            outer_layout.addWidget(self._root_widget, 1)
+            self.main_splitter = QSplitter(Qt.Horizontal, self)
+            self.main_splitter.setChildrenCollapsible(False)
+            self.main_splitter.addWidget(self.calendar_pane)
+            self.main_splitter.addWidget(self._root_widget)
+            self.main_splitter.setCollapsible(0, False)
+            self.main_splitter.setCollapsible(1, False)
+            self.main_splitter.setStretchFactor(0, 0)
+            self.main_splitter.setStretchFactor(1, 1)
+
+            self._root_widget.setMinimumWidth(420)
+            self.calendar_pane.setMinimumWidth(self.calendar_pane.effective_min_width())
+            self.main_splitter.setSizes([self.calendar_pane.effective_min_width(), 1000])
+            self.calendar_pane._update_splitter_interaction()
+
+            outer_layout.addWidget(self.main_splitter)
 
             self._hide_legacy_calendar_button()
 

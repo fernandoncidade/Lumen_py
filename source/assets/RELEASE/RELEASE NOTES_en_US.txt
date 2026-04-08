@@ -1,4 +1,54 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.13.0
+Date: February 13, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Update focused on layout and interaction refinements (calendar panel and resizing), improved reliability of drag & drop across task columns, integration between Pomodoro and tasks, and enhancements in theme application and translations. Small logging fixes and exception protections increase overall stability.
+
+Main improvements
+- Calendar panel
+  - More predictable toggle behavior for showing/hiding the calendar, with automatic width adjustment to avoid content overlap.
+  - Improved resizing behavior to maintain proportions and prevent invalid sizes when opening/closing the panel.
+
+- Drag & drop in task tabs/columns
+  - Dragging over a tab header now automatically opens the target tab to facilitate dropping.
+  - Drops on the header correctly move tasks to the chosen column without losing selection or items.
+  - Flow protected against inconsistent intermediate states, reducing item loss during moves.
+
+- Pomodoro ↔ Tasks integration
+  - Pomodoro cycles trigger updates in the task manager to support focused workflows.
+  - "In Progress" column shown next to the timer panel, with a responsive initial layout and reactive list updates.
+
+- Task entry and file support
+  - New task field accepts dragged files and fills the field; pressing Enter adds the task.
+  - Interface translations and texts update at runtime without losing important selections (e.g., priority).
+
+- Appearance and theme synchronization
+  - Fields and lists better follow the system theme, avoiding visual artifacts when switching light/dark modes.
+  - Reapplication of colors and styles has been reinforced to keep a consistent look without fixed stylesheets.
+
+Bug fixes
+- Prevented incorrect resizing behavior when toggling the calendar panel.
+- Fixed issue where items disappeared when dropped onto tab headers.
+- Protected against exceptions when applying theme to various widgets, avoiding unwanted background rectangles.
+- Reduced startup failures in the task manager and timer due to unavailable connections/mechanisms.
+- When updating option lists, the selected index is preserved whenever possible.
+
+Quick checks
+1. Toggle the calendar panel in windows of different sizes and repeat open/close; verify columns and content do not overlap.
+2. Drag a task between columns, including dropping on the tab title; confirm the task appears in the destination column.
+3. Run a Pomodoro cycle and observe updates/triggers for tasks in progress.
+4. Drag a file to the new task field and press Enter to add; confirm the attachment persists.
+5. Switch theme (light/dark) and change language: confirm consistent appearance and preservation of selections in menus.
+
+Notes
+- The update prioritizes user experience and robustness; existing workflows remain unchanged.
+- If unexpected behavior occurs, reproduce the steps and check logs for diagnostics.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.12.0
 Date: February 12, 2026
 Author: Fernando Nillsson Cidade

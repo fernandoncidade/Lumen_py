@@ -3,6 +3,7 @@ from PySide6.QtCore import Signal, QCoreApplication
 import os
 from source.utils.LogManager import LogManager
 from source.utils.CaminhoPersistenteUtils import obter_caminho_persistente
+from source.utils.GerenciadorBotoesUI import GerenciadorBotoesUI
 from source.modules.tempo.GerenciadorTarefas import (
     carregar_tarefas,
     salvar_tarefas,
@@ -42,6 +43,7 @@ class GerenciadorTarefas(QWidget):
             caminho_persistente = obter_caminho_persistente()
             self.arquivo_tarefas = os.path.join(caminho_persistente, "tarefas.json")
             self.tarefas = self.carregar_tarefas()
+            self.gerenciador_botoes = GerenciadorBotoesUI(self)
             self.setup_ui()
 
             app = QCoreApplication.instance()

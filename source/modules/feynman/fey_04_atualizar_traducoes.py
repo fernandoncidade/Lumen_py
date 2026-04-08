@@ -13,8 +13,8 @@ def atualizar_traducoes(self):
 
         self.label_meus_conceitos.setText(QCoreApplication.translate("App", "📚 Meus Conceitos:"))
 
-        self.btn_novo.setText(QCoreApplication.translate("App", "➕ Novo"))
-        self.btn_deletar.setText(QCoreApplication.translate("App", "🗑️ Excluir"))
+        self.gerenciador_botoes.set_button_text(self.btn_novo, QCoreApplication.translate("App", "➕ Novo"))
+        self.gerenciador_botoes.set_button_text(self.btn_deletar, QCoreApplication.translate("App", "🗑️ Excluir"))
 
         self.label_conceito.setText(QCoreApplication.translate("App", "1️⃣ <b>Conceito</b> (ponto de vista sintetizado):"))
 

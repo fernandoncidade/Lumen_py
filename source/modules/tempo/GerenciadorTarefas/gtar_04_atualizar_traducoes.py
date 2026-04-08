@@ -15,12 +15,22 @@ def atualizar_traducoes(self):
         self.combo_prioridade.setCurrentText(QCoreApplication.translate("App", "🔴 Importante e Urgente"))
         self._ajustar_largura_combo(self.combo_prioridade)
 
-        self.btn_adicionar.setText(QCoreApplication.translate("App", "➕ Adicionar"))
-        self.btn_remover.setText(QCoreApplication.translate("App", "🗑️ Remover Tarefa(s)"))
-        self.btn_mover.setText(QCoreApplication.translate("App", "🔀 Mover Tarefa(s)"))
+        if hasattr(self, "gerenciador_botoes") and self.gerenciador_botoes is not None:
+            self.gerenciador_botoes.set_button_text(self.btn_adicionar, QCoreApplication.translate("App", "➕ Adicionar"))
+            self.gerenciador_botoes.set_button_text(self.btn_remover, QCoreApplication.translate("App", "🗑️ Remover Tarefa(s)"))
+            self.gerenciador_botoes.set_button_text(self.btn_mover, QCoreApplication.translate("App", "🔀 Mover Tarefa(s)"))
+
+        else:
+            self.btn_adicionar.setText(QCoreApplication.translate("App", "➕ Adicionar"))
+            self.btn_remover.setText(QCoreApplication.translate("App", "🗑️ Remover Tarefa(s)"))
+            self.btn_mover.setText(QCoreApplication.translate("App", "🔀 Mover Tarefa(s)"))
 
         if hasattr(self, 'btn_resetar_contagem'):
-            self.btn_resetar_contagem.setText(QCoreApplication.translate("App", "🔄 Resetar Contagem"))
+            if hasattr(self, "gerenciador_botoes") and self.gerenciador_botoes is not None:
+                self.gerenciador_botoes.set_button_text(self.btn_resetar_contagem, QCoreApplication.translate("App", "🔄 Resetar Contagem"))
+
+            else:
+                self.btn_resetar_contagem.setText(QCoreApplication.translate("App", "🔄 Resetar Contagem"))
 
         self.col_todo.setTitle(QCoreApplication.translate("App", "📋 A Fazer"))
         self.col_doing.setTitle(QCoreApplication.translate("App", "⚙️ Em Progresso"))

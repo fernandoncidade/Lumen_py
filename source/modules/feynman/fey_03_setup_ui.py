@@ -1,6 +1,6 @@
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit, QLabel, QComboBox, QListWidget, QSplitter, QFrame, QAbstractItemView
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit, QLabel, QComboBox, QListWidget, QSplitter, QFrame, QAbstractItemView, QSizePolicy
 from PySide6.QtWidgets import QTabWidget
-from PySide6.QtCore import Qt, QObject, QEvent, QCoreApplication
+from PySide6.QtCore import Qt, QObject, QEvent, QCoreApplication, QTimer
 from PySide6.QtGui import QPalette, QColor
 from source.modules.feynman.fey_17_limpar_abas import adicionar_botao_limpar
 from source.utils.LogManager import LogManager
@@ -25,6 +25,7 @@ def setup_ui(self):
         layout_frame = QVBoxLayout()
 
         splitter = QSplitter(Qt.Horizontal)
+        splitter.setChildrenCollapsible(False)
 
         painel_esquerdo = QWidget(self)
         layout_esquerdo = QVBoxLayout()
@@ -40,14 +41,26 @@ def setup_ui(self):
         layout_esquerdo.addWidget(self.lista_conceitos)
 
         botoes_conceitos = QHBoxLayout()
+        botoes_conceitos.setAlignment(Qt.AlignLeft)
 
-        self.btn_novo = QPushButton()
+        try:
+            self.btn_novo = self.gerenciador_botoes.create_button()
+
+        except Exception:
+            self.btn_novo = QPushButton()
+
         self.btn_novo.clicked.connect(self.novo_conceito)
-        botoes_conceitos.addWidget(self.btn_novo)
+        botoes_conceitos.addWidget(self.btn_novo, 0, Qt.AlignLeft)
 
-        self.btn_deletar = QPushButton()
+        try:
+            self.btn_deletar = self.gerenciador_botoes.create_button()
+
+        except Exception:
+            self.btn_deletar = QPushButton()
+
         self.btn_deletar.clicked.connect(self.deletar_conceito)
-        botoes_conceitos.addWidget(self.btn_deletar)
+        botoes_conceitos.addWidget(self.btn_deletar, 0, Qt.AlignLeft)
+        botoes_conceitos.addStretch()
 
         layout_esquerdo.addLayout(botoes_conceitos)
         painel_esquerdo.setLayout(layout_esquerdo)
@@ -135,8 +148,9 @@ def setup_ui(self):
             pass
 
         footer_layout = QHBoxLayout()
+        self.combo_dominio.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         footer_layout.addWidget(self.label_nivel)
-        footer_layout.addWidget(self.combo_dominio)
+        footer_layout.addWidget(self.combo_dominio, 1)
         footer_layout.addStretch()
         footer_layout.addWidget(self.btn_salvar)
 
@@ -156,10 +170,35 @@ def setup_ui(self):
         layout_direito.addLayout(footer_layout)
         painel_direito.setLayout(layout_direito)
 
+        def _update_right_panel_min_width():
+            try:
+                btns_width = 0
+
+                if self.btn_salvar is not None:
+                    btns_width += self.btn_salvar.minimumSizeHint().width()
+
+                if hasattr(self, "btn_limpar") and self.btn_limpar is not None:
+                    btns_width += self.btn_limpar.minimumSizeHint().width()
+
+                min_combo = max(180, self.combo_dominio.minimumSizeHint().width())
+                min_label = self.label_nivel.minimumSizeHint().width()
+                spacing = max(24, footer_layout.spacing() * 4)
+                computed = btns_width + min_combo + min_label + spacing
+
+                painel_direito.setMinimumWidth(max(520, computed))
+
+            except Exception:
+                painel_direito.setMinimumWidth(520)
+
         splitter.addWidget(painel_esquerdo)
         splitter.addWidget(painel_direito)
+        splitter.setCollapsible(0, False)
+        splitter.setCollapsible(1, False)
         splitter.setStretchFactor(0, 1)
         splitter.setStretchFactor(1, 3)
+        painel_esquerdo.setMinimumWidth(260)
+        _update_right_panel_min_width()
+        splitter.setSizes([320, 960])
 
         layout_frame.addWidget(splitter)
         frame_principal.setLayout(layout_frame)
@@ -310,6 +349,7 @@ def setup_ui(self):
         self.atualizar_traducoes()
         self.atualizar_lista()
         self.conceito_atual = None
+        QTimer.singleShot(0, _update_right_panel_min_width)
 
     except Exception as e:
         logger.error(f"Erro ao configurar interface do MetodoFeynman: {str(e)}", exc_info=True)

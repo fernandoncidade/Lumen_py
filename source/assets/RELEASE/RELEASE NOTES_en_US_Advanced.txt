@@ -1,4 +1,108 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.13.0
+Date: February 13, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Delivery focused on layout and interaction refinements (calendar panel and splitters), improved robustness of the drag&drop flow across Task Manager tabs/columns, integration between Pomodoro ↔ Task Manager, and defensive improvements in palette synchronization and translations for the Feynman Method. Small logging fixes and exception guards were added to increase stability in varied PySide6 environments.
+
+Main improvements
+1. Calendar Panel and Splitter
+   - New toggle behavior for the calendar panel:
+     - Robust calculation of effective minimum width considering margins, the toggle button width and the panel minimum size.
+     - Expand/collapse control that updates the button label ("Show Calendar" / "Hide Calendar") and adjusts minimumWidth dynamically.
+   - Defensive synchronization of the QSplitter:
+     - _sync_splitter_sizes_after_toggle computes limits (left_min / right_min / total) and adjusts sizes atomically to avoid inconsistent values.
+     - _update_splitter_interaction changes handleWidth and attempts to enable/disable handle(1) with exception handling for platforms/versions that don't expose the API.
+   - Resilience to missing main_splitter: silent returns when the parent widget hasn't exposed the splitter yet.
+
+2. Drag&Drop flow over Task Manager Tabs
+   - _AutoOpenTabWidget refined:
+     - dragMoveEvent detects tab index via tabBar().tabAt and automatically switches the tab while the user moves the cursor.
+     - dropEvent handles drops over the tab header: resolves the target list defensively (attribute .lista or findChild(QListWidget)), moves items (takeItem/addItem) and invokes synchronizers (update_lists / _synchronize_status_after_move / lists_updated).
+     - Implicit signal blocking avoids inconsistent intermediate states; exception handling ensures fallback to super().dropEvent() when needed.
+   - Visual/UX integration: tab labels keep dynamic translation via update_translations.
+
+3. Pomodoro ↔ Task Manager integration
+   - Pomodoro connected to the time worker:
+     - PomodoroTimer.cycle_completed connected to _time_worker.on_pomodoro to trigger application-level pomodoro logic.
+   - "⚙️ In Progress" column integrated as a side pane in the main splitter of the Time Manager:
+     - layout with groups and initial sizes (main_splitter.setSizes), ensuring responsive behavior.
+   - Signals between TaskManager and TimeManager exposed: lists_updated and task_added for reactive updates.
+
+4. FileDrop / Task Input and Translations
+   - FileDropLineEdit integrated into the input_task field:
+     - Accepts drops with defensive fallback for mimeData/urls; returnPressed connected to add_task.
+   - Runtime-updatable translations:
+     - update_translations applies placeholders, button texts, column titles and tabs; preserves current selection of priority_combo and readjusts combo width via _adjust_combo_width.
+
+5. Palette Synchronization and Feynman UI
+   - Application of QPalette based on QPalette.Window for Feynman Method fields:
+     - _apply_window_as_base applies the palette conditionally to QTextEdit, QListWidget and QComboBox; handles view()/viewport() with callable checks to avoid exceptions across varied Qt implementations.
+   - Event filter (_PaletteThemeSyncFilter) installed on the QApplication instance:
+     - Reapplies palettes on ApplicationPaletteChange, PaletteChange, StyleChange (and ColorSchemeChange when available), preventing visual leaks without using stylesheets.
+   - Translations update:
+     - update_translations preserves the current index of combo_domain when reloading items and updates tabs and buttons; invokes update_list when applicable.
+
+Bug fixes
+1. Floating layout / Splitter
+   - Prevents invalid splitter sizes when toggling the calendar panel; defensive calculations prevent overflow/underflow of total sizes.
+
+2. Drag&Drop over tab header losing items
+   - Fixed: dropEvent routes to the correct list and moves items without losing selection; handles cases without selected items using currentItem.
+
+3. Exceptions when applying palette
+   - Protections added for missing view()/viewport() and for native widgets that should not force AutoFillBackground; avoids unwanted background rectangles.
+
+4. Failures initializing Task Manager / Pomodoro
+   - try/except protections in signal connections and eventFilter installation prevent crashes at startup when objects are not fully constructed.
+
+5. Translations and state preservation
+   - When updating combo items, the current index is preserved when possible; failures are caught without breaking the UI.
+
+Main files changed / added in this delivery
+- source/modules/eisenhower/interface/ui_07_Calendar.py
+- source/modules/eisenhower/eis_02_initUI.py
+- source/modules/tempo/GerenciadorTarefas/gtar_03_setup_ui.py
+- source/modules/tempo/GerenciadorTarefas/gtar_04_atualizar_traducoes.py
+- source/modules/tempo/GerenciadorTempo/gtemp_01_setup_ui.py
+- source/modules/tempo/tmp_03_GerenciadorTarefas.py
+- source/modules/feynman/fey_03_setup_ui.py
+- source/modules/feynman/fey_04_atualizar_traducoes.py
+
+Validation recommendations (tests & verification)
+- Calendar Panel / Splitter:
+  1. Toggle the panel at different window sizes and verify splitter.sizes() remain consistent and without overlap.
+  2. Repeatedly open/close the panel and confirm handleWidth and handle enable/disable behave correctly.
+
+- Drag & Drop (Task Manager):
+  1. Drag an item between lists by dragging over the tab header and confirm the item is moved to the correct list without loss.
+  2. Test drops without selection (only currentItem) and with multiple selected items.
+
+- Pomodoro ↔ Tasks:
+  1. Simulate a Pomodoro cycle and confirm that cycle_completed triggers _time_worker.on_pomodoro.
+  2. Add a task via input_task (ENTER) and via file drop; check emission of task_added and persistence.
+
+- Feynman Method (palette & translations):
+  1. Switch system color scheme and verify palette reapplication in QTextEdit/QListWidget/QComboBox of the Feynman module.
+  2. Change language at runtime and confirm combo_domain preserves index and the list updates without crashing.
+
+Technical notes
+- Preference for QPalette over setStyleSheet to keep native appearance and reduce visual regressions.
+- Sensitive operations wrapped in try/except with logger.error/debug/exception using exc_info=True to aid diagnosis without breaking the UI.
+- Event filters installed on the QApplication instance to react to palette/theme changes centrally.
+- Drag&drop implemented by transferring items via takeItem/addItem (QListWidget) to preserve QListWidgetItem properties.
+- UI functions preserve critical states (indices, sizes) when possible; in inconsistent cases, a safe fallback is applied.
+
+Next suggested steps
+1. Add automated tests for drops over tabs (mocked events) and splitter sizing regression.
+2. Expose UX preferences: default calendar panel behavior (open/closed) and handleWidth factor.
+3. Cover Pomodoro ↔ Task Manager integration with integration tests and validate asynchronous signals.
+4. Review palette application on specific widgets with visual tests (pixel-diff) to avoid regressions in dark/light themes.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.12.0
 Date: February 12, 2026
 Author: Fernando Nillsson Cidade

@@ -1,6 +1,6 @@
 COMMERCIAL LICENSE AGREEMENT — Lúmen
-Version: 2026.2.12.0
-Date: February 12, 2026
+Version: 2026.2.13.0
+Date: February 13, 2026
 
 This Commercial License Agreement ("Agreement") is entered into between:
 

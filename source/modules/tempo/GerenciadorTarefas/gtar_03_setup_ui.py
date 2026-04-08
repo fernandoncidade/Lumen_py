@@ -1,4 +1,5 @@
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QTabWidget
+from PySide6.QtCore import Qt
 from .gtar_26_FileDropLineEdit import FileDropLineEdit
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
@@ -7,7 +8,7 @@ def setup_ui(self):
     try:
         layout = QVBoxLayout()
 
-        adicionar = QHBoxLayout()
+        linha_entrada = QHBoxLayout()
 
         self.input_tarefa = FileDropLineEdit(self, self)
         self.input_tarefa.returnPressed.connect(self.adicionar_tarefa)
@@ -20,28 +21,54 @@ def setup_ui(self):
         except Exception:
             self.input_tarefa.setMinimumHeight(24)
 
-        adicionar.addWidget(self.input_tarefa)
+        linha_entrada.addWidget(self.input_tarefa)
 
         self.combo_prioridade = QComboBox()
-        adicionar.addWidget(self.combo_prioridade)
+        linha_entrada.addWidget(self.combo_prioridade)
 
-        self.btn_adicionar = QPushButton()
+        layout.addLayout(linha_entrada)
+
+        linha_botoes = QHBoxLayout()
+        linha_botoes.setAlignment(Qt.AlignLeft)
+
+        try:
+            self.btn_adicionar = self.gerenciador_botoes.create_button()
+
+        except Exception:
+            self.btn_adicionar = QPushButton()
+
         self.btn_adicionar.clicked.connect(self.adicionar_tarefa)
-        adicionar.addWidget(self.btn_adicionar)
+        linha_botoes.addWidget(self.btn_adicionar)
 
-        self.btn_mover = QPushButton()
+        try:
+            self.btn_mover = self.gerenciador_botoes.create_button()
+
+        except Exception:
+            self.btn_mover = QPushButton()
+
         self.btn_mover.clicked.connect(self.mover_tarefas_marcadas)
-        adicionar.addWidget(self.btn_mover)
+        linha_botoes.addWidget(self.btn_mover)
 
-        self.btn_remover = QPushButton()
+        try:
+            self.btn_remover = self.gerenciador_botoes.create_button()
+
+        except Exception:
+            self.btn_remover = QPushButton()
+
         self.btn_remover.clicked.connect(self.remover_tarefas_marcadas)
-        adicionar.addWidget(self.btn_remover)
+        linha_botoes.addWidget(self.btn_remover)
 
-        self.btn_resetar_contagem = QPushButton()
+        try:
+            self.btn_resetar_contagem = self.gerenciador_botoes.create_button()
+
+        except Exception:
+            self.btn_resetar_contagem = QPushButton()
+
         self.btn_resetar_contagem.clicked.connect(self.resetar_contagem_botao)
-        adicionar.addWidget(self.btn_resetar_contagem)
+        linha_botoes.addWidget(self.btn_resetar_contagem)
+        linha_botoes.addStretch()
 
-        layout.addLayout(adicionar)
+        layout.addLayout(linha_botoes)
 
         self.col_todo = self.criar_coluna("Todo")
         self.col_doing = self.criar_coluna("Doing")

@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QGroupBox, QPushButton
+from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QLabel, QListWidget, QGroupBox, QSplitter, QWidget
+from PySide6.QtCore import Qt
 from source.utils.LogManager import LogManager
 from source.modules.tempo.tmp_02_PomodoroTimer import PomodoroTimer
 from source.modules.tempo.tmp_03_GerenciadorTarefas import GerenciadorTarefas
@@ -6,7 +7,7 @@ logger = LogManager.get_logger()
 
 def setup_ui(self):
     try:
-        layout = QHBoxLayout()
+        layout = QVBoxLayout()
 
         left_col = QVBoxLayout()
 
@@ -38,8 +39,24 @@ def setup_ui(self):
         doing_timer_layout.addWidget(self.col_doing_timer_list)
         self.col_doing_timer_group.setLayout(doing_timer_layout)
 
-        layout.addLayout(left_col, 3)
-        layout.addWidget(self.col_doing_timer_group, 1)
+        left_widget = QWidget(self)
+        left_widget.setLayout(left_col)
+
+        self.main_splitter = QSplitter(Qt.Horizontal, self)
+        self.main_splitter.setChildrenCollapsible(False)
+        self.main_splitter.addWidget(left_widget)
+        self.main_splitter.addWidget(self.col_doing_timer_group)
+        self.main_splitter.setCollapsible(0, False)
+        self.main_splitter.setCollapsible(1, False)
+        self.main_splitter.setStretchFactor(0, 3)
+        self.main_splitter.setStretchFactor(1, 1)
+        self.main_splitter.setHandleWidth(6)
+
+        left_widget.setMinimumWidth(540)
+        self.col_doing_timer_group.setMinimumWidth(280)
+        self.main_splitter.setSizes([1080, 360])
+
+        layout.addWidget(self.main_splitter)
 
         self.setLayout(layout)
         self.atualizar_traducoes()

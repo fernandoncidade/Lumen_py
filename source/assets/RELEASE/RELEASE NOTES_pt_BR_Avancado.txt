@@ -1,4 +1,108 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.13.0
+Data: 13 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em refinamentos de layout e interação (painel de calendário e splitters), robustez do fluxo drag&drop nas abas/colunas do Gerenciador de Tarefas, integração entre Pomodoro ↔ Gerenciador de Tarefas e melhorias defensivas na sincronização de paleta e traduções do Método Feynman. Pequenas correções de logging e proteção contra exceções foram adicionadas para aumentar a estabilidade em ambientes PySide6 variados.
+
+Melhorias principais
+1. Painel de Calendário e Splitter (eis_02_initUI.py / ui_07_Calendar.py)
+   - Novo comportamento de toggle do painel de calendário:
+     - Cálculo robusto de largura mínima efetiva (effective_min_width) considerando margens, largura do toggle button e tamanho mínimo do painel.
+     - Controle de expansão/colapso que atualiza label do botão ("Mostrar Calendário" / "Recolher Calendário") e ajusta minimumWidth dinamicamente.
+   - Sincronização defensiva do QSplitter:
+     - _sync_splitter_sizes_after_toggle calcula limites (left_min / right_min / total) e ajusta sizes de forma atômica para evitar valores inconsistentes.
+     - _update_splitter_interaction altera handleWidth e tenta habilitar/desabilitar handle(1) com tratamento de exceções para plataformas/versões que não exponham a API.
+   - Resiliência a ausência de main_splitter: retornos silenciosos quando o widget pai ainda não expõe o splitter.
+
+2. Fluxo Drag&Drop sobre Abas do Gerenciador de Tarefas (gtar_03_setup_ui.py)
+   - _AutoOpenTabWidget refinado:
+     - dragMoveEvent detecta tab index via tabBar().tabAt e muda aba automaticamente enquanto usuário move o cursor.
+     - dropEvent trata drops sobre o header da aba: resolve target_list de forma defensiva (atributo .lista ou findChild(QListWidget)), move itens (takeItem/addItem) e invoca sincronizadores (atualizar_listas / _sincronizar_status_pos_movimento / listas_atualizadas).
+     - Bloqueios de sinais implícitos evitam estados intermediários inconsistentes; tratamento de exceptions garante fallback para super().dropEvent() quando necessário.
+   - Integração visual/UX: rótulos de abas mantêm tradução dinâmica via atualizar_traducoes.
+
+3. Integração Pomodoro ↔ Gerenciador de Tarefas (gtemp_01_setup_ui.py / tmp_03_GerenciadorTarefas.py)
+   - Pomodoro conectado ao worker de tempo:
+     - PomodoroTimer.ciclo_completado conectado a _tempo_worker.on_pomodoro para acionar lógica de pomodoro em nível de aplicação.
+   - Coluna "⚙️ Em Progresso" integrada como pane lateral no splitter principal do Gerenciador de Tempo:
+     - layout com grupos e tamanhos iniciais (main_splitter.setSizes), garantindo comportamento responsivo.
+   - Sinais entre GerenciadorTarefas e GerenciadorTempo expostos: listas_atualizadas e tarefa_adicionada para atualizações reativas.
+
+4. FileDrop / Input de Tarefas e Traduções (gtar_03_setup_ui.py / gtar_04_atualizar_traducoes.py)
+   - FileDropLineEdit integrado ao campo input_tarefa:
+     - Aceitação de drops com fallback defensivo para mimeData/urls; returnPressed ligado a adicionar_tarefa.
+   - Traduções atualizáveis em runtime:
+     - atualizar_traducoes aplica placeholders, textos de botões, títulos de colunas e tabs; preserva seleção atual de combo_prioridade e reajusta largura do combo via _ajustar_largura_combo.
+
+5. Sincronização de Paleta e UI do Método Feynman (fey_03_setup_ui.py / fey_04_atualizar_traducoes.py)
+   - Aplicação de QPalette baseada em QPalette.Window para campos do Método Feynman:
+     - Função _apply_window_as_base aplica paleta condicionalmente em QTextEdit, QListWidget e QComboBox; trata view()/viewport() com verificações callable para evitar exceções em implementações variadas do Qt.
+   - Filtro de eventos (_PaletteThemeSyncFilter) instalado na instância QApplication:
+     - Reaplica paletas em ApplicationPaletteChange, PaletteChange, StyleChange (e ColorSchemeChange quando disponível), prevenindo vazamentos visuais sem uso de stylesheets.
+   - Atualização de traduções:
+     - atualizar_traducoes preserva índice atual do combo_dominio ao recarregar itens e atualiza abas e botões; invoca atualizar_lista quando aplicável.
+
+Correções de bugs
+1. Layout / Splitter flutuante
+   - Evita tamanhos inválidos no splitter ao alternar painel de calendário; cálculos defensivos previnem overflow/underflow do total de sizes.
+
+2. Drag&Drop sobre cabeçalho de abas perdendo itens
+   - Corrigido: dropEvent encaminha para a lista correta e move itens sem perder seleção; trata casos sem items selecionados usando currentItem.
+
+3. Exceções na aplicação de paleta
+   - Proteções adicionadas para view()/viewport() inexistentes e para widgets nativos que não devem forçar AutoFillBackground; evita retângulos visuais indesejados.
+
+4. Falhas ao inicializar Gerenciador de Tarefas / Pomodoro
+   - Proteções try/except em conexões de sinal e eventFilter installation evitam crashes em inicio quando objetos ainda não estão completamente construídos.
+
+5. Traduções e preservação de estado
+   - Ao atualizar items de combo, o índice atual é preservado quando possível; falhas são capturadas sem interromper a UI.
+
+Arquivos principais alterados / adicionados nesta entrega
+- source/modules/eisenhower/interface/ui_07_Calendar.py
+- source/modules/eisenhower/eis_02_initUI.py
+- source/modules/tempo/GerenciadorTarefas/gtar_03_setup_ui.py
+- source/modules/tempo/GerenciadorTarefas/gtar_04_atualizar_traducoes.py
+- source/modules/tempo/GerenciadorTempo/gtemp_01_setup_ui.py
+- source/modules/tempo/tmp_03_GerenciadorTarefas.py
+- source/modules/feynman/fey_03_setup_ui.py
+- source/modules/feynman/fey_04_atualizar_traducoes.py
+
+Recomendações de validação (tests & verificação)
+- Painel de Calendário / Splitter:
+  1. Alternar painel (toggle) em diferentes tamanhos de janela e verificar que splitter.sizes() permanecem consistentes e sem sobreposição.
+  2. Testar abrir/fechar painel repetidamente e confirmar que handleWidth e habilitação do handle se comportam corretamente.
+
+- Drag & Drop (Gerenciador de Tarefas):
+  1. Arrastar item entre listas arrastando sobre a aba (header) e confirmar que o item é movido para a lista correta sem perda.
+  2. Testar drops sem seleção (apenas currentItem) e com múltiplos itens selecionados.
+
+- Pomodoro ↔ Tarefas:
+  1. Simular ciclo de Pomodoro e confirmar que sinal ciclo_completado aciona _tempo_worker.on_pomodoro.
+  2. Adicionar tarefa via input_tarefa (ENTER) e via drop de arquivo; conferir emissão de tarefa_adicionada e persistência.
+
+- Método Feynman (paleta & traduções):
+  1. Alternar esquema de cores do sistema e verificar reaplicação de paleta em QTextEdit/QListWidget/QComboBox do Feynman.
+  2. Alterar idioma em runtime e confirmar que combo_dominio preserva índice e que lista é atualizada sem crash.
+
+Notas técnicas
+- Preferência por QPalette em vez de setStyleSheet para manter aparência nativa e reduzir regressões visuais.
+- Todas as operações sensíveis envolvem try/except com logger.error/debug/exception com exc_info=True para facilitar diagnóstico sem quebrar a UI.
+- Event filters instalados na instância QApplication para reagir a mudanças de paleta/tema de forma centralizada.
+- Drag&drop implementado com transferência de itens por takeItem/addItem (QListWidget) para manter propriedades do QListWidgetItem intactas.
+- Funções de UI preservam estados críticos (índices, tamanhos) quando possível; em casos de inconsistência, fallback seguro é aplicado.
+
+Próximos passos sugeridos
+1. Adicionar testes automáticos para drops sobre abas (mock de eventos) e regressão de splitter sizing.
+2. Expor preferências de UX: comportamento padrão do painel de calendário (aberto/fechado) e fator de handleWidth.
+3. Cobrir com testes de integração Pomodoro ↔ Gerenciador de Tarefas e validar sinais assíncronos.
+4. Revisar aplicação de paleta em widgets específicos com testes visuais (pixel-diff) para evitar regressões em temas escuros/claro.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.12.0
 Data: 12 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

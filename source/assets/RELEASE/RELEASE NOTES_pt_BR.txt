@@ -1,4 +1,54 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.13.0
+Data: 13 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Atualização focada em refinamentos de layout e interação (painel de calendário e redimensionamento), maior confiabilidade do arrastar & soltar nas colunas de tarefas, integração entre Pomodoro e tarefas, e melhorias na aplicação de tema e nas traduções. Pequenas correções de logs e proteções contra exceções aumentam a estabilidade geral.
+
+Melhorias principais
+- Painel de calendário
+  - Alternância entre mostrar/ocultar o calendário mais previsível, com ajuste automático de largura para evitar sobreposição de conteúdo.
+  - Comportamento de redimensionamento aprimorado para manter proporções e evitar tamanhos inválidos ao abrir/fechar o painel.
+
+- Arrastar & soltar em abas/colunas de tarefas
+  - Ao arrastar sobre o cabeçalho de uma aba, a aba alvo abre automaticamente para facilitar o drop.
+  - Drops sobre o cabeçalho movem as tarefas corretamente para a coluna escolhida sem perder seleção ou itens.
+  - Fluxo protegido contra estados intermediários inconsistentes, reduzindo perdas de itens durante movimentos.
+
+- Integração Pomodoro ↔ Tarefas
+  - Ciclos do Pomodoro acionam atualizações no gerenciador de tarefas para facilitar o fluxo de foco.
+  - Coluna "Em Progresso" exibida ao lado do painel de temporizador, com layout inicial responsivo e atualização reativa de listas.
+
+- Entrada de tarefas e suporte a arquivos
+  - Campo de nova tarefa aceita arrastar arquivos e preencher o campo; pressionar Enter adiciona a tarefa.
+  - Traduções e textos de interface atualizam em tempo real sem perder seleções importantes (por ex. prioridade).
+
+- Aparência e sincronização de tema
+  - Campos e listas seguem melhor o tema do sistema, evitando artefatos visuais ao alternar entre claro/escuro.
+  - Reaplicação de cores e estilos foi reforçada para manter aparência consistente sem usar estilos fixos.
+
+Correções de bugs
+- Evitado comportamento de redimensionamento incorreto ao alternar o painel de calendário.
+- Corrigido problema que fazia itens desaparecerem ao soltar sobre cabeçalho de abas.
+- Protegido contra exceções na aplicação de tema em widgets variados, evitando retângulos de fundo indesejados.
+- Reduzidas falhas durante inicialização do gerenciador de tarefas e do temporizador por conexões/mecanismos não disponíveis.
+- Ao atualizar listas de opções, o índice selecionado é preservado sempre que possível.
+
+O que verificar rapidamente
+1. Alternar o painel de calendário em janelas de diferentes tamanhos e repetir abrir/fechar; verificar que colunas e conteúdo não se sobrepõem.
+2. Arrastar uma tarefa entre colunas, incluindo soltar sobre o título da aba; confirmar que a tarefa aparece na coluna destino.
+3. Executar um ciclo do Pomodoro e observar atualização/acionamento nas tarefas em andamento.
+4. Arrastar um arquivo para o campo de nova tarefa e pressionar Enter para adicionar; confirmar persistência do anexo.
+5. Alternar o tema (claro/escuro) e mudar o idioma: confirmar aparência consistente e preservação de seleções em menus.
+
+Observações
+- Atualização prioriza experiência e robustez; fluxos conhecidos permanecem inalterados.
+- Se ocorrer comportamento inesperado, reproduza o passo e consulte os logs para diagnóstico.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.12.0
 Data: 12 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade
