@@ -1,4 +1,52 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.7.0
+Data: 7 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Atualização focada em tornar a gestão de tarefas e o calendário mais confiáveis, visuais e fáceis de usar. Melhorias na interação, abertura de anexos, exibição por datas e sincronização de tema, além de ajustes que reduzem erros e perda de dados.
+
+Principais novidades
+- Calendário mais útil
+  - Dias com tarefas exibem contadores visuais (badges) e destaques por dia/semana/mês.
+  - Tooltips do calendário mostram prioridade, arquivo vinculado e resumo da descrição.
+  - Menu de contexto no calendário permite editar ou remover tarefas diretamente.
+
+- Ações em lote e seleção
+  - Suporte a seleção múltipla (Ctrl+clique e arrastar) para mover, remover e compartilhar várias tarefas de uma vez.
+  - Mensagens de confirmação e feedback após operações em lote.
+
+- Abertura de anexos mais robusta
+  - Tentativas de abrir anexos usam métodos compatíveis com cada sistema operacional, com mensagens claras em caso de falha.
+
+- Preservação de informações e ordenação
+  - Metadados importantes (prioridade, arquivo, descrição, pomodoros) são preservados ao editar.
+  - Listas ordenadas de forma determinística por prioridade → data → horário → título; itens sem prazo aparecem ao final.
+
+- Aparência e temas
+  - Melhor sincronização de paleta entre componentes compostos para evitar inconsistências visuais em temas claro/escuro.
+
+Correções de bugs
+- Evita exclusões indevidas: tarefas com mesmo texto e prioridades diferentes não são removidas por engano.
+- Sincronização calendário ↔ listas: editar/remover via calendário afeta corretamente a tarefa de origem.
+- Falhas ao abrir anexos tratadas com fallbacks e logs, reduzindo erros silenciosos.
+- Ajustes visuais para evitar fundos incorretos em áreas compostas após troca de tema.
+- Tratamento de exceções ampliado para maior estabilidade nas operações (arrastar/soltar, edição, menus).
+
+O que muda para você
+- Gerenciar tarefas pelo calendário e pelas listas ficou mais direto e seguro.
+- Menos risco de perder tarefas por exclusões acidentais.
+- Visual mais consistente ao alternar temas e melhor visibilidade de dias ocupados.
+- Abrir anexos deve funcionar de forma mais confiável em diferentes sistemas.
+
+Recomendações rápidas
+- Use Ctrl+clique ou arraste para selecionar várias tarefas antes de aplicar ações em lote.
+- Verifique a confirmação mostrada ao remover tarefas em massa.
+- Ao abrir anexos, confirme o caminho do arquivo se aparecer mensagem de erro.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.6.0
 Data: 6 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

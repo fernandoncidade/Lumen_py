@@ -1,6 +1,6 @@
 from PySide6.QtCore import QCoreApplication, Qt
 from PySide6.QtGui import QFont
-from source.modules.eisenhower.services.svc_09_prioridade_display import prioridade_para_texto
+from source.modules.eisenhower.services.svc_09_prioridade_para_texto import prioridade_para_texto
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 

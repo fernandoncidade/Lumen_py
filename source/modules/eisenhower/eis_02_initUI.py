@@ -1,7 +1,7 @@
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QHBoxLayout
 from .services import init_ui
-from .ui import Calendar
+from .interface import Calendar
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 

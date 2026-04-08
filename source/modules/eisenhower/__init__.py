@@ -18,17 +18,19 @@ from .eis_17_atualizar_textos_atualizar import atualizar_textos_atualizar
 from .eis_18_open_calendar import open_calendar
 from .eis_19_stop_eisenhower_thread import _stop_eisenhower_thread, cleanup
 
-from .ui import (
+from .interface import (
     add_task,
     handle_item_checked,
     move_item_between_lists,
     remove_task,
     save_tasks,
     load_tasks,
+    Calendar,
+    LineEditFrame,
+    BadgeCalendarWidget,
     CalendarDialog,
     RotatedTabButton,
-    CalendarPanel,
-    Calendar
+    CalendarPanel
 )
 
 from .services import (
@@ -43,7 +45,13 @@ from .services import (
     limpar_tudo,
     sair,
     abrir_arquivo,
-    salvar_como
+    salvar_como,
+    atualizar_itens_tarefas,
+    prioridade_para_texto,
+    EditTaskDialog,
+    DragDropTaskList,
+    FileDropLineEdit,
+    install_palette_theme_sync,
 )
 
 __all__ = [
@@ -75,10 +83,12 @@ __all__ = [
     "remove_task",
     "save_tasks",
     "load_tasks",
+    "Calendar",
+    "LineEditFrame",
+    "BadgeCalendarWidget",
     "CalendarDialog",
     "RotatedTabButton",
     "CalendarPanel",
-    "Calendar",
     # services
     "init_ui",
     "CustomTimeEdit",
@@ -91,5 +101,11 @@ __all__ = [
     "limpar_tudo",
     "sair",
     "abrir_arquivo",
-    "salvar_como"
+    "salvar_como",
+    "atualizar_itens_tarefas",
+    "prioridade_para_texto",
+    "EditTaskDialog",
+    "DragDropTaskList",
+    "FileDropLineEdit",
+    "install_palette_theme_sync",
 ]

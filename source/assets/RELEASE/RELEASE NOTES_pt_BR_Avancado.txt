@@ -1,4 +1,145 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.7.0
+Data: 7 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em modularização, legibilidade e organização do código do módulo Eisenhower; melhorias de coesão entre componentes do calendário, widgets de UI e serviços de menu/contexto; correções de robustez, padronização de tratamento de erros e adição de pequenas funcionalidades que melhoram manutenção e testabilidade. A ênfase desta versão é tornar o código mais modular, reduzir acoplamento e facilitar futuras extensões (ex.: internacionalização, temas, integração com outras partes do app).
+
+Melhorias principais
+1. Modularização e separação de responsabilidades
+   - Fragmentação do CalendarDialog em múltiplos módulos menores (`caldial_*`) para isolar comportamentos: fechamento, abertura de arquivos vinculados, coleta/atualização de tarefas, aplicação de locale/paleta, e gerenciamento de datas destacadas.
+   - BadgeCalendarWidget refatorado em funções separadas (`set_task_counts`, `paintCell`, `_draw_badge`, `_date_at_pos`, `event`) para permitir testes unitários e reutilização de lógica de desenho/tooltip.
+   - Widgets utilitários (`LineEditFrame`, `RotatedTabButton`, `CalendarPanel`, `Calendar`) reorganizados para melhor separação de layout, pintura e lógica de interação.
+
+2. Legibilidade e manutenção do código
+   - Extração de responsabilidades em funções pequenas e nomeadas; cada arquivo cobre um comportamento claro (ex.: `caldial_03_collect_tasks.py` apenas coleta tarefas).
+   - Ampliação de tratamento de exceções com logging consistente (`LogManager.get_logger()`), evitando blocos try sem except e assegurando exc_info em logs críticos.
+   - Padronização de traduções via `get_text()` com `QCoreApplication.translate("App", ...)` para uniformizar strings do UI.
+
+3. Sintonia de paleta e suporte a temas
+   - Implementado `install_palette_theme_sync` (CalendarDialog) que aplica paleta base em widgets compostos, propaga `QPalette.Window` para `Base/AlternateBase` quando apropriado e instala um filtro de evento para reaplicar a sincronização sem reentrância.
+   - Sincronização defensiva para view()/viewport() em widgets compostos, reduzindo inconsistências visuais entre temas claro/escuro.
+
+4. Calendário — UX e integração com listas
+   - Mapeamento robusto entre tarefas do calendário e `QListWidgetItem` de origem via função de resolução (`_find_source_item_for_calendar` / lógica equivalente), permitindo editar/remover itens diretamente do CalendarDialog sem dessincronização.
+   - Destaque de datas e contadores por dia/semana/mês: `set_task_counts` calcula contadores por dia, semana e mês e atualiza células (badges) eficientemente.
+   - Tooltips enriquecidos com prioridade, arquivo vinculado e preview de descrição; suporte a QEvent.ToolTip e ContextMenu refinado para oferecer ações direcionadas.
+
+5. Abertura de arquivos vinculados — fallbacks multi-plataforma
+   - Abertura de arquivos via `QDesktopServices.openUrl(QUrl.fromLocalFile(...))` com fallbacks seguros:
+     - Windows: `os.startfile`
+     - macOS: `open` via subprocess
+     - Linux: `xdg-open`
+   - Erros de abertura são logados e mensagens amigáveis podem ser exibidas ao usuário.
+
+6. API e serviços: clareza e contratos
+   - Serviços de contexto e menu (ex.: `show_context_menu`, `svc_06_show_context_menu.py`) reorganizados para operar sobre coleções de itens (listas) e para aceitar payloads uniformes (dict com keys padronizadas: `title`, `priority`, `date`, `time`, `file_path`, `description`, `integration_id`, `origin`).
+   - Compatibilidade com seleção múltipla (ExtendedSelection) e suporte a ações em lote (mover/remover/compartilhar).
+
+7. Conservação de metadados e prevenção de perda de dados
+   - Ao editar tarefas, metadados essenciais (`file_path`, `priority`, `description`, `pomodoros`) são preservados explicitamente quando aplicável; substituição de itens preserva `checkState` e estilos visuais.
+   - Remoção diferenciada: tarefas sem id persistente agora usam comparação que inclui prioridade normalizada, evitando exclusão indevida de duplicatas com prioridades diferentes.
+
+8. Ordenação e inserção determinística
+   - Implementação de chave de ordenação hierárquica nas listas (prioridade → data → horário → título).
+   - Parsers defensivos para `date`/`time` que aceitam ISO e formatos comuns; ausência de date/time é tratada com valor "max" para empurrar itens sem prazo para o fim por padrão.
+
+Correções de bugs
+1. Evitar remoções em lote indevidas
+   - Remoção individual e em lote agora diferenciam tarefas por prioridade quando `id` não está presente, corrigindo comportamentos que excluíam múltiplas tarefas textual-mente idênticas.
+
+2. Problemas de sincronização Calendar ↔ listas
+   - Correção na resolução de itens originados do calendário para garantir que editar/remover via CalendarDialog afete o `QListWidgetItem` real e atualize placeholders/time-groups adequadamente.
+
+3. Falhas silenciosas ao abrir anexos
+   - Adicionados fallbacks e logs para evitar falhas silenciosas ao abrir arquivos; mensagem de erro/log informa a causa quando operações falham.
+
+4. Erros de UI/tema em widgets compostos
+   - Correções para aplicar paleta em `view()`/`viewport()` e prevenir inconsistências no fundo de widgets compostos.
+
+5. Tratamento de exceções e logging
+   - Remoção de blocos `try` sem `except` e adição de logs com `exc_info` em pontos sensíveis (drag&drop, edição, abertura de arquivos, menu de contexto).
+
+Detalhes de implementação (pontos técnicos)
+- CalendarDialog modular:
+  - `caldial_01_closeEvent.py`: desconexão segura de sinais de tradução com tratamento de RuntimeError/TypeError.
+  - `caldial_02_open_linked_file.py`: lógica de abertura com múltiplos fallbacks e mensagens de erro logadas.
+  - `caldial_03_collect_tasks.py`: coleta robusta de tarefas preparadas para exibição no diálogo.
+  - `caldial_04_update_task_list.py`: atualização da QListWidget com formatação, tooltips e preservação de estados.
+  - `caldial_05_update_badge_counts.py`: recalcula badge counts chamando `set_task_counts`.
+  - `caldial_06_on_language_changed.py` / `caldial_07_apply_locale_to_calendar.py`: aplicação de traduções e locale (QLocale) ao calendário e controles.
+  - `caldial_08_get_task_dates.py` / `caldial_09_apply_highlighted_dates.py`: extração de datas de tarefas e aplicação de formatos `QTextCharFormat` para destacar células.
+
+- BadgeCalendarWidget:
+  - `badcal_01_set_task_counts.py`: agrupa contadores por dia/semana/mês usando `collections.Counter`, valida QDate e atualiza `updateCells()`.
+  - `badcal_02_paintCell.py`: delega para `QCalendarWidget.paintCell` e chama `_draw_badge` conforme contagem.
+  - `badcal_03_draw_badge.py`: desenho de badge com antialiasing, cor derivada da paleta e texto centrado.
+  - `badcal_04_date_at_pos.py`: tentativa de usar `dateAt()` quando disponível e fallback via `QAbstractItemView` para mapear posição do cursor em index e extrair data (Qt.UserRole variantes).
+  - `badcal_05_event.py`: gerenciamento de `QEvent.ToolTip` e `QEvent.ContextMenu` para exibir tooltips e menus contextuais ricos.
+
+- Widgets e utilitários:
+  - `ui_08_LineEditFrame.py`: container com padding controlado por `_frame_width()` e pintura custom.
+  - `ui_11_RotatedTabButton.py`: widget que calcula tamanho via `QFontMetrics`, renderiza texto rotacionado e expõe `setText()`/`text()`.
+  - `ui_12_CalendarPanel.py` / `ui_07_Calendar.py`: painel agregador que monta `BadgeCalendarWidget`, filtros (Dia/Semana/Mês), listas de tarefas e integra com serviços (ex.: `show_context_menu`).
+
+- Serviços e integração:
+  - `svc_06_show_context_menu.py` (e relacionados): suporte completo a:
+    - seleção múltipla e ações em lote;
+    - editar tarefa (edição de prioridade incluída);
+    - remover tarefa(s) com confirmação e feedback;
+    - compartilhar em lote com payloads padronizados via EventBus.
+  - `svc_01_initUI.py`: melhorias de DragDropTaskList, FileDropLineEdit (arraste/soltar + escolher/abrir/limpar arquivo) e instalação do palette sync.
+
+Arquivos principais alterados / adicionados nesta entrega
+- caldial_01_closeEvent.py
+- caldial_02_open_linked_file.py
+- caldial_03_collect_tasks.py
+- caldial_04_update_task_list.py
+- caldial_05_update_badge_counts.py
+- caldial_06_on_language_changed.py
+- caldial_07_apply_locale_to_calendar.py
+- caldial_08_get_task_dates.py
+- caldial_09_apply_highlighted_dates.py
+- caldial_10_install_palette_theme_sync.py
+- badcal_01_set_task_counts.py
+- badcal_02_paintCell.py
+- badcal_03_draw_badge.py
+- badcal_04_date_at_pos.py
+- badcal_05_event.py
+- ui_07_Calendar.py
+- ui_08_LineEditFrame.py
+- ui_11_RotatedTabButton.py
+- ui_12_CalendarPanel.py
+- source/modules/eisenhower/services/svc_06_show_context_menu.py
+- svc_01_initUI.py
+- Outros ajustes de logging e refatoração em arquivos relacionados
+
+Testes e verificação recomendados
+- Calendar ↔ Lista:
+  - Abrir `CalendarDialog` e executar editar/remover via contexto; confirmar que o `QListWidgetItem` de origem é atualizado/removido e que badges/contadores se atualizam.
+- Abertura de arquivos:
+  - Testar abrir anexos via diálogo e via lista em Windows/macOS/Linux para validar fallbacks (`os.startfile`, `open`, `xdg-open`).
+- Tema/Paleta:
+  - Alternar entre temas claro/escuro e verificar se o fundo de widgets compostos (views/viewport) aplica corretamente a paleta sem vazamentos visuais.
+- Seleção múltipla e ações em lote:
+  - Selecionar múltiplos itens (Ctrl+clique e arrasto), executar mover/remover/compartilhar; confirmar que payloads enviados ao EventBus estão padronizados e que remoções respeitam prioridade quando `id` ausente.
+- Ordenação:
+  - Inserir tarefas com combinações de prioridade/date/time/título; verificar ordenação por chave hierárquica implementada.
+- Robustez:
+  - Forçar condições de erro (ex.: arquivo inexistente, itens sem metadados, chamadas intermitentes a serviços opcionais) e verificar que exceções são logadas sem crash.
+
+Observações finais
+- Esta versão prioriza a manutenção e a extensibilidade: ao dividir responsabilidades em módulos pequenos e bem nomeados, ganhamos clareza, testabilidade e caminho mais simples para futuras funcionalidades (ex.: filtros avançados, exportação/integração com outros sistemas).
+- Recomenda-se executar testes de integração e revisar logs (`LogManager`) em cenários reais de uso para ajustar mensagens e garantir cobertura nos pontos sensíveis.
+- Se desejar, posso:
+  - gerar um arquivo `RELEASE_NOTES_2026.2.7.0_pt_BR.txt` no workspace com este conteúdo;
+  - criar um changelog mais compacto em formato markdown para commit/PR;
+  - adicionar casos de teste unitário básicos para `BadgeCalendarWidget` e `caldial_03_collect_tasks.py`.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.6.0
 Data: 6 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

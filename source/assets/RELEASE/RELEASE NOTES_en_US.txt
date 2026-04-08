@@ -1,4 +1,52 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.7.0
+Date: February 7, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Update focused on making task management and the calendar more reliable, visual, and easy to use. Improvements in interaction, attachment opening, date-based display, and theme synchronization, plus adjustments that reduce errors and data loss.
+
+Main highlights
+- More useful calendar
+  - Days with tasks show visual counters (badges) and highlights by day/week/month.
+  - Calendar tooltips display priority, linked file and a summary of the description.
+  - Calendar context menu allows editing or removing tasks directly.
+
+- Batch actions and selection
+  - Support for multiple selection (Ctrl+click and drag) to move, remove and share multiple tasks at once.
+  - Confirmation messages and feedback after batch operations.
+
+- More robust attachment opening
+  - Attempts to open attachments use methods compatible with each operating system, with clear messages in case of failure.
+
+- Information preservation and sorting
+  - Important metadata (priority, file, description, pomodoros) are preserved when editing.
+  - Lists are deterministically ordered by priority → date → time → title; items without deadlines appear at the end.
+
+- Appearance and themes
+  - Improved palette synchronization between composite components to avoid visual inconsistencies in light/dark themes.
+
+Bug fixes
+- Prevents unintended deletions: tasks with identical text but different priorities are no longer removed by mistake.
+- Calendar ↔ lists synchronization: editing/removing via the calendar correctly affects the original task.
+- Failures when opening attachments are handled with fallbacks and logged, reducing silent errors.
+- Visual adjustments to avoid incorrect backgrounds in composite areas after theme changes.
+- Expanded exception handling for greater stability in operations (drag & drop, editing, menus).
+
+What changes for you
+- Managing tasks via the calendar and lists is more direct and secure.
+- Lower risk of losing tasks due to accidental deletions.
+- More consistent appearance when switching themes and better visibility of busy days.
+- Opening attachments should work more reliably across different systems.
+
+Quick recommendations
+- Use Ctrl+click or drag to select multiple tasks before applying batch actions.
+- Verify the confirmation shown when removing tasks in bulk.
+- When opening attachments, confirm the file path if an error message appears.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.6.0
 Date: February 6, 2026
 Author: Fernando Nillsson Cidade

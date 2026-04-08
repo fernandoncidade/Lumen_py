@@ -2276,6 +2276,11 @@ Defina 0 para repetir imediatamente após o áudio terminar.</translation>
     </message>
 
     <message>
+      <source>⏱️ Compartilhar com Pomodoro</source>
+      <translation>⏱️ Compartilhar com Pomodoro</translation>
+    </message>
+
+    <message>
       <source>Tarefa removida com sucesso!</source>
       <translation>Tarefa removida com sucesso!</translation>
     </message>

@@ -3,7 +3,7 @@ from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
 try:
-    from source.modules.eisenhower.ui.ui_05_save_tasks import save_tasks as _ui_save_tasks
+    from source.modules.eisenhower.interface.ui_05_save_tasks import save_tasks as _ui_save_tasks
 
 except Exception:
     _ui_save_tasks = None

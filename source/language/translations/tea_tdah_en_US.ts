@@ -2276,6 +2276,11 @@ Set 0 to repeat immediately after the audio finishes.</translation>
     </message>
 
     <message>
+      <source>⏱️ Compartilhar com Pomodoro</source>
+      <translation>⏱️ Share with Pomodoro</translation>
+    </message>
+
+    <message>
       <source>Tarefa removida com sucesso!</source>
       <translation>Task successfully removed!</translation>
     </message>
