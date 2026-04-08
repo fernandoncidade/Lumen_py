@@ -16,6 +16,8 @@ def _on_event_bus_tarefa(self, dados: dict):
 
         titulo = (payload.get("titulo") or "").strip()
         prioridade = payload.get("prioridade") or "Importante e Urgente"
+        task_id = payload.get("id")
+
         if not titulo:
             return
 
@@ -25,7 +27,7 @@ def _on_event_bus_tarefa(self, dados: dict):
         file_path = payload.get("file_path") or None
 
         try:
-            self._adicionar_tarefa_integrada_do_tempo(titulo=titulo, prioridade=prioridade, date=date_iso, time=time_str, description=description, file_path=file_path)
+            self._adicionar_tarefa_integrada_do_tempo(titulo=titulo, prioridade=prioridade, date=date_iso, time=time_str, description=description, file_path=file_path, task_id=task_id)
 
         except Exception:
             try:

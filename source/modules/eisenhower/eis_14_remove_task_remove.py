@@ -1,7 +1,7 @@
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
-def remove_task_remove(self, item, list_widget, confirm: bool = True):
+def remove_task_remove(self, item, list_widget, confirm: bool = True, show_success: bool = True):
     try:
         try:
             from source.modules.eisenhower import remove_task as _remove_task
@@ -10,7 +10,7 @@ def remove_task_remove(self, item, list_widget, confirm: bool = True):
             _remove_task = globals().get('remove_task')
 
         if _remove_task:
-            removed = _remove_task(self, item, list_widget, confirm)
+            removed = _remove_task(self, item, list_widget, confirm, show_success)
 
         else:
             removed = False

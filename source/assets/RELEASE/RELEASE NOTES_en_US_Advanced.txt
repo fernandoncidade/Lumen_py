@@ -1,4 +1,161 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.18.0
+Date: February 18, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+This release focuses on standardizing task identity across modules (Eisenhower ↔ Time Manager), improving persistence/import/export robustness, evolving the calendar experience (including annual view), and strengthening stability in app startup, dynamic translation, and the status bar.
+
+Main Improvements
+1. Unique task identity and deduplication (new central utility)
+- New file: source/utils/task_identity.py
+- Introduces identity functions:
+  - ensure_task_id(data): guarantees a UUID for any task without an id.
+  - task_identity_signature(source): stable signature based on id/title/date/time/description/priority.
+  - tasks_match(a, b): comparison by id (preferred) or full signature.
+- Result: cross-module integration now prevents duplicates with higher precision (not relying only on title).
+
+2. Eisenhower ↔ Time integration with ID propagation
+- Eisenhower now returns created task data in add_task and publishes it to the event bus with:
+  - id, date, time, description, file_path.
+- Integration handlers were adjusted to pass task_id end-to-end:
+  - eis_09_add_task_add.py
+  - eis_11_on_event_bus_tarefa.py
+  - eis_13_adicionar_tarefa_integrada_do_tempo.py
+  - gtemp_04_on_tarefa_adicionada_gestao_tempo.py
+  - gtemp_05_on_event_bus_tarefa.py
+  - gtar_10_adicionar_tarefa_interna.py
+  - gtar_11_adicionar_tarefa_externa.py
+- Result: more reliable sync between boards/lists and lower risk of “mirror tasks”.
+
+3. Safer persistence (backup and consistent schema)
+- Automatic backup before overwriting files:
+  - Eisenhower Worker: creates *.bak before save.
+  - Eisenhower save UI: creates *.bak.
+  - Task Manager (Time): creates *.bak.
+- Persisted structure now includes id in task entries:
+  - eis_15_save_tasks_save.py
+  - ui_05_save_tasks.py
+  - ui_06_load_tasks.py
+- Loading was reinforced with ensure_task_id for legacy files without id.
+
+4. Reworked Eisenhower Import/Export (JSON/XLSX/PDF)
+- arq_04_abrir_arquivo.py:
+  - Adds explicit JSON support.
+  - Validates full structure by quadrant (required lists).
+  - Requires valid id and text per entry.
+  - XLSX now requires standard header: id,text,date,time,file_path,description,priority.
+  - PDF now imports structural payload via sentinels:
+    - LUMEN_EISENHOWER_EXPORT_V1_BEGIN / END.
+- arq_05_salvar_como.py:
+  - Generates a single, consistent payload for JSON/XLSX/PDF.
+  - PDF now embeds readable/structural JSON for validated reimport.
+- Result: removes fragile free-text parsing and reduces data corruption/ambiguity.
+
+5. Calendar: annual view, advanced filters, and UX
+- New component: source/modules/eisenhower/interface/ui_13_YearCalendarWidget.py
+  - 12-month grid, monthly counts, monthly tooltip, month/year selection.
+  - Per-month context menu to edit/remove tasks and remove all tasks from a month.
+  - Visual sync with theme/palette.
+- CalendarPanel (ui_12_CalendarPanel.py):
+  - New “Year” filter.
+  - Month/year switching with QStackedWidget.
+  - Signals for visibility and view mode.
+- Calendar wrapper (ui_07_Calendar.py):
+  - New rotated side button to switch “Annual/Monthly Calendar”.
+- Calendar task list (caldial_04_update_task_list.py):
+  - Year filter.
+  - Month headers in listing when in month/year mode.
+  - Aggregated monthly tooltips for annual view.
+- Calendar badge (badcal_02_paintCell.py):
+  - Highlights current day (when not selected), improving visual orientation.
+
+6. Bulk removal and clean success feedback
+- Removal flow adjusted for batch operations:
+  - remove_task now accepts show_success.
+  - Multiple removal avoids repeated popups and shows a single confirmation at the end.
+- Adjustments in:
+  - eis_14_remove_task_remove.py
+  - ui_04_remove_task.py
+  - ecms_18_mostrar_menu_contexto.py
+
+7. Startup, icon, and visual stability
+- src_01_SplashAppStarter.py:
+  - Configures AppUserModelID early.
+  - Applies app icon at startup and on splash.
+  - Prioritizes autismo_256-256.ico on splash.
+- src_02_InicializadorMain.py:
+  - Parameterized AppUserModelID with status return.
+  - Technical .ico verification (warning for file without multiple resolutions).
+  - Native Windows icon application via WM_SETICON (small/big).
+  - Order adjustment to apply icon before show().
+- gui_01_estudo_acessivel.py:
+  - Reuses existing translation manager in app (avoids duplicate instances).
+- ui_16_setup_statusbar.py:
+  - Protections for already-destroyed Qt objects (shiboken6.isValid + RuntimeError “already deleted” handling).
+
+8. Complementary UX adjustments
+- fey_03_setup_ui.py:
+  - QListWidget with setSelectionRectVisible(True) for clearer multi-selection.
+- gtar_14_mostrar_menu_contexto.py:
+  - Locale/date-format improvements in edit dialog.
+  - Dynamic sync on language change.
+
+Bug Fixes
+1. Cross-module task duplication due to incomplete comparison:
+- Fixed with strong identity by id/signature and task_id propagation.
+
+2. Data loss risk during saves:
+- Fixed with automatic *.bak backup before critical writes.
+
+3. Fragile imports due to textual PDF parsing:
+- Fixed with validated structural format via sentinels + JSON.
+
+4. Icon inconsistencies on Windows (taskbar/window):
+- Fixed with unified AppUserModelID and native WM_SETICON application.
+
+5. Exceptions from destroyed Qt objects in status bar:
+- Fixed with object liveness validation and safe fallback.
+
+Main files impacted in this release
+- source/utils/task_identity.py (new)
+- source/modules/mod_06_eisenhower.py
+- source/modules/eisenhower/eis_01_EisenhowerWorker.py
+- source/modules/eisenhower/eis_09_add_task_add.py
+- source/modules/eisenhower/eis_11_on_event_bus_tarefa.py
+- source/modules/eisenhower/eis_13_adicionar_tarefa_integrada_do_tempo.py
+- source/modules/eisenhower/eis_14_remove_task_remove.py
+- source/modules/eisenhower/eis_15_save_tasks_save.py
+- source/modules/eisenhower/interface/ui_01_add_task.py
+- source/modules/eisenhower/interface/ui_04_remove_task.py
+- source/modules/eisenhower/interface/ui_05_save_tasks.py
+- source/modules/eisenhower/interface/ui_06_load_tasks.py
+- source/modules/eisenhower/interface/ui_07_Calendar.py
+- source/modules/eisenhower/interface/ui_11_RotatedTabButton.py
+- source/modules/eisenhower/interface/ui_12_CalendarPanel.py
+- source/modules/eisenhower/interface/ui_13_YearCalendarWidget.py (new)
+- source/modules/eisenhower/interface/CalendarDialog/caldial_04_update_task_list.py
+- source/modules/eisenhower/interface/BadgeCalendarWidget/badcal_02_paintCell.py
+- source/modules/eisenhower/services/Arquivo/arq_04_abrir_arquivo.py
+- source/modules/eisenhower/services/Arquivo/arq_05_salvar_como.py
+- source/modules/eisenhower/services/svc_06_EisenhowerContextMenuService.py
+- source/modules/eisenhower/services/EisenhowerContextMenuService/ecms_18_mostrar_menu_contexto.py
+- source/modules/tempo/tmp_03_GerenciadorTarefas.py
+- source/modules/tempo/GerenciadorTempo/gtemp_04_on_tarefa_adicionada_gestao_tempo.py
+- source/modules/tempo/GerenciadorTempo/gtemp_05_on_event_bus_tarefa.py
+- source/modules/tempo/GerenciadorTarefas/gtar_02_salvar_tarefas.py
+- source/modules/tempo/GerenciadorTarefas/gtar_10_adicionar_tarefa_interna.py
+- source/modules/tempo/GerenciadorTarefas/gtar_11_adicionar_tarefa_externa.py
+- source/modules/tempo/GerenciadorTarefas/gtar_14_mostrar_menu_contexto.py
+- source/modules/feynman/fey_03_setup_ui.py
+- source/src_01_SplashAppStarter.py
+- source/src_02_InicializadorMain.py
+- source/gui/gui_01_estudo_acessivel.py
+- source/gui/ui/ui_16_setup_statusbar.py
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.17.0
 Date: February 17, 2026
 Author: Fernando Nillsson Cidade

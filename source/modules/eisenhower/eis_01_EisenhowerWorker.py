@@ -15,7 +15,8 @@ class _EisenhowerWorker(QObject):
     @Slot(str, object)
     def _save(self, path, tasks):
         try:
-            import json, os
+            import json, os, shutil
+
             if not path:
                 self.save_finished.emit(False)
                 return
@@ -24,6 +25,13 @@ class _EisenhowerWorker(QObject):
             if dirp and not os.path.exists(dirp):
                 try:
                     os.makedirs(dirp, exist_ok=True)
+
+                except Exception:
+                    pass
+
+            if os.path.exists(path):
+                try:
+                    shutil.copy2(path, f"{path}.bak")
 
                 except Exception:
                     pass

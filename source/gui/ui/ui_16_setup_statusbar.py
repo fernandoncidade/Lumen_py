@@ -30,6 +30,17 @@ def setup_statusbar(self):
             except Exception:
                 return None
 
+        def _is_qt_alive(obj) -> bool:
+            if obj is None:
+                return False
+
+            try:
+                from shiboken6 import isValid
+                return bool(isValid(obj))
+
+            except Exception:
+                return True
+
         def _render_status():
             try:
                 idx = self.tabs.currentIndex() if hasattr(self, "tabs") else -1
@@ -153,18 +164,27 @@ def setup_statusbar(self):
             try:
                 scene = getattr(mapa_widget, "scene", None)
 
-                if scene is None:
+                if not _is_qt_alive(scene):
                     _set_selection_count("mapa", "nos", 0)
                     return
 
                 from source.modules.mapa.mp_01_NoConceito import NoConceito
                 total = 0
 
-                for item in scene.selectedItems() or []:
+                selected_items = scene.selectedItems() or []
+
+                for item in selected_items:
                     if isinstance(item, NoConceito):
                         total += 1
 
                 _set_selection_count("mapa", "nos", total)
+
+            except RuntimeError as e:
+                if "already deleted" in str(e):
+                    _set_selection_count("mapa", "nos", 0)
+                    return
+
+                logger.error(f"Erro ao contar seleção do módulo Mapas Mentais: {e}", exc_info=True)
 
             except Exception as e:
                 logger.error(f"Erro ao contar seleção do módulo Mapas Mentais: {e}", exc_info=True)
@@ -233,7 +253,7 @@ def setup_statusbar(self):
                 elif module_key == "mapa":
                     scene = getattr(widget, "scene", None)
 
-                    if scene is not None:
+                    if _is_qt_alive(scene):
                         scene.selectionChanged.connect(partial(_count_selected_mapa, widget))
 
                     _count_selected_mapa(widget)

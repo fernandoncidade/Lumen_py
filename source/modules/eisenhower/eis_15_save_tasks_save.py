@@ -12,20 +12,23 @@ def save_tasks_save(self):
     try:
         def _list_to_entries(lst):
             entries = []
+
             if lst is None:
                 return entries
 
             for i in range(lst.count()):
                 item = lst.item(i)
+
                 if item.flags() & Qt.ItemIsSelectable:
                     data = item.data(Qt.UserRole) or {}
                     text = data.get("text", item.text())
                     date = data.get("date")
                     time = data.get("time")
-                    entry = {"text": text, "date": date, "time": time}
+                    entry = {"id": data.get("id"), "text": text, "date": date, "time": time}
 
                     try:
                         file_path = data.get("file_path")
+
                         if file_path:
                             entry["file_path"] = file_path
 
@@ -34,6 +37,7 @@ def save_tasks_save(self):
 
                     try:
                         description = data.get("description")
+
                         if description:
                             entry["description"] = description
 
@@ -42,6 +46,7 @@ def save_tasks_save(self):
 
                     try:
                         priority = data.get("priority")
+
                         if priority is not None:
                             entry["priority"] = priority
 
@@ -69,6 +74,7 @@ def save_tasks_save(self):
 
             except Exception as e:
                 logger.error(f"Erro ao emitir sinal de salvar: {e}", exc_info=True)
+
                 if _ui_save_tasks is not None:
                     _ui_save_tasks(self)
 

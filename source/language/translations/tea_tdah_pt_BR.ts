@@ -2540,6 +2540,11 @@ Deseja continuar?</translation>
     </message>
 
     <message>
+      <source>📂 Abrir</source>
+      <translation>📂 Abrir</translation>
+    </message>
+
+    <message>
       <source>🔗 Vincular Arquivo</source>
       <translation>🔗 Vincular Arquivo</translation>
     </message>
@@ -2659,6 +2664,56 @@ Deseja continuar?</translation>
     <message>
       <source>itens</source>
       <translation>itens</translation>
+    </message>
+
+    <message>
+      <source>Ano</source>
+      <translation>Ano</translation>
+    </message>
+
+    <message>
+      <source>Calendário Mensal</source>
+      <translation>Calendário Mensal</translation>
+    </message>
+
+    <message>
+      <source>Calendário Anual</source>
+      <translation>Calendário Anual</translation>
+    </message>
+
+    <message>
+      <source>Calendário Anual/Calendário Mensal</source>
+      <translation>Calendário Anual/Calendário Mensal</translation>
+    </message>
+
+    <message>
+      <source>Visualização atual: calendário anual. Clique para calendário mensal.</source>
+      <translation>Visualização atual: calendário anual. Clique para calendário mensal.</translation>
+    </message>
+
+    <message>
+      <source>Visualização atual: calendário mensal. Clique para calendário anual.</source>
+      <translation>Visualização atual: calendário mensal. Clique para calendário anual.</translation>
+    </message>
+
+    <message>
+      <source>(Sem título)</source>
+      <translation>(Sem título)</translation>
+    </message>
+
+    <message>
+      <source>Deseja remover todas as tarefas do mês selecionado?</source>
+      <translation>Deseja remover todas as tarefas do mês selecionado?</translation>
+    </message>
+
+    <message>
+      <source>Nenhuma tarefa neste período.</source>
+      <translation>Nenhuma tarefa neste período.</translation>
+    </message>
+
+    <message>
+      <source>Escolher arquivo</source>
+      <translation>Escolher arquivo</translation>
     </message>
 
   </context>

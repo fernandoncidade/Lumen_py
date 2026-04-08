@@ -1,4 +1,6 @@
 import json
+import os
+import shutil
 from PySide6.QtCore import Qt
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
@@ -7,17 +9,20 @@ def save_tasks(app):
     try:
         def list_to_entries(lst):
             entries = []
+
             for i in range(lst.count()):
                 item = lst.item(i)
+
                 if item.flags() & Qt.ItemIsSelectable:
                     data = item.data(Qt.UserRole) or {}
                     text = data.get("text", item.text())
                     date = data.get("date")
                     time = data.get("time")
-                    entry = {"text": text, "date": date, "time": time}
+                    entry = {"id": data.get("id"), "text": text, "date": date, "time": time}
 
                     try:
                         file_path = data.get("file_path")
+
                         if file_path:
                             entry["file_path"] = file_path
 
@@ -26,6 +31,7 @@ def save_tasks(app):
 
                     try:
                         description = data.get("description")
+
                         if description:
                             entry["description"] = description
 
@@ -34,6 +40,7 @@ def save_tasks(app):
 
                     try:
                         priority = data.get("priority")
+
                         if priority is not None:
                             entry["priority"] = priority
 
@@ -54,6 +61,14 @@ def save_tasks(app):
             "quadrant4": list_to_entries(app.quadrant4_list),
             "quadrant4_completed": list_to_entries(app.quadrant4_completed_list),
         }
+
+        if os.path.exists(app.tasks_path):
+            try:
+                shutil.copy2(app.tasks_path, f"{app.tasks_path}.bak")
+
+            except Exception as e:
+                logger.debug(f"Falha ao gerar backup de tarefas do Eisenhower: {e}", exc_info=True)
+
         with open(app.tasks_path, "w", encoding="utf-8") as file:
             json.dump(tasks, file, ensure_ascii=False, indent=2)
 

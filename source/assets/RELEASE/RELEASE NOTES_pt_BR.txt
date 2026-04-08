@@ -1,4 +1,50 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.18.0
+Data: 18 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Resumo rápido
+- Melhor integração entre tarefas da Matriz de Eisenhower e do Gerenciador de Tempo.
+- Calendário com visualização anual e filtros mais completos.
+- Importação e exportação de tarefas mais confiáveis (JSON, Excel e PDF).
+- Salvamento mais seguro com cópias de backup automáticas.
+- Melhorias na inicialização do app, ícone no Windows e estabilidade geral da interface.
+
+Melhorias para o dia a dia
+- Tarefas duplicadas entre áreas diferentes do app foram reduzidas.
+- Sincronização entre listas e quadros ficou mais estável.
+- Ao remover várias tarefas, a experiência ficou mais limpa, com menos janelas repetidas.
+- Edição de tarefas com datas/horários ficou mais clara e consistente com o idioma escolhido.
+- Seleção múltipla em listas ficou mais visível e fácil de usar.
+
+Calendário aprimorado
+- Nova visualização anual para acompanhar tarefas por mês.
+- Novo filtro por ano.
+- Alternância entre visualização mensal e anual.
+- Lista de tarefas do calendário mais organizada em períodos maiores.
+- Destaque visual do dia atual para facilitar orientação.
+
+Importar, exportar e salvar com mais segurança
+- Estrutura de importação/exportação foi padronizada para reduzir erros.
+- PDFs exportados agora preservam melhor os dados para reimportação.
+- Validação de dados mais rígida ao abrir arquivos.
+- Criação automática de backup antes de salvar, reduzindo risco de perda de informações.
+
+Estabilidade e correções
+- Correção de falhas que podiam gerar tarefas “espelhadas”/duplicadas.
+- Correção de problemas de consistência de ícone no Windows.
+- Inicialização da aplicação mais robusta.
+- Melhor tratamento de situações internas da interface para evitar travamentos.
+
+Impacto esperado
+- Mais confiança ao organizar tarefas entre recursos diferentes.
+- Menos retrabalho com dados duplicados ou inconsistentes.
+- Uso do calendário mais útil para planejamento mensal e anual.
+- Experiência geral mais estável e previsível.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.17.0
 Data: 17 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

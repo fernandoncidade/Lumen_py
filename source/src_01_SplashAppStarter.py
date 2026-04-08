@@ -17,7 +17,22 @@ class SplashAppStarter:
 
     def _create_app(self):
         from PySide6.QtWidgets import QApplication
+
+        try:
+            from source.src_02_InicializadorMain import configurar_windows_app_id
+            configurar_windows_app_id()
+
+        except Exception as e:
+            self.logger.warning(f"Falha ao configurar AppUserModelID no início: {e}", exc_info=True)
+
         self.app = QApplication(sys.argv)
+
+        try:
+            from source.src_02_InicializadorMain import configurar_icone_aplicacao
+            configurar_icone_aplicacao(self.app)
+
+        except Exception as e:
+            self.logger.warning(f"Falha ao configurar ícone da aplicação no início: {e}", exc_info=True)
 
         try:
             from source.language.tr_01_gerenciadorTraducao import GerenciadorTraducao
@@ -36,11 +51,13 @@ class SplashAppStarter:
             try:
                 aplicado = self.translation_manager.aplicar_traducao()
                 self.logger.debug(f"Traduções aplicadas na inicialização: {aplicado}")
+
                 try:
                     idioma = self.translation_manager.obter_idioma_atual()
                     self.logger.info(f"Idioma atual do GerenciadorTraducao: {idioma}")
                     import os
                     dir_trad = os.path.join(os.path.dirname(os.path.dirname(__file__)), "language", "translations")
+
                     if os.path.isdir(dir_trad):
                         files = os.listdir(dir_trad)
                         self.logger.debug(f"Arquivos de tradução disponíveis: {files}")
@@ -69,8 +86,10 @@ class SplashAppStarter:
 
         try:
             pix = None
+
             if get_icon_path:
-                icon_path = get_icon_path("autismo.ico")
+                icon_path = get_icon_path("autismo_256-256.ico")
+
                 if icon_path:
                     pix = QPixmap(icon_path)
 
@@ -93,6 +112,16 @@ class SplashAppStarter:
         splash.setWindowFlags(Qt.SplashScreen | Qt.FramelessWindowHint)
         splash.setAttribute(Qt.WA_TranslucentBackground, True)
         splash.resize(scaled_pix.width() + 40, scaled_pix.height() + 160)
+
+        try:
+            if self.app:
+                app_icon = self.app.windowIcon()
+
+                if app_icon and not app_icon.isNull():
+                    splash.setWindowIcon(app_icon)
+
+        except Exception:
+            pass
 
         layout = QVBoxLayout(splash)
         layout.setContentsMargins(14, 14, 14, 14)
@@ -164,8 +193,10 @@ class SplashAppStarter:
 
             def hooked_import(name, globals=None, locals=None, fromlist=(), level=0):
                 mod = orig_import(name, globals, locals, fromlist, level)
+
                 try:
                     new = sorted(set(sys.modules.keys()) - seen_modules)
+
                     for m in new:
                         if m not in seen_modules:
                             seen_modules.add(m)
@@ -218,6 +249,7 @@ class SplashAppStarter:
 
         except Exception as e:
             self.logger.critical(f"Erro ao carregar aplicação: {e}", exc_info=True)
+
             try:
                 if self.splash:
                     self.splash.close()
@@ -230,6 +262,7 @@ class SplashAppStarter:
         self._create_app()
         self._create_splash()
         self.splash.show()
+
         if self.app:
             from PySide6.QtCore import QTimer
             QTimer.singleShot(0, self._loader)

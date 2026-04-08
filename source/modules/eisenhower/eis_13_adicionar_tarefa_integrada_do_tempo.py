@@ -1,16 +1,28 @@
 from PySide6.QtCore import Qt
 from source.utils.LogManager import LogManager
+from uuid import uuid4
+from source.utils.task_identity import tasks_match
 logger = LogManager.get_logger()
 
-def _adicionar_tarefa_integrada_do_tempo(self, titulo: str, prioridade: str, date: str = None, time: str = None, description: str = None, file_path: str = None):
+def _adicionar_tarefa_integrada_do_tempo(self, titulo: str, prioridade: str, date: str = None, time: str = None, description: str = None, file_path: str = None, task_id: str = None):
     try:
         lst = self._lista_por_prioridade(prioridade)
         if lst is None:
             return
 
+        candidata = {
+            "id": task_id,
+            "text": titulo,
+            "date": date,
+            "time": time,
+            "description": description,
+            "priority": prioridade,
+        }
+
         try:
             for i in range(lst.count()):
                 it = lst.item(i)
+
                 if not it:
                     continue
 
@@ -18,8 +30,9 @@ def _adicionar_tarefa_integrada_do_tempo(self, titulo: str, prioridade: str, dat
                     continue
 
                 data = it.data(Qt.UserRole) or {}
-                base = (data.get("text") or it.text() or "").strip()
-                if base == titulo:
+                atual = dict(data) if isinstance(data, dict) else {"text": (it.text() or "").strip()}
+
+                if tasks_match(atual, candidata):
                     return
 
         except Exception:
@@ -32,10 +45,12 @@ def _adicionar_tarefa_integrada_do_tempo(self, titulo: str, prioridade: str, dat
 
         display_text = titulo
         date_human = None
+
         if date:
             try:
                 from PySide6.QtCore import QDate
                 qd = QDate.fromString(date, Qt.ISODate)
+
                 if qd.isValid() and hasattr(self, "date_input"):
                     date_human = qd.toString(self.date_input.displayFormat())
 
@@ -55,6 +70,7 @@ def _adicionar_tarefa_integrada_do_tempo(self, titulo: str, prioridade: str, dat
         task_item.setFlags(task_item.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsSelectable | Qt.ItemIsEnabled)
         task_item.setCheckState(Qt.Unchecked)
         task_item.setData(Qt.UserRole, {
+            "id": task_id or str(uuid4()),
             "text": titulo,
             "date": date,
             "time": time,

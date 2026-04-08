@@ -10,6 +10,7 @@ def add_task_add(self):
     selected_quadrant = 0
     date_iso = None
     time_str = None
+
     try:
         task_text = (self.task_input.text() or "").strip()
         selected_quadrant = int(self.quadrant_selector.currentIndex())
@@ -34,6 +35,8 @@ def add_task_add(self):
         logger.error(f"Erro ao adicionar tarefa: {e}", exc_info=True)
 
     try:
+        created_data = None
+
         try:
             from source.modules.eisenhower import add_task as _add_task
 
@@ -41,7 +44,7 @@ def add_task_add(self):
             _add_task = globals().get('add_task')
 
         if _add_task:
-            _add_task(self)
+            created_data = _add_task(self)
 
     except Exception as e:
         logger.error(f"Erro ao chamar add_task: {e}", exc_info=True)
@@ -63,10 +66,13 @@ def add_task_add(self):
                     payload = {
                         "integration_id": str(uuid4()),
                         "origin": "eisenhower",
+                        "id": (created_data or {}).get("id"),
                         "titulo": task_text,
                         "prioridade": Tarefa.normalizar_prioridade(prioridade),
-                        "date": date_iso,
-                        "time": time_str,
+                        "date": (created_data or {}).get("date", date_iso),
+                        "time": (created_data or {}).get("time", time_str),
+                        "description": (created_data or {}).get("description") or None,
+                        "file_path": (created_data or {}).get("file_path") or None,
                     }
                     get_event_bus().send_tarefa(payload)
 

@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QMessageBox
+from PySide6.QtWidgets import QMessageBox, QApplication
 from PySide6.QtCore import QCoreApplication, Qt
 from source.modules.tempo.tmp_01_Tarefa import Tarefa
 from source.utils.LogManager import LogManager
@@ -11,6 +11,7 @@ def _list_has_selectable_items(lst) -> bool:
     try:
         for i in range(lst.count()):
             it = lst.item(i)
+
             if it and (it.flags() & Qt.ItemIsSelectable):
                 return True
 
@@ -26,6 +27,7 @@ def _ensure_placeholder(app, lst, placeholder_text: str):
 
         if not _list_has_selectable_items(lst):
             lst.blockSignals(True)
+
             try:
                 lst.clear()
                 app.add_placeholder(lst, placeholder_text)
@@ -60,6 +62,7 @@ def _priority_key(data: dict | None):
             return None
 
         val = data.get("priority")
+
         if val is None or val == "":
             val = data.get("prioridade")
 
@@ -78,7 +81,7 @@ def _priority_key(data: dict | None):
     except Exception:
         return None
 
-def remove_task(app, item, list_widget, confirm: bool = True) -> bool:
+def remove_task(app, item, list_widget, confirm: bool = True, show_success: bool = True) -> bool:
     try:
         if not item or not (item.flags() & Qt.ItemIsSelectable):
             return False
@@ -96,6 +99,7 @@ def remove_task(app, item, list_widget, confirm: bool = True) -> bool:
 
         data = item.data(Qt.UserRole) or {}
         removed_from_same_list = False
+
         try:
             quadrant_lists = [
                 getattr(app, "quadrant1_list", None),
@@ -114,6 +118,7 @@ def remove_task(app, item, list_widget, confirm: bool = True) -> bool:
 
                 for i in range(qlst.count()):
                     it = qlst.item(i)
+
                     if not it:
                         continue
 
@@ -121,10 +126,12 @@ def remove_task(app, item, list_widget, confirm: bool = True) -> bool:
                         continue
 
                     d = it.data(Qt.UserRole) or {}
+
                     try:
                         if str(d.get("text") or "").strip() == str(data.get("text") or "").strip() and (d.get("date") or "") == (data.get("date") or "") and (d.get("time") or "") == (data.get("time") or ""):
                             pk_item = _priority_key(data)
                             pk_other = _priority_key(d)
+
                             if pk_item is not None and pk_other is not None and pk_item != pk_other:
                                 continue
 
@@ -178,6 +185,24 @@ def remove_task(app, item, list_widget, confirm: bool = True) -> bool:
 
         except Exception:
             pass
+
+        if show_success:
+            try:
+                msg_ok = QMessageBox(app)
+                msg_ok.setWindowTitle(get_text("Sucesso") or "Sucesso")
+                msg_ok.setText(get_text("Tarefa removida com sucesso!") or "Tarefa removida com sucesso!")
+                msg_ok.addButton(get_text("Ok") or "Ok", QMessageBox.AcceptRole)
+
+                try:
+                    QApplication.beep()
+
+                except Exception:
+                    pass
+
+                msg_ok.exec()
+
+            except Exception:
+                pass
 
         return True
 

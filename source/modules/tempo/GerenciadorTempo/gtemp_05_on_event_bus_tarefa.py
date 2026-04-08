@@ -4,10 +4,12 @@ logger = LogManager.get_logger()
 def _on_event_bus_tarefa(self, dados: dict):
     try:
         payload = dados or {}
+
         if payload.get("origin") != "eisenhower":
             return
 
         integration_id = payload.get("integration_id")
+
         if integration_id and integration_id in self._integracao_ids_recebidos:
             return
 
@@ -16,6 +18,7 @@ def _on_event_bus_tarefa(self, dados: dict):
 
         titulo = (payload.get("titulo") or "").strip()
         prioridade = payload.get("prioridade") or "Importante e Urgente"
+        task_id = payload.get("id")
         date_iso = payload.get("date") or payload.get("date_iso") or None
         time_str = payload.get("time") or None
         description = payload.get("description") or payload.get("desc") or None
@@ -26,7 +29,7 @@ def _on_event_bus_tarefa(self, dados: dict):
 
         if hasattr(self, 'tarefas') and self.tarefas:
             try:
-                self.tarefas.adicionar_tarefa_externa(titulo=titulo, prioridade=prioridade, description=description, file_path=file_path, date=date_iso, time=time_str)
+                self.tarefas.adicionar_tarefa_externa(titulo=titulo, prioridade=prioridade, description=description, file_path=file_path, date=date_iso, time=time_str, task_id=task_id)
 
             except Exception:
                 try:

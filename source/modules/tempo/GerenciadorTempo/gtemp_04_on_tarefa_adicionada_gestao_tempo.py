@@ -11,12 +11,14 @@ def _on_tarefa_adicionada_gestao_tempo(self, dados: dict):
 
         titulo = (dados or {}).get("titulo")
         prioridade = (dados or {}).get("prioridade")
+
         if not titulo:
             return
 
         payload = {
             "integration_id": str(uuid4()),
             "origin": "tempo",
+            "id": (dados or {}).get("id"),
             "titulo": titulo,
             "prioridade": Tarefa.normalizar_prioridade(prioridade),
             "description": (dados or {}).get("description") or (dados or {}).get("desc") or None,

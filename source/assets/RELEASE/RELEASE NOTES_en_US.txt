@@ -1,4 +1,50 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.18.0
+Date: February 18, 2026
+Author: Fernando Nillsson Cidade
+
+Quick Summary
+- Better integration between Eisenhower Matrix tasks and the Time Manager.
+- Calendar with annual view and more complete filters.
+- More reliable task import and export (JSON, Excel, and PDF).
+- Safer saving with automatic backup copies.
+- Improvements in app startup, Windows icon behavior, and overall interface stability.
+
+Everyday Improvements
+- Duplicate tasks across different areas of the app were reduced.
+- Synchronization between lists and boards became more stable.
+- When removing multiple tasks, the experience became cleaner, with fewer repeated pop-up windows.
+- Task editing with dates/times became clearer and more consistent with the selected language.
+- Multi-selection in lists became more visible and easier to use.
+
+Enhanced Calendar
+- New annual view to track tasks by month.
+- New year filter.
+- Switching between monthly and annual views.
+- Calendar task list is now better organized for larger periods.
+- Visual highlight for the current day to improve orientation.
+
+Importing, Exporting, and Saving with More Safety
+- The import/export structure was standardized to reduce errors.
+- Exported PDFs now preserve data better for reimporting.
+- Stricter data validation when opening files.
+- Automatic backup creation before saving, reducing the risk of data loss.
+
+Stability and Fixes
+- Fixed issues that could generate “mirrored”/duplicate tasks.
+- Fixed Windows icon consistency issues.
+- More robust application startup.
+- Better handling of internal interface situations to prevent freezes.
+
+Expected Impact
+- More confidence when organizing tasks across different resources.
+- Less rework with duplicated or inconsistent data.
+- More useful calendar usage for monthly and annual planning.
+- More stable and predictable overall experience.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.17.0
 Date: February 17, 2026
 Author: Fernando Nillsson Cidade

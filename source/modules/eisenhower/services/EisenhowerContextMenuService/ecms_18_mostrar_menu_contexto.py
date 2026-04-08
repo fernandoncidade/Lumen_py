@@ -1,12 +1,14 @@
-from PySide6.QtWidgets import QMenu, QMessageBox
+from PySide6.QtWidgets import QMenu, QMessageBox, QApplication
 from PySide6.QtGui import QAction
 from PySide6.QtCore import Qt
 from source.utils.LogManager import LogManager
+from source.utils.task_identity import task_identity_signature
 logger = LogManager.get_logger()
 
 def mostrar_menu_contexto(self, point, list_widget):
     try:
         item = list_widget.itemAt(point)
+
         if not item:
             return
 
@@ -28,8 +30,10 @@ def mostrar_menu_contexto(self, point, list_widget):
         def _resolve_source(it):
             try:
                 data = it.data(Qt.UserRole) or {}
+
                 if isinstance(data, dict) and data.get("category"):
                     src_list, src_item = self._find_source_item_for_calendar(data)
+
                     if src_list is not None and src_item is not None:
                         return src_list, src_item
 
@@ -42,6 +46,7 @@ def mostrar_menu_contexto(self, point, list_widget):
             resolved = []
             for it in _selected_items():
                 src_list, src_item = _resolve_source(it)
+
                 if src_list is not None and src_item is not None:
                     resolved.append((src_list, src_item))
 
@@ -62,13 +67,23 @@ def mostrar_menu_contexto(self, point, list_widget):
                     from source.modules.tempo.tmp_01_Tarefa import Tarefa
 
                     enviados = 0
+                    vistos = set()
+
                     for _, it in _resolved_selection():
                         data = it.data(Qt.UserRole) or {}
+                        chave = task_identity_signature(data)
+
+                        if chave in vistos:
+                            continue
+
+                        vistos.add(chave)
                         titulo = (data.get("text") or self._base_text_from_item(it) or "").strip()
+
                         if not titulo:
                             continue
 
                         pr = data.get("priority") or data.get("prioridade")
+
                         if isinstance(pr, (int, float)) or (isinstance(pr, str) and str(pr).isdigit()):
                             try:
                                 pnum = int(pr)
@@ -96,6 +111,7 @@ def mostrar_menu_contexto(self, point, list_widget):
                         payload = {
                             "integration_id": str(uuid4()),
                             "origin": "eisenhower",
+                            "id": data.get("id"),
                             "titulo": titulo,
                             "prioridade": prioridade_norm,
                             "date": date_iso,
@@ -144,8 +160,10 @@ def mostrar_menu_contexto(self, point, list_widget):
                     def _handler():
                         try:
                             moved = False
+
                             for source_list, source_item in _resolved_selection():
                                 target = self._target_list_for_quadrant(i, keep_completed=None)
+
                                 if target is None or target is source_list:
                                     continue
 
@@ -197,6 +215,7 @@ def mostrar_menu_contexto(self, point, list_widget):
         def _remover_selecionadas():
             try:
                 items = _selected_items()
+
                 if not items:
                     return
 
@@ -221,24 +240,48 @@ def mostrar_menu_contexto(self, point, list_widget):
                     pass
 
                 resolved = _resolved_selection()
+
                 if not resolved:
                     return
 
                 seen = set()
+                removed_count = 0
+
                 for src_list, src_item in resolved:
                     try:
                         if src_list is None or src_item is None:
                             continue
 
                         key = (id(src_list), id(src_item))
+
                         if key in seen:
                             continue
 
                         seen.add(key)
-                        self.app.remove_task(src_item, src_list, confirm=False)
+
+                        if self.app.remove_task(src_item, src_list, confirm=False, show_success=False):
+                            removed_count += 1
 
                     except Exception:
                         continue
+
+                if removed_count > 0:
+                    try:
+                        msg_ok = QMessageBox(self.app)
+                        msg_ok.setWindowTitle(self.get_text("Sucesso") or "Sucesso")
+                        msg_ok.setText(self.get_text("Tarefa removida com sucesso!") or "Tarefa removida com sucesso!")
+                        msg_ok.addButton(self.get_text("Ok") or "Ok", QMessageBox.AcceptRole)
+
+                        try:
+                            QApplication.beep()
+
+                        except Exception:
+                            pass
+
+                        msg_ok.exec()
+
+                    except Exception:
+                        pass
 
             except Exception as e:
                 logger.error(f"Erro ao remover tarefas selecionadas: {e}", exc_info=True)

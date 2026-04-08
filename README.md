@@ -10,14 +10,14 @@
 
 ## <a id="ptbr"></a>🇧🇷 Português (BR)
 
-> **Observação:** Este repositório refere-se à versão **v2026.2.17.0** do 📚 Projeto Lúmen. Apoie o projeto e adquira a versão paga através do link: [Instalar via Microsoft Store](https://apps.microsoft.com/detail/9N70CLLMVRPN)
+> **Observação:** Este repositório refere-se à versão **v2026.2.18.0** do 📚 Projeto Lúmen. Apoie o projeto e adquira a versão paga através do link: [Instalar via Microsoft Store](https://apps.microsoft.com/detail/9N70CLLMVRPN)
 
 <details>
 <summary>Clique para expandir o README em português</summary>
 
 # 📚 Lúmen
 
-Versão: v2026.2.17.0  
+Versão: v2026.2.18.0  
 Autor: Fernando Nillsson Cidade
 
 - Manual de Utilização (PT‑BR): [MANUAL.md — Português](./MANUAL.md#ptbr)
@@ -50,6 +50,85 @@ Fornecer uma ferramenta desktop configurável que reduza barreiras de leitura, a
 - Localização: pt-BR e en-US (arquivos .ts incluídos; gerar .qm antes do empacotamento).
 - Armazenamento local por padrão (privacidade).
 
+## ✅ Evolução completa de funcionalidades e recursos
+
+### 📖 Leitor Acessível (TTS)
+- Correção da pausa para garantir que a leitura permaneça realmente pausada, sem avanço automático inesperado.
+- Melhor controle da fila de áudio em textos longos, com retomada mais previsível ao continuar a leitura.
+- Maior robustez no fluxo de troca de voz e no tratamento de arquivos temporários de áudio.
+
+### ⏱️ Pomodoro e Gestão de Tempo
+- Fluxo do timer reforçado com estados mais claros de **Iniciar / Pausar / Continuar**.
+- Bloqueio de novos ciclos de foco quando o limite configurado é atingido, com aviso contextual.
+- Preservação do progresso atual ao alterar tempos de foco/descanso durante o uso.
+- Recursos de **pular ciclo** e **resetar relógio** com comportamento mais consistente.
+- Configuração de som do Pomodoro com escolha de campainha, prévia de áudio e intervalo de repetição.
+- Alerta sonoro ao fim de ciclo com reprodução imediata e repetição até o fechamento do aviso.
+- Integração automática com tarefas em andamento para registrar pomodoros concluídos.
+
+### 🗂️ Gestão de Tarefas e Kanban
+- Melhorias no arrastar e soltar entre colunas e abas, com sincronização de status mais confiável.
+- Melhorias de menu de contexto para edição, movimentação e ações em lote.
+- Redução de duplicidade de tarefas ao integrar fluxos entre módulos.
+- Contadores e listas com atualização visual mais consistente no uso diário.
+
+### 📌 Matriz de Eisenhower
+- Integração bidirecional com Gestão de Tempo com vínculo de tarefa mais estável.
+- Evolução do calendário da matriz com suporte a visão anual, filtro por ano e melhor organização por períodos.
+- Melhorias em remoção múltipla com menos interrupções e confirmação final consolidada.
+- Salvamento e carregamento com mais segurança, incluindo cópias automáticas de backup.
+- Importação/exportação mais robusta em **JSON, Excel e PDF**, com validações de estrutura e maior confiabilidade de reimportação.
+
+### 🧠 Mapas Mentais
+- Integração aprimorada com o Método Feynman para enviar conceitos com menos retrabalho.
+- Melhor robustez de persistência com backup automático e redução de gravações redundantes.
+- Carregamento mais defensivo para recuperar o máximo possível mesmo com dados parcialmente inconsistentes.
+- Melhorias no manuseio de arquivos vinculados e no fluxo de uso visual do mapa.
+
+### 🎓 Método Feynman
+- Recebimento de conceitos vindos de Mapas Mentais com normalização e mesclagem para evitar duplicação.
+- Pré-visualização mais rica de conceitos e arquivos vinculados para revisão rápida.
+- Abertura de arquivos vinculados com mais compatibilidade entre ambientes.
+- Melhor estabilidade de recursos internos durante abertura/fechamento de fluxos.
+
+### 🗓️ Calendário e planejamento
+- Expansão da experiência de calendário com visão mensal e anual.
+- Melhor leitura da agenda com agrupamentos por período e informações contextuais aprimoradas.
+- Destaques visuais para facilitar orientação da data atual e navegação de tarefas.
+
+### 🌐 Idioma, tema, interface e plataforma
+- Troca dinâmica de idioma com atualização imediata de textos e rótulos em múltiplas telas.
+- Melhor sincronização visual com tema/paleta da aplicação em tempo real.
+- Ajustes de locale e formato de data/hora para reduzir ambiguidades na edição de tarefas.
+- Inicialização mais estável no Windows, com melhorias de ícone e consistência visual.
+- Proteções adicionais na interface para evitar falhas em cenários de ciclo de vida de componentes.
+
+### 🛡️ Integridade de dados e confiabilidade geral
+- Padronização de identidade única de tarefas para reduzir tarefas “espelho” entre módulos.
+- Backups automáticos antes de operações críticas de escrita.
+- Validações mais rígidas em importação/carregamento para reduzir risco de corrupção silenciosa.
+- Melhor experiência de recuperação e continuidade em cenários de inconsistência.
+
+### 🧪 Checklist funcional completo (validação manual)
+1. Criar tarefas, mover entre Kanban/Eisenhower e validar ausência de duplicidade inesperada.
+2. Executar ciclos de Pomodoro com pausa/continuação/pulo/reset e confirmar persistência do progresso.
+3. Configurar som do Pomodoro, validar prévia e repetição de alerta ao fim do ciclo.
+4. Alternar calendário entre visão mensal/anual e validar filtro por ano e listagem por período.
+5. Exportar e reimportar tarefas (JSON/Excel/PDF) para validar consistência de dados.
+6. Integrar conceito de Mapa Mental para Feynman e confirmar atualização sem duplicação indevida.
+7. Trocar idioma/tema com app aberto e verificar atualização imediata da interface.
+8. Reiniciar aplicativo e confirmar persistência normal dos dados.
+
+### 🧩 Consolidação histórica de funcionalidades e recursos (v2025.11.26.0 → v2026.2.18.0)
+- Evolução contínua do Leitor Acessível com TTS local, controles tipográficos persistentes, régua de foco, extração de texto e maior estabilidade em pausa/retomada da leitura.
+- Gestão de Tempo ampliada com Pomodoro configurável (foco/descanso/ciclos), bloqueios por limite, alertas sonoros configuráveis e registro automático de progresso nas tarefas.
+- Gestão de Tarefas/Kanban reforçada com melhorias de edição, arrastar e soltar, ações em lote, atualização visual mais previsível e integração mais confiável com outros recursos.
+- Matriz de Eisenhower expandida com sincronização bidirecional, deduplicação por identidade de tarefa, calendário mensal/anual, filtros por ano e operações de remoção em massa mais limpas.
+- Importação/exportação e persistência fortalecidas com validações estruturais mais rígidas, suporte consistente em JSON/Excel/PDF e backups automáticos antes de gravações críticas.
+- Integração Mapa Mental + Método Feynman consolidada com fluxo de envio de conceitos, redução de duplicidades, melhor revisão guiada e tratamento mais estável de arquivos vinculados.
+- Plataforma e interface amadurecidas com tradução dinâmica em tempo real, sincronização de tema/paleta, ajustes de locale de data/hora, inicialização mais robusta e melhor consistência visual no Windows.
+- Confiabilidade geral elevada com proteções defensivas adicionais na interface, prevenção de estados inválidos e continuidade operacional mais segura em cenários de inconsistência.
+
 ## 🚀 Instalação (Windows — desenvolvimento)
 Requisitos mínimos:
 - Python 3.10+
@@ -80,10 +159,15 @@ Observação: se o sistema exige permissões de execução do PowerShell, ajuste
 - Testar a pasta do executável quanto a DLLs substituíveis e procedimentos de redistribuição (LGPL).
 
 ## ⚙️ Dependências (principais)
-- PySide6
-- pyttsx3 (ou outro backend TTS configurável)
-- PyMuPDF (fitz) — extração de texto de PDFs
-Consulte requirements.txt para a lista completa e versões.
+- PySide6, PySide6_Essentials, PySide6_Addons e shiboken6 — interface gráfica desktop (Qt).
+- pyttsx3 e edge-tts — síntese de voz (TTS).
+- pdfplumber, pypdfium2, pypdf e PyPDF2 — leitura e processamento de PDFs.
+- openpyxl e pandas — importação/exportação de dados e planilhas.
+- reportlab — geração/exportação de documentos PDF.
+- python-docx e docx2pdf — manipulação e conversão de documentos.
+- spacy, sentence-transformers, transformers e torch — recursos de linguagem/IA.
+- numpy e scikit-learn — base numérica e apoio a processamento/modelos.
+Consulte a lista completa (com versões) em [`requirements.txt`](./requirements.txt).
 
 ## 🛠️ Notas técnicas
 - Logging: utils/LogManager.py (logs em %LOCALAPPDATA%\TEA_TDAH_Dislexia).
@@ -123,6 +207,8 @@ E‑mail (privacidade/licenças): linceu_lighthouse@outlook.com
 
 ## 📄 Versão e notas de lançamento
 Consulte assets/RELEASE/RELEASE\ NOTES_pt_BR.txt e assets/RELEASE/RELEASE\ NOTES_en_US.txt para histórico de versões e mudanças importantes.
+- Notas avançadas (detalhamento técnico):
+  - assets/RELEASE/RELEASE NOTES_pt_BR_Avancado.txt
 
 ---
 
@@ -130,14 +216,14 @@ Consulte assets/RELEASE/RELEASE\ NOTES_pt_BR.txt e assets/RELEASE/RELEASE\ NOTES
 
 ## <a id="enus"></a>🇺🇸 English (US)
 
-> **Note:** This repository refers to the **v2026.2.17.0** version of the 📚 Lúmen Project. Support the project and purchase the paid version through the link: [Instalar via Microsoft Store](https://apps.microsoft.com/detail/9N70CLLMVRPN)
+> **Note:** This repository refers to the **v2026.2.18.0** version of the 📚 Lúmen Project. Support the project and purchase the paid version through the link: [Instalar via Microsoft Store](https://apps.microsoft.com/detail/9N70CLLMVRPN)
 
 <details>
 <summary>Click to expand the README in English</summary>
 
 # 📚 Lúmen
 
-Version: v2026.2.17.0  
+Version: v2026.2.18.0  
 Author: Fernando Nillsson Cidade
 
 - User Manual (EN‑US): [MANUAL.md — English](./MANUAL.md#enus)
@@ -170,6 +256,85 @@ Provide a configurable desktop tool that reduces barriers to reading, attention 
 - Localization: pt‑BR and en‑US (.ts files included; generate .qm before packaging).
 - Local storage by default (privacy).
 
+## ✅ Complete evolution of features and resources
+
+### 📖 Accessible Reader (TTS)
+- Pause behavior fixed to ensure playback truly stays paused, without unexpected auto-advance.
+- Better audio queue control for long texts, with more predictable resume behavior.
+- Stronger robustness in voice-switch flow and temporary audio file handling.
+
+### ⏱️ Pomodoro and Time Management
+- Timer flow reinforced with clearer **Start / Pause / Resume** states.
+- New focus-cycle blocking when configured limits are reached, with contextual warning.
+- Current progress is preserved when changing focus/break times while running.
+- **Skip cycle** and **reset clock** behaviors are now more consistent.
+- Pomodoro sound configuration with bell selection, audio preview, and repeat interval.
+- End-of-cycle alert now plays immediately and repeats until the warning dialog is closed.
+- Automatic integration with active tasks to register completed Pomodoros.
+
+### 🗂️ Task Management and Kanban
+- Drag-and-drop improvements across columns and tabs, with more reliable status synchronization.
+- Context menu enhancements for editing, moving, and batch actions.
+- Reduced task duplication when integrating flows across modules.
+- More consistent visual refresh for counters and lists in daily usage.
+
+### 📌 Eisenhower Matrix
+- Bidirectional integration with Time Management using more stable task linkage.
+- Calendar evolution with yearly view support, year filter, and better period organization.
+- Improved multi-removal flow with fewer interruptions and consolidated final feedback.
+- Safer save/load behavior, including automatic backup copies.
+- More robust **JSON, Excel, and PDF** import/export with structure validation and more reliable reimport.
+
+### 🧠 Mind Maps
+- Improved integration with the Feynman Method to transfer concepts with less rework.
+- Stronger persistence robustness with automatic backup and reduced redundant writes.
+- More defensive loading to recover as much content as possible from partially inconsistent data.
+- Better linked-file handling and overall visual workflow.
+
+### 🎓 Feynman Method
+- Incoming concepts from Mind Maps are normalized and merged to avoid duplication.
+- Richer concept and linked-file previews for faster review.
+- Better linked-file opening compatibility across environments.
+- Improved stability of internal resources during open/close workflows.
+
+### 🗓️ Calendar and planning
+- Expanded calendar experience with monthly and yearly views.
+- Better schedule readability through period grouping and richer contextual information.
+- Visual highlights to improve orientation for current date and task navigation.
+
+### 🌐 Language, theme, interface, and platform
+- Dynamic language switching with immediate text/label updates across screens.
+- Better real-time visual synchronization with the application theme/palette.
+- Locale and date/time formatting improvements to reduce ambiguity when editing tasks.
+- More stable startup on Windows, including icon and visual consistency improvements.
+- Additional interface protections to avoid failures in component lifecycle scenarios.
+
+### 🛡️ Data integrity and overall reliability
+- Standardized unique task identity to reduce cross-module “mirror tasks”.
+- Automatic backups before critical write operations.
+- Stricter import/load validations to reduce silent corruption risks.
+- Better recovery and continuity experience in inconsistent-data scenarios.
+
+### 🧪 Full functional checklist (manual validation)
+1. Create tasks, move them across Kanban/Eisenhower, and verify no unexpected duplicates.
+2. Run Pomodoro cycles with pause/resume/skip/reset and confirm progress persistence.
+3. Configure Pomodoro sound, validate preview, and alert repetition at cycle end.
+4. Switch calendar between monthly/yearly views and validate year filter and period grouping.
+5. Export and reimport tasks (JSON/Excel/PDF) to validate data consistency.
+6. Send a Mind Map concept to Feynman and confirm update without unintended duplication.
+7. Change language/theme while the app is open and verify immediate UI updates.
+8. Restart the app and confirm normal data persistence.
+
+### 🧩 Consolidated feature and resource evolution (v2025.11.26.0 → v2026.2.18.0)
+- Continuous evolution of the Accessible Reader with local TTS, persistent typography controls, focus ruler, text extraction, and stronger pause/resume stability.
+- Expanded Time Management with configurable Pomodoro (focus/break/cycles), cycle-limit blocking, configurable sound alerts, and automatic task progress registration.
+- Reinforced Task/Kanban management with editing improvements, drag-and-drop refinements, batch actions, more predictable visual refresh, and more reliable integration with other resources.
+- Expanded Eisenhower Matrix with bidirectional sync, task-identity-based deduplication, monthly/yearly calendar views, year filters, and cleaner bulk-removal flows.
+- Stronger import/export and persistence with stricter structural validation, consistent JSON/Excel/PDF support, and automatic backups before critical writes.
+- Consolidated Mind Map + Feynman integration with concept handoff flow, reduced duplication, better guided review, and more stable linked-file handling.
+- Matured platform and interface with dynamic runtime translation, theme/palette synchronization, locale date/time refinements, more robust startup, and better visual consistency on Windows.
+- Improved overall reliability with additional defensive UI protections, invalid-state prevention, and safer operational continuity under inconsistent-data scenarios.
+
 ## 🚀 Installation (Windows — development)
 Minimum requirements:
 - Python 3.10+
@@ -200,10 +365,15 @@ Note: if the system requires PowerShell execution permissions, adjust the execut
 - Test the executable folder for replaceable DLLs and redistribution procedures (LGPL).
 
 ## ⚙️ Main dependencies
-- PySide6
-- pyttsx3 (or another configurable TTS backend)
-- PyMuPDF (fitz) — PDF text extraction
-See requirements.txt for the full list and versions.
+- PySide6, PySide6_Essentials, PySide6_Addons, and shiboken6 — desktop GUI (Qt).
+- pyttsx3 and edge-tts — text-to-speech (TTS).
+- pdfplumber, pypdfium2, pypdf, and PyPDF2 — PDF reading and processing.
+- openpyxl and pandas — data/spreadsheet import and export.
+- reportlab — PDF generation/export.
+- python-docx and docx2pdf — document handling and conversion.
+- spacy, sentence-transformers, transformers, and torch — language/AI capabilities.
+- numpy and scikit-learn — numerical foundation and model-processing support.
+See the complete pinned dependency list in [`requirements.txt`](./requirements.txt).
 
 ## 🛠️ Technical notes
 - Logging: utils/LogManager.py (logs at %LOCALAPPDATA%\TEA_TDAH_Dislexia).
@@ -243,6 +413,8 @@ Email (privacy/licenses): linceu_lighthouse@outlook.com
 
 ## 📄 Version and release notes
 See assets/RELEASE/RELEASE NOTES_pt_BR.txt and assets/RELEASE/RELEASE NOTES_en_US.txt for version history and important changes.
+- Advanced notes (technical deep dive):
+  - assets/RELEASE/RELEASE NOTES_en_US_Advanced.txt
 
 ---
 

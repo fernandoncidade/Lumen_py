@@ -1,11 +1,20 @@
 import json
 import os
+import shutil
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
 def salvar_tarefas(self):
     try:
         os.makedirs(os.path.dirname(self.arquivo_tarefas), exist_ok=True)
+
+        if os.path.exists(self.arquivo_tarefas):
+            try:
+                shutil.copy2(self.arquivo_tarefas, f"{self.arquivo_tarefas}.bak")
+
+            except Exception as e:
+                logger.debug(f"Falha ao gerar backup de tarefas do Pomodoro: {e}", exc_info=True)
+
         with open(self.arquivo_tarefas, "w", encoding="utf-8") as f:
             json.dump([t.to_dict() for t in self.tarefas], f, ensure_ascii=False, indent=2)
 

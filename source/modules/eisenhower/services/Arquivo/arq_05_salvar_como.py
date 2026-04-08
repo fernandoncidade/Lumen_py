@@ -1,31 +1,125 @@
-from PySide6.QtWidgets import QFileDialog, QMessageBox
-from PySide6.QtCore import Qt
+import json
 import os
+from PySide6.QtCore import Qt
+from PySide6.QtWidgets import QFileDialog, QMessageBox
 from source.utils.LogManager import LogManager
+from source.utils.task_identity import ensure_task_id
 logger = LogManager.get_logger()
+
+_QUADRANT_KEYS = (
+    "quadrant1",
+    "quadrant1_completed",
+    "quadrant2",
+    "quadrant2_completed",
+    "quadrant3",
+    "quadrant3_completed",
+    "quadrant4",
+    "quadrant4_completed",
+)
+
+_XLSX_HEADERS = ("id", "text", "date", "time", "file_path", "description", "priority")
+_PDF_SENTINEL_BEGIN = "LUMEN_EISENHOWER_EXPORT_V1_BEGIN"
+_PDF_SENTINEL_END = "LUMEN_EISENHOWER_EXPORT_V1_END"
+
+def _normalize_priority(value, default_priority):
+    if isinstance(value, bool):
+        return default_priority
+
+    try:
+        parsed = int(value)
+
+        if 1 <= parsed <= 4:
+            return parsed
+
+    except Exception:
+        pass
+
+    if isinstance(value, str):
+        txt = value.strip().lower()
+
+        if "importante e urgente" in txt:
+            return 1
+
+        if "importante" in txt and "nao urgente" in txt:
+            return 2
+
+        if "nao importante" in txt and "urgente" in txt:
+            return 3
+
+        if "nao importante" in txt and "nao urgente" in txt:
+            return 4
+
+    return default_priority
+
+def _build_json_structure(app):
+    def _list_to_entries(lst, default_priority):
+        entries = []
+
+        if lst is None:
+            return entries
+
+        for i in range(lst.count()):
+            item = lst.item(i)
+
+            if not item or not (item.flags() & Qt.ItemIsSelectable):
+                continue
+
+            data = item.data(Qt.UserRole) or {}
+            payload = dict(data) if isinstance(data, dict) else {}
+            payload["text"] = str(payload.get("text", item.text() or "")).strip()
+            payload["date"] = payload.get("date")
+            payload["time"] = payload.get("time")
+
+            if not payload["text"]:
+                continue
+
+            ensure_task_id(payload)
+
+            entry = {
+                "id": payload.get("id"),
+                "text": payload.get("text"),
+                "date": payload.get("date"),
+                "time": payload.get("time"),
+            }
+
+            if payload.get("file_path"):
+                entry["file_path"] = payload.get("file_path")
+
+            if payload.get("description"):
+                entry["description"] = payload.get("description")
+
+            entry["priority"] = _normalize_priority(payload.get("priority"), default_priority)
+            entries.append(entry)
+
+        return entries
+
+    return {
+        "quadrant1": _list_to_entries(getattr(app, "quadrant1_list", None), 1),
+        "quadrant1_completed": _list_to_entries(getattr(app, "quadrant1_completed_list", None), 1),
+        "quadrant2": _list_to_entries(getattr(app, "quadrant2_list", None), 2),
+        "quadrant2_completed": _list_to_entries(getattr(app, "quadrant2_completed_list", None), 2),
+        "quadrant3": _list_to_entries(getattr(app, "quadrant3_list", None), 3),
+        "quadrant3_completed": _list_to_entries(getattr(app, "quadrant3_completed_list", None), 3),
+        "quadrant4": _list_to_entries(getattr(app, "quadrant4_list", None), 4),
+        "quadrant4_completed": _list_to_entries(getattr(app, "quadrant4_completed_list", None), 4),
+    }
 
 def salvar_como(self, app=None):
     app = self._resolve_app(app)
-    path, filt = QFileDialog.getSaveFileName(app, self.get_text("Salvar"), os.path.expanduser("~"), "JSON (*.json);;Excel (*.xlsx);;PDF (*.pdf)")
+
+    path, _ = QFileDialog.getSaveFileName(
+        app,
+        self.get_text("Salvar"),
+        os.path.expanduser("~"),
+        "JSON (*.json);;Excel (*.xlsx);;PDF (*.pdf)",
+    )
+
     if not path:
         return
 
-    def _qenum_to_int(v):
-        try:
-            return int(v)
-
-        except Exception:
-            try:
-                return int(getattr(v, "value"))
-
-            except Exception:
-                try:
-                    return int(v.value())
-
-                except Exception:
-                    return None
-
     ext = os.path.splitext(path)[1].lower()
+    tasks = _build_json_structure(app)
+
     if ext == ".xlsx":
         try:
             from openpyxl import Workbook
@@ -37,63 +131,26 @@ def salvar_como(self, app=None):
 
         try:
             wb = Workbook()
+            default_ws = wb.active
+            wb.remove(default_ws)
 
-            def write_sheet(name, lst):
-                if name in wb.sheetnames:
-                    ws = wb[name]
+            for key in _QUADRANT_KEYS:
+                ws = wb.create_sheet(title=key)
 
-                else:
-                    ws = wb.create_sheet(title=name)
+                for col_index, col_name in enumerate(_XLSX_HEADERS, start=1):
+                    ws.cell(row=1, column=col_index, value=col_name)
 
-                headers = [
-                    "text",
-                    "date",
-                    "time",
-                    "file_path",
-                    "description",
-                    "priority",
-                ]
-                for col_index, h in enumerate(headers, start=1):
-                    ws.cell(row=1, column=col_index, value=h)
+                row_index = 2
 
-                row = 2
-                for i in range(lst.count()):
-                    item = lst.item(i)
-                    if item and (item.flags() & Qt.ItemIsSelectable):
-                        data = item.data(Qt.UserRole) or {}
-                        text_val = data.get("text", item.text())
-                        date_iso = data.get("date")
-                        time_str = data.get("time")
-                        file_path = data.get("file_path")
-                        description = data.get("description")
-                        priority = data.get("priority") if data.get("priority") is not None else None
-
-                        values = [
-                            text_val,
-                            date_iso,
-                            time_str,
-                            file_path,
-                            description,
-                            priority,
-                        ]
-
-                        for col_index, v in enumerate(values, start=1):
-                            ws.cell(row=row, column=col_index, value=v)
-
-                        row += 1
-
-            if "Sheet" in wb.sheetnames and len(wb.sheetnames) == 1:
-                ws_default = wb["Sheet"]
-                wb.remove(ws_default)
-
-            write_sheet("quadrant1", app.quadrant1_list)
-            write_sheet("quadrant1_completed", app.quadrant1_completed_list)
-            write_sheet("quadrant2", app.quadrant2_list)
-            write_sheet("quadrant2_completed", app.quadrant2_completed_list)
-            write_sheet("quadrant3", app.quadrant3_list)
-            write_sheet("quadrant3_completed", app.quadrant3_completed_list)
-            write_sheet("quadrant4", app.quadrant4_list)
-            write_sheet("quadrant4_completed", app.quadrant4_completed_list)
+                for entry in tasks.get(key, []):
+                    ws.cell(row=row_index, column=1, value=entry.get("id"))
+                    ws.cell(row=row_index, column=2, value=entry.get("text"))
+                    ws.cell(row=row_index, column=3, value=entry.get("date"))
+                    ws.cell(row=row_index, column=4, value=entry.get("time"))
+                    ws.cell(row=row_index, column=5, value=entry.get("file_path"))
+                    ws.cell(row=row_index, column=6, value=entry.get("description"))
+                    ws.cell(row=row_index, column=7, value=entry.get("priority"))
+                    row_index += 1
 
             wb.save(path)
             QMessageBox.information(app, self.get_text("Salvar"), self.get_text("Arquivo salvo com sucesso."))
@@ -113,157 +170,32 @@ def salvar_como(self, app=None):
             return
 
         try:
+            payload_json = json.dumps(tasks, ensure_ascii=False, indent=2)
+            lines = payload_json.splitlines()
+
             c = canvas.Canvas(path, pagesize=A4)
-            width, height = A4
-            from reportlab.lib.units import cm
-            left_margin = 1 * cm
-            right_margin = 1 * cm
-            top_margin = 1 * cm
-            bottom_margin = 1 * cm
-            y = height - top_margin
-            c.setFont("Helvetica-Bold", 14)
-            c.drawString(left_margin, y, "EISENHOWER ORGANIZER")
-            y -= 30
+            _, height = A4
+            left = 36
+            top = height - 36
+            bottom = 36
+            y = top
+
             c.setFont("Helvetica-Bold", 12)
-            sections = [
-                ("1º Quadrante - Importante e Urgente", app.quadrant1_list),
-                ("Concluídas 1º Quadrante", app.quadrant1_completed_list),
-                ("2º Quadrante - Importante, mas Não Urgente", app.quadrant2_list),
-                ("Concluídas 2º Quadrante", app.quadrant2_completed_list),
-                ("3º Quadrante - Não Importante, mas Urgente", app.quadrant3_list),
-                ("Concluídas 3º Quadrante", app.quadrant3_completed_list),
-                ("4º Quadrante - Não Importante e Não Urgente", app.quadrant4_list),
-                ("Concluídas 4º Quadrante", app.quadrant4_completed_list),
-            ]
-            c.setFont("Helvetica", 10)
-            from reportlab.lib.utils import simpleSplit
-            from reportlab.pdfbase.pdfmetrics import stringWidth
+            c.drawString(left, y, "Lumen Eisenhower Export")
+            y -= 20
+            c.setFont("Helvetica", 9)
+            c.drawString(left, y, "Arquivo estrutural (JSON legivel) para importacao validada.")
+            y -= 20
 
-            def _draw_wrapped(text, indent, current_y, font_name="Helvetica", font_size=10):
-                if text is None:
-                    return current_y
-
-                c.setFont(font_name, font_size)
-
-                max_width = width - left_margin - right_margin - indent
-                if max_width <= 0:
-                    max_width = width - left_margin - right_margin
-
-                raw_lines = simpleSplit(text or "", font_name, font_size, max_width)
-
-                lines = []
-                for ln in raw_lines:
-                    if stringWidth(ln, font_name, font_size) <= max_width:
-                        lines.append(ln)
-
-                    else:
-                        cur = ""
-                        for ch in ln:
-                            if stringWidth(cur + ch, font_name, font_size) <= max_width:
-                                cur += ch
-
-                            else:
-                                if cur:
-                                    lines.append(cur)
-
-                                cur = ch
-
-                        if cur:
-                            lines.append(cur)
-
-                y_local = current_y
-                for ln in lines:
-                    if y_local < (bottom_margin + font_size + 4):
-                        c.showPage()
-                        y_local = height - top_margin
-                        c.setFont(font_name, font_size)
-
-                    c.drawString(left_margin + indent, y_local, ln)
-                    y_local -= (font_size + 2)
-
-                return y_local
-
-            def _format_item_line(item, data):
-                text_val = data.get("text", item.text())
-                date_iso = data.get("date")
-                time_str = data.get("time")
-                date_display = None
-                if date_iso:
-                    try:
-                        from PySide6.QtCore import QDate
-                        qd = QDate.fromString(date_iso, Qt.ISODate)
-                        if qd.isValid() and hasattr(app, "date_input") and app.date_input is not None:
-                            date_display = qd.toString(app.date_input.displayFormat())
-
-                        else:
-                            date_display = date_iso
-
-                    except Exception:
-                        date_display = date_iso
-
-                parts = []
-                parts.append(text_val)
-                tail = []
-                if date_display:
-                    tail.append(date_display)
-
-                if time_str:
-                    tail.append(time_str)
-
-                if tail:
-                    parts.append(" — " + " ".join(tail))
-
-                return "".join(parts)
-
-            for title, lst in sections:
-                if y < (bottom_margin + 40):
+            for line in [_PDF_SENTINEL_BEGIN] + lines + [_PDF_SENTINEL_END]:
+                if y <= bottom:
                     c.showPage()
-                    y = height - top_margin
-                    c.setFont("Helvetica", 10)
+                    y = top
+                    c.setFont("Courier", 7)
 
-                c.setFont("Helvetica-Bold", 11)
-                c.drawString(left_margin, y, title)
-                y -= 16
-                c.setFont("Helvetica", 10)
-                if lst.count() == 0:
-                    c.drawString(left_margin + 10, y, "-")
-                    y -= 12
-
-                else:
-                    for i in range(lst.count()):
-                        item = lst.item(i)
-                        if item and (item.flags() & Qt.ItemIsSelectable):
-                            data = item.data(Qt.UserRole) or {}
-
-                            main_line = _format_item_line(item, data)
-                            y = _draw_wrapped(f"- {main_line}", 10, y, font_name="Helvetica", font_size=10)
-
-                            extra_order = []
-                            if data.get("priority") is not None:
-                                try:
-                                    from source.modules.eisenhower.services.svc_09_prioridade_para_texto import prioridade_para_texto
-                                    prio_txt = prioridade_para_texto(data.get("priority"), app)
-
-                                except Exception:
-                                    prio_txt = str(data.get("priority"))
-
-                                extra_order.append(("Prioridade", prio_txt))
-
-                            if data.get("description"):
-                                extra_order.append(("Descrição", data.get("description")))
-
-                            if data.get("file_path"):
-                                extra_order.append(("Arquivo", data.get("file_path")))
-
-                            for label, val in extra_order:
-                                y = _draw_wrapped(f"{label}: {val}", 20, y, font_name="Helvetica", font_size=9)
-
-                            if y < (bottom_margin + 40):
-                                c.showPage()
-                                y = height - top_margin
-                                c.setFont("Helvetica", 10)
-
-                y -= 8
+                c.setFont("Courier", 7)
+                c.drawString(left, y, line)
+                y -= 9
 
             c.save()
             QMessageBox.information(app, self.get_text("Salvar"), self.get_text("PDF salvo com sucesso."))
@@ -274,48 +206,8 @@ def salvar_como(self, app=None):
 
     elif ext == ".json":
         try:
-            import json as _json
-
-            def list_to_full_entries(lst):
-                entries = []
-                for i in range(lst.count()):
-                    item = lst.item(i)
-                    if item and (item.flags() & Qt.ItemIsSelectable):
-                        data = item.data(Qt.UserRole) or {}
-                        entry = {
-                            "display_text": item.text(),
-                            "text": data.get("text", item.text()),
-                            "date": data.get("date"),
-                            "time": data.get("time"),
-                            "check_state": _qenum_to_int(item.checkState()),
-                            "flags": _qenum_to_int(item.flags()),
-                            "priority": data.get("priority"),
-                            "description": data.get("description"),
-                            "file_path": data.get("file_path"),
-                            "tooltip": item.toolTip(),
-                            "raw_data": data,
-                        }
-                        entries.append(entry)
-
-                return entries
-
-            full = {
-                "meta": {
-                    "date_display_format": getattr(app, "date_input", None).displayFormat() if hasattr(app, "date_input") and app.date_input is not None else None,
-                    "language": getattr(getattr(app, "gerenciador_traducao", None), "obter_idioma_atual", lambda: None)(),
-                },
-                "quadrant1": list_to_full_entries(app.quadrant1_list),
-                "quadrant1_completed": list_to_full_entries(app.quadrant1_completed_list),
-                "quadrant2": list_to_full_entries(app.quadrant2_list),
-                "quadrant2_completed": list_to_full_entries(app.quadrant2_completed_list),
-                "quadrant3": list_to_full_entries(app.quadrant3_list),
-                "quadrant3_completed": list_to_full_entries(app.quadrant3_completed_list),
-                "quadrant4": list_to_full_entries(app.quadrant4_list),
-                "quadrant4_completed": list_to_full_entries(app.quadrant4_completed_list),
-            }
-
             with open(path, "w", encoding="utf-8") as f:
-                _json.dump(full, f, ensure_ascii=False, indent=2)
+                json.dump(tasks, f, ensure_ascii=False, indent=2)
 
             QMessageBox.information(app, self.get_text("Salvar"), self.get_text("Arquivo salvo com sucesso."))
 

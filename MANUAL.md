@@ -57,7 +57,7 @@ Lúmen é uma suíte de ferramentas para estudo composta por módulos principais
 6. Em Eisenhower: categorize tarefas e reorganize por prioridade.
 
 ## <a id="abertura-e-controles-globais"></a>Abertura e controles globais
-Ao abrir o Lúmen verá a janela principal com abas e uma barra de menus (Arquivo, Configurações, Idiomas, Vozes, Sobre). A barra de status exibe informações contextuais.
+Ao abrir o Lúmen verá a janela principal com abas e uma barra de menus (Arquivo, Configurações, Idiomas, Vozes, Sobre). Você pode trocar idioma e aparência com o aplicativo aberto; os textos da interface são atualizados em tempo real. A barra de status exibe informações contextuais.
 
 ---
 
@@ -149,6 +149,10 @@ Gerenciador de Tarefas (Kanban)
 Dicas práticas
 - Foque em uma tarefa por vez no <span style="font-size:1.1em;"><code>Doing</code></span> para manter disciplina.  
 - Use estimativas de pomodoro para planejar sessões de estudo ao longo do dia.
+- Som do Pomodoro: em Configurações, escolha a campainha e teste antes de salvar para garantir o alerta desejado.
+- Controles inteligentes do timer: o botão principal alterna entre iniciar, pausar e continuar conforme o estado atual.
+- Se você alterar duração de foco/descanso durante o uso, o aplicativo preserva o andamento do ciclo atual.
+- Na criação de tarefas, pressione Enter para adicionar mais rápido no fluxo diário.
 
 </details>
 
@@ -180,6 +184,7 @@ Controles e opções
 Dicas práticas
 - Comece pelo nó central com o tema principal; crie ramos para subtemas.  
 - Use cores e ícones para categorizar informações e facilitar memorização.
+- Integração com Feynman: quando fizer sentido, envie um conceito do mapa para revisão no Método Feynman e continue o estudo sem retrabalho.
 
 </details>
 
@@ -211,6 +216,9 @@ Controles e opções
 Dicas práticas
 - Escreva de forma simples e curta; evite termos técnicos sem explicação.  
 - Revise periodicamente: conceitos revisados ajudam a consolidar memorização.
+- Arquivos de apoio: você pode vincular materiais ao conceito para consultar rapidamente durante a revisão.
+- Pré-visualização rápida: passe o mouse sobre um conceito para ver um resumo antes de abrir.
+- Integração com Mapas Mentais: ao receber conteúdo vindo do mapa, revise e complemente no mesmo conceito para manter continuidade.
 
 </details>
 
@@ -241,6 +249,9 @@ Controles e opções
 Dicas práticas
 - Reserve tempo semanal para revisar e redistribuir tarefas.  
 - Use os quadrantes para decidir onde alocar pomodoros e esforços de estudo.
+- Calendário lateral: alterne entre mostrar/recolher para ganhar espaço ou focar no planejamento por data.
+- Visão anual: use para enxergar seus compromissos por mês e ajustar prioridades com antecedência.
+- Compartilhar com Gestão de Tempo: no menu da tarefa, envie para o fluxo de Pomodoro e acompanhe execução com foco.
 
 </details>
 
@@ -261,65 +272,35 @@ Dicas práticas
 
 ## <a id="novas-funcionalidades-como-usar"></a>Novas funcionalidades (como usar)
 
-### Pomodoro mais inteligente no dia a dia
-- Use o botão principal do timer normalmente: ele muda entre Iniciar, Pausar e Continuar conforme o momento do estudo.
-- Se você atingir a meta de ciclos do dia, o aplicativo avisa e bloqueia novos ciclos de foco até você aumentar a meta.
-- Você pode usar `Pular` para encerrar o período atual e ir para o próximo, ou `Resetar Relógio` para recomeçar o período do zero.
-- Ao terminar um foco, você recebe confirmação de progresso com a contagem de ciclos concluídos.
+### Menos tarefas duplicadas entre áreas
+- Ao compartilhar tarefas entre Matriz de Eisenhower e Gestão de Tempo, o vínculo ficou mais confiável.
+- Na prática, você verá menos tarefas repetidas ao usar os dois recursos juntos.
+- Para manter tudo limpo, edite a tarefa original quando quiser ajustar título, data ou descrição.
 
-### Alterar tempos sem perder o que já foi feito
-- Durante o uso do timer, você pode ajustar minutos de foco, descanso e quantidade de ciclos.
-- Ao mudar essas configurações, o tempo já cumprido no ciclo atual é preservado para você não perder andamento.
-- Se necessário, ajuste para pelo menos 1 ciclo para manter o fluxo funcionando corretamente.
+### Calendário anual para planejar melhor
+- Use o botão lateral do calendário para alternar entre visão mensal e anual.
+- Na visão anual, clique no mês para filtrar as tarefas daquele período.
+- Use o filtro por ano para revisar metas e compromissos com visão de longo prazo.
 
-### Integração automática entre Pomodoro e tarefas
-- Mantenha a tarefa que você está executando na coluna `Em Progresso`.
-- Quando um ciclo de foco termina, o contador de Pomodoros dessa tarefa é atualizado automaticamente.
-- Quando a tarefa atingir a meta de ciclos definida, ela pode ser concluída automaticamente, conforme seu fluxo.
-- Use o botão de reset de contagem quando quiser zerar apenas os contadores, sem apagar tarefas.
+### Importação e exportação mais seguras
+- Você pode importar e exportar tarefas em JSON, Excel e PDF com mais consistência.
+- Ao abrir arquivos, o aplicativo valida melhor os dados e avisa quando houver inconsistências.
+- Isso reduz risco de bagunça na agenda ao reaproveitar arquivos antigos ou compartilhados.
 
-### Mover tarefas com mais rapidez
-- Arraste tarefas entre listas para atualizar o status com poucos cliques.
-- Ao arrastar sobre as abas, a aba de destino pode abrir sozinha para facilitar a movimentação.
-- Você também pode clicar com o botão direito e escolher para qual lista ou prioridade enviar a tarefa.
-- Na criação de tarefas, pressione Enter para adicionar rapidamente.
+### Mais proteção ao salvar
+- Antes de salvar mudanças importantes, o aplicativo cria cópias automáticas de segurança.
+- Se ocorrer algum problema, você tem mais chance de recuperar seu conteúdo recente.
+- Mesmo com essa proteção, mantenha o hábito de exportar cópias periódicas dos seus dados.
 
-### Matriz de Eisenhower com uso mais prático
-- No painel da matriz, use o botão de calendário para alternar entre mostrar e recolher o calendário lateral.
-- Com o calendário aberto, selecione uma data para ver as tarefas daquele dia.
-- Com o calendário recolhido, você ganha mais espaço para organizar os quadrantes.
-- No menu da tarefa (clique com o botão direito), você pode mover rapidamente para outro quadrante.
+### Remoção em lote mais prática
+- Ao excluir várias tarefas, o fluxo ficou mais direto e com menos janelas repetidas.
+- Selecione múltiplas tarefas e use o menu de contexto para remover em lote.
+- No final, você recebe uma confirmação única de conclusão.
 
-### Compartilhar tarefas da Matriz para o Pomodoro
-- Na tarefa da matriz, abra o menu com clique direito e escolha compartilhar com a Gestão de Tempo.
-- A tarefa aparece no fluxo de Pomodoro para você estudar com foco e registrar progresso.
-- Você pode compartilhar uma tarefa por vez ou várias tarefas em sequência.
-
-### Método Feynman com material de apoio e visão rápida
-- Vincule arquivos de apoio aos seus conceitos para manter tudo no mesmo lugar.
-- Passe o mouse sobre um conceito para ver um resumo rápido antes de abrir.
-- Se o arquivo tiver sido movido ou apagado, o aplicativo mostra um aviso para você corrigir o vínculo.
-
-### Mapa Mental -> Método Feynman sem retrabalho
-- No Mapa Mental, preencha o conceito e use o botão de integração para enviar ao Método Feynman.
-- Ao abrir o Método Feynman, o conteúdo já chega organizado para você revisar.
-- Se o conceito já existir, o aplicativo atualiza o conteúdo em vez de criar duplicado.
-
-### Tema e idioma atualizados em tempo real
-- Você pode trocar idioma e tema com o aplicativo aberto.
-- Textos, títulos e botões são atualizados na hora, sem necessidade de reiniciar.
-- As telas de tempo, tarefas, Pomodoro e matriz acompanham a mudança automaticamente.
-
-### Som do Pomodoro configurável
-- Acesse `Configurações -> Som` para escolher a campainha do Pomodoro.
-- Use `▶️ Tocar` para testar o áudio antes de salvar.
-- Ajuste o intervalo de repetição; ao fim do ciclo, o alerta toca na hora e repete até você fechar o aviso.
-- As preferências ficam salvas para os próximos usos.
-
-### Proteção extra ao abrir e recuperar conteúdo
-- Ao abrir conteúdos com informações incompletas, o aplicativo tenta recuperar o máximo possível automaticamente.
-- Em casos de inconsistência, você recebe aviso em vez de perder tudo sem perceber.
-- Essa proteção reduz risco de interrupção durante estudo e organização.
+### Uso mais estável no dia a dia
+- A abertura do aplicativo ficou mais consistente, especialmente no Windows.
+- Idiomas, datas e elementos visuais acompanham melhor as mudanças feitas durante o uso.
+- Com isso, a experiência geral fica mais previsível durante estudo e organização.
 
 ## <a id="solução-de-problemas-troubleshooting"></a>Solução de problemas (Troubleshooting)
 - Sem som:
@@ -428,7 +409,7 @@ Lúmen is a study tool suite composed of core modules: Accessible Reader, Time M
 6. In Eisenhower: categorize tasks and reorganize by priority.
 
 ## <a id="startup-and-global-controls"></a>Startup and Global Controls
-When opening Lúmen, you will see the main window with tabs and a menu bar (**File**, **Settings**, **Languages**, **Voices**, **About**). The status bar displays contextual information.
+When opening Lúmen, you will see the main window with tabs and a menu bar (**File**, **Settings**, **Languages**, **Voices**, **About**). You can change language and appearance while the app is open; interface texts update in real time. The status bar displays contextual information.
 
 ---
 
@@ -520,6 +501,10 @@ Task Manager (Kanban)
 Practical tips
 - Focus on one task at a time in <span style="font-size:1.1em;"><code>Doing</code></span> to maintain discipline.  
 - Use Pomodoro estimates to plan study sessions throughout the day.
+- Pomodoro sound: in Settings, choose the bell and test it before saving to confirm your preferred alert.
+- Smart timer controls: the main button switches between Start, Pause, and Resume based on the current state.
+- If you change focus/break duration while running, the app preserves progress in the current cycle.
+- When creating tasks, press Enter to add faster in daily workflow.
 
 </details>
 
@@ -551,6 +536,7 @@ Controls and options
 Practical tips
 - Start with a central node for the main theme; create branches for subtopics.  
 - Use colors and icons to categorize information and aid memorization.
+- Feynman integration: when it helps, send a concept from Mind Maps to the Feynman Method and continue studying without rework.
 
 </details>
 
@@ -582,6 +568,9 @@ Controls and options
 Practical tips
 - Write simply and concisely; avoid technical terms without explanation.  
 - Review periodically: revised concepts help consolidate memory.
+- Supporting files: you can link materials to a concept for quick consultation during review.
+- Quick preview: hover over a concept to see a summary before opening it.
+- Mind Maps integration: when content comes from Mind Maps, review and complement it in the same concept to keep continuity.
 
 </details>
 
@@ -612,6 +601,9 @@ Controls and options
 Practical tips
 - Reserve weekly time to review and redistribute tasks.  
 - Use quadrants to decide where to allocate Pomodoros and study effort.
+- Side calendar: switch between show/collapse to gain space or focus on date-based planning.
+- Annual view: use it to see commitments by month and adjust priorities ahead of time.
+- Share with Time Management: in the task menu, send tasks to the Pomodoro flow and track execution with focus.
 
 </details>
 
@@ -632,65 +624,35 @@ Practical tips
 
 ## <a id="new-features-how-to-use"></a>New Features (How to Use)
 
-### Smarter Pomodoro in Daily Use
-- Use the timer's main button normally: it changes between Start, Pause, and Resume depending on your study moment.
-- If you reach the day's cycle goal, the app warns you and blocks new focus cycles until you increase the goal.
-- You can use `Skip` to end the current period and move to the next one, or `Reset Clock` to restart the current period from zero.
-- When you finish a focus period, you get a progress confirmation with the number of completed cycles.
+### Fewer duplicate tasks across areas
+- When sharing tasks between the Eisenhower Matrix and Time Management, links are now more reliable.
+- In practice, you should see fewer repeated tasks when using both resources together.
+- To keep everything clean, edit the original task when you want to adjust title, date, or description.
 
-### Change Times Without Losing Current Progress
-- While using the timer, you can adjust focus minutes, break minutes, and cycle count.
-- When you change these settings, elapsed time in the current cycle is preserved so you don't lose momentum.
-- If needed, set at least 1 cycle to keep the flow working properly.
+### Annual calendar for broader planning
+- Use the calendar side button to switch between monthly and annual views.
+- In annual view, click a month to filter tasks for that period.
+- Use the year filter to review goals and commitments with a long-term view.
 
-### Automatic Integration Between Pomodoro and Tasks
-- Keep the task you are currently working on in the `In Progress` column.
-- When a focus cycle ends, that task's Pomodoro counter is updated automatically.
-- When the task reaches its defined cycle goal, it can be completed automatically, depending on your workflow.
-- Use the counter reset button when you want to clear counters only, without deleting tasks.
+### Safer import and export
+- You can keep importing and exporting tasks in JSON, Excel, and PDF with better consistency.
+- When opening files, the app validates data more strictly and warns you when inconsistencies are found.
+- This reduces the risk of clutter in your schedule when reusing old or shared files.
 
-### Move Tasks Faster
-- Drag tasks between lists to update status with fewer clicks.
-- While dragging over tabs, the destination tab can open automatically to make moving easier.
-- You can also right-click and choose which list or priority to send the task to.
-- When creating tasks, press Enter to add quickly.
+### More protection when saving
+- Before saving important changes, the app creates automatic safety backups.
+- If something goes wrong, you have a better chance of recovering recent content.
+- Even with this protection, keep exporting periodic copies of your data.
 
-### Eisenhower Matrix with More Practical Use
-- In the matrix panel, use the calendar button to switch between showing and collapsing the side calendar.
-- With the calendar open, select a date to view that day's tasks.
-- With the calendar collapsed, you get more space to organize quadrants.
-- In the task menu (right-click), you can quickly move the task to another quadrant.
+### More practical bulk removal
+- When deleting multiple tasks, the flow is now more direct with fewer repeated pop-ups.
+- Select multiple tasks and use the context menu to remove them in batch.
+- At the end, you get a single completion confirmation.
 
-### Share Matrix Tasks with Pomodoro
-- On a matrix task, open the right-click menu and choose to share it with Time Management.
-- The task appears in the Pomodoro flow so you can study with focus and log progress.
-- You can share one task at a time or several tasks in sequence.
-
-### Feynman Method with Supporting Material and Quick View
-- Link supporting files to your concepts to keep everything in one place.
-- Hover over a concept to see a quick preview before opening it.
-- If the file was moved or deleted, the app shows a warning so you can fix the link.
-
-### Mind Map -> Feynman Method Without Rework
-- In Mind Maps, fill in the concept and use the integration button to send it to the Feynman Method.
-- When you open the Feynman Method, the content already arrives organized for review.
-- If the concept already exists, the app updates content instead of creating a duplicate.
-
-### Theme and Language Updated in Real Time
-- You can change language and theme while the app is open.
-- Texts, titles, and buttons update immediately, without restarting.
-- Time, tasks, Pomodoro, and matrix screens follow the change automatically.
-
-### Configurable Pomodoro Sound
-- Go to `Settings -> Sound` to choose the Pomodoro bell.
-- Use `▶️ Play` to test the audio before saving.
-- Adjust the repeat interval; at cycle end, the alert plays immediately and repeats until you close the warning.
-- Preferences are saved for future uses.
-
-### Extra Protection When Opening and Recovering Content
-- When opening content with incomplete information, the app automatically tries to recover as much as possible.
-- In inconsistent cases, you get a warning instead of losing everything without noticing.
-- This protection reduces the risk of interruption during study and organization.
+### More stable day-to-day usage
+- App startup is now more consistent, especially on Windows.
+- Languages, date displays, and visual elements better follow changes made during use.
+- Overall, the experience is now more predictable while studying and organizing.
 
 ## <a id="troubleshooting"></a>Troubleshooting
 - No sound:

@@ -2,6 +2,7 @@ import json
 from PySide6.QtWidgets import QListWidgetItem
 from PySide6.QtCore import Qt, QDate, QCoreApplication
 from PySide6.QtGui import QFont
+from source.utils.task_identity import ensure_task_id
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -14,13 +15,16 @@ def load_tasks(app):
             tasks = json.load(file)
             date_format = app.date_input.displayFormat() if hasattr(app, "date_input") else "dd/MM/yyyy"
 
-            def create_item(text, date_value, time_value, completed):
+            def create_item(text, date_value, time_value, completed, data):
                 display_text = text
                 tooltip_lines = []
+
                 if date_value:
                     qdate = QDate.fromString(date_value, Qt.ISODate)
+
                     if qdate.isValid():
                         date_human = qdate.toString(date_format)
+
                         if time_value:
                             display_text = f"{text} — {date_human} {time_value}"
 
@@ -35,8 +39,13 @@ def load_tasks(app):
                 item = QListWidgetItem(display_text)
                 item.setFlags(item.flags() | Qt.ItemIsUserCheckable | Qt.ItemIsSelectable | Qt.ItemIsEnabled)
                 item.setCheckState(Qt.Checked if completed else Qt.Unchecked)
-                data = {"text": text, "date": date_value, "time": time_value}
-                item.setData(Qt.UserRole, data)
+                payload = dict(data) if isinstance(data, dict) else {}
+                payload["text"] = text
+                payload["date"] = date_value
+                payload["time"] = time_value
+                ensure_task_id(payload)
+                item.setData(Qt.UserRole, payload)
+
                 if tooltip_lines:
                     item.setToolTip("\n".join(tooltip_lines))
 
@@ -45,22 +54,26 @@ def load_tasks(app):
             def populate_list(key, lst, completed=False):
                 if key in tasks and tasks[key]:
                     lst.clear()
+
                     for entry in tasks[key]:
                         if isinstance(entry, dict):
                             text = entry.get("text", "")
                             date_value = entry.get("date")
                             time_value = entry.get("time")
+                            entry_data = dict(entry)
 
                         else:
                             text = str(entry)
                             date_value = None
                             time_value = None
+                            entry_data = {"text": text, "date": date_value, "time": time_value}
 
                         text = text.strip()
+
                         if not text:
                             continue
 
-                        item = create_item(text, date_value, time_value, completed)
+                        item = create_item(text, date_value, time_value, completed, entry_data)
 
                         try:
                             if lst in (app.quadrant1_list, app.quadrant1_completed_list):
@@ -96,6 +109,7 @@ def load_tasks(app):
                                 data["file_path"] = entry.get("file_path")
                                 item.setData(Qt.UserRole, data)
                                 tt = item.toolTip() or ""
+
                                 if tt:
                                     tt = tt + "\n"
 
@@ -122,12 +136,14 @@ def load_tasks(app):
 
                                 try:
                                     tt = item.toolTip() or ""
+
                                     if tt:
                                         tt = tt + "\n"
 
                                     desc_full = entry.get("description") or ""
                                     preview_lines = [ln for ln in desc_full.splitlines() if ln.strip()]
                                     preview = "\n".join(preview_lines[:3])
+
                                     if preview:
                                         tt = tt + (get_text("Descrição") or "Descrição") + ":\n" + preview
 

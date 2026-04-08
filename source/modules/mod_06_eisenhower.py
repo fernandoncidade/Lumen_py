@@ -123,8 +123,8 @@ class MatrizEisenhower(QWidget):
     def _lista_por_prioridade(self, prioridade: str):
         return _lista_por_prioridade(self, prioridade)
 
-    def _adicionar_tarefa_integrada_do_tempo(self, titulo: str, prioridade: str, date: str = None, time: str = None, description: str = None, file_path: str = None):
-        _adicionar_tarefa_integrada_do_tempo(self, titulo, prioridade, date=date, time=time, description=description, file_path=file_path)
+    def _adicionar_tarefa_integrada_do_tempo(self, titulo: str, prioridade: str, date: str = None, time: str = None, description: str = None, file_path: str = None, task_id: str = None):
+        _adicionar_tarefa_integrada_do_tempo(self, titulo, prioridade, date=date, time=time, description=description, file_path=file_path, task_id=task_id)
 
     def handle_item_checked(self, item, source_list, target_list):
         handle_item_checked(self, item, source_list, target_list)
@@ -132,8 +132,8 @@ class MatrizEisenhower(QWidget):
     def move_item_between_lists(self, item, source, target, new_check_state):
         move_item_between_lists(self, item, source, target, new_check_state)
 
-    def remove_task(self, item, list_widget, confirm: bool = True):
-        remove_task_remove(self, item, list_widget, confirm)
+    def remove_task(self, item, list_widget, confirm: bool = True, show_success: bool = True):
+        return remove_task_remove(self, item, list_widget, confirm, show_success)
 
     def save_tasks(self):
         save_tasks_save(self)

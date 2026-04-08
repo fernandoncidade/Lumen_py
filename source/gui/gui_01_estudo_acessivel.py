@@ -10,6 +10,7 @@ logger = LogManager.get_logger()
 
 try:
     base_persist = obter_caminho_persistente()
+
     if base_persist:
         try:
             QCoreApplication.setOrganizationName("Lumen")
@@ -25,10 +26,30 @@ except Exception as e:
 class EstudoAcessivel(QMainWindow):
     def __init__(self):
         super().__init__()
+
         try:
-            self.tradutor = GerenciadorTraducao()
+            app = QCoreApplication.instance()
+            tradutor_app = getattr(app, "gerenciador_traducao", None) if app is not None else None
+
+            if tradutor_app is not None:
+                self.tradutor = tradutor_app
+
+            else:
+                self.tradutor = GerenciadorTraducao()
+                self.tradutor.aplicar_traducao()
+
+                if app is not None:
+                    try:
+                        app.gerenciador_traducao = self.tradutor
+
+                    except Exception:
+                        try:
+                            app.setProperty("gerenciador_traducao", self.tradutor)
+
+                        except Exception:
+                            pass
+
             self.tradutor.idioma_alterado.connect(self.atualizar_interface)
-            self.tradutor.aplicar_traducao()
             self.gerenciador_traducao = self.tradutor
 
             self.setup_ui()
@@ -41,6 +62,7 @@ class EstudoAcessivel(QMainWindow):
 
             try:
                 icon_path = get_icon_path("autismo.ico")
+
                 if icon_path and os.path.exists(icon_path):
                     window_icon = QIcon(icon_path)
                     self.setWindowIcon(window_icon)

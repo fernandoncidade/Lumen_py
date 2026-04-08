@@ -10,10 +10,10 @@ from source.modules.eisenhower.services.EisenhowerContextMenuService import (
     _target_list_for_quadrant,
     _find_source_item_for_calendar,
     editar_tarefa_item,
-    editar_tarefa_por_dados,
+    editar_tarefa_por_dados as _editar_tarefa_por_dados_impl,
     remover_tarefa_item,
-    remover_tarefa_por_dados,
-    remover_todas_por_data,
+    remover_tarefa_por_dados as _remover_tarefa_por_dados_impl,
+    remover_todas_por_data as _remover_todas_por_data_impl,
     _base_text_from_item,
     _build_display_and_tooltip,
     _edit_date_time_dialog,
@@ -59,16 +59,16 @@ class EisenhowerContextMenuService:
         return editar_tarefa_item(self, item, list_widget)
 
     def editar_tarefa_por_dados(self, task_data: dict):
-        return editar_tarefa_por_dados(self, task_data)
+        return _editar_tarefa_por_dados_impl(self, task_data)
 
     def remover_tarefa_item(self, item, list_widget=None, confirm: bool = True) -> bool:
         return remover_tarefa_item(self, item, list_widget, confirm)
 
     def remover_tarefa_por_dados(self, task_data: dict, confirm: bool = True) -> bool:
-        return remover_tarefa_por_dados(self, task_data, confirm)
+        return _remover_tarefa_por_dados_impl(self, task_data, confirm)
 
     def remover_todas_por_data(self, date_iso: str) -> int:
-        return remover_todas_por_data(self, date_iso)
+        return _remover_todas_por_data_impl(self, date_iso)
 
     def _base_text_from_item(self, item) -> str:
         return _base_text_from_item(self, item)

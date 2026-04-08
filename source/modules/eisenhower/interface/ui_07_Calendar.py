@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QHBoxLayout, QWidget, QSizePolicy
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QWidget, QSizePolicy
 from PySide6.QtCore import Qt, QCoreApplication
 from .ui_11_RotatedTabButton import RotatedTabButton
 from .ui_12_CalendarPanel import CalendarPanel
@@ -24,15 +24,34 @@ class Calendar(QWidget):
 
             self.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
 
+            self.side_tabs_layout = QVBoxLayout()
+            self.side_tabs_layout.setContentsMargins(0, 0, 0, 0)
+            self.side_tabs_layout.setSpacing(0)
+
             self.toggle_button = RotatedTabButton(get_text("Mostrar Calendário"), self)
             self.toggle_button.setMinimumWidth(25)
-            layout.addWidget(self.toggle_button, 0, Qt.AlignLeft | Qt.AlignTop)
+            self.toggle_button.setClickHandler(lambda: self.toggle_panel())
+            self.side_tabs_layout.addWidget(self.toggle_button, 0, Qt.AlignLeft | Qt.AlignTop)
+
+            self.calendar_mode_button = RotatedTabButton(get_text("Calendário Anual/Calendário Mensal"), self)
+            self.calendar_mode_button.setMinimumWidth(25)
+            self.calendar_mode_button.setClickHandler(self.toggle_month_filter_calendar_mode)
+            self.calendar_mode_button.setVisible(False)
+            self.calendar_mode_button.setEnabled(False)
+            self.side_tabs_layout.addWidget(self.calendar_mode_button, 0, Qt.AlignLeft | Qt.AlignTop)
+
+            self.side_tabs_layout.addStretch(1)
+            layout.addLayout(self.side_tabs_layout, 0)
 
             self.calendar_panel = CalendarPanel(app, self)
             self.calendar_panel.setMinimumWidth(max(self.calendar_panel.minimumSizeHint().width(), 300))
             self.calendar_panel.setMaximumWidth(16777215)
             self.calendar_panel.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
             layout.addWidget(self.calendar_panel, 1)
+            self.calendar_panel.month_view_toggle_visibility_changed.connect(self._set_month_toggle_visibility)
+            self.calendar_panel.month_view_mode_changed.connect(self._on_month_view_mode_changed)
+            self._set_month_toggle_visibility(self.calendar_panel.is_month_filter_active())
+            self._on_month_view_mode_changed(self.calendar_panel.calendar_view_mode())
 
             self.calendar_panel.setVisible(False)
             self.setMinimumWidth(self.effective_min_width())
@@ -47,6 +66,10 @@ class Calendar(QWidget):
         try:
             left, _top, right, _bottom = self._layout_margins
             btn_w = max(self.toggle_button.minimumWidth(), self.toggle_button.sizeHint().width())
+
+            if self.calendar_mode_button.isVisible():
+                btn_w = max(btn_w, self.calendar_mode_button.minimumWidth(), self.calendar_mode_button.sizeHint().width())
+
             panel_w = 0
 
             if self._expanded and self.calendar_panel is not None:
@@ -66,6 +89,7 @@ class Calendar(QWidget):
                 return
 
             sizes = splitter.sizes()
+
             if len(sizes) < 2:
                 return
 
@@ -147,9 +171,40 @@ class Calendar(QWidget):
         except Exception as e:
             logger.error(f"Erro ao alternar painel de calendário: {e}", exc_info=True)
 
+    def toggle_month_filter_calendar_mode(self):
+        try:
+            self.calendar_panel.toggle_month_filter_view_mode()
+
+        except Exception as e:
+            logger.error(f"Erro ao alternar calendário anual/mensal: {e}", exc_info=True)
+
+    def _set_month_toggle_visibility(self, visible):
+        try:
+            self.calendar_mode_button.setVisible(bool(visible))
+            self.calendar_mode_button.setEnabled(bool(visible))
+            self.setMinimumWidth(self.effective_min_width())
+            self.updateGeometry()
+
+        except Exception as e:
+            logger.error(f"Erro ao atualizar visibilidade da aba anual/mensal: {e}", exc_info=True)
+
+    def _on_month_view_mode_changed(self, mode):
+        try:
+            if mode == "year":
+                self.calendar_mode_button.setText(get_text("Calendário Mensal"))
+                self.calendar_mode_button.setToolTip(get_text("Visualização atual: calendário anual. Clique para calendário mensal."))
+
+            else:
+                self.calendar_mode_button.setText(get_text("Calendário Anual"))
+                self.calendar_mode_button.setToolTip(get_text("Visualização atual: calendário mensal. Clique para calendário anual."))
+
+        except Exception as e:
+            logger.error(f"Erro ao atualizar dica da aba anual/mensal: {e}", exc_info=True)
+
     def on_language_changed(self):
         try:
             self.toggle_button.setText(get_text("Recolher Calendário") if self._expanded else get_text("Mostrar Calendário"))
+            self._on_month_view_mode_changed(self.calendar_panel.calendar_view_mode())
 
             try:
                 self.calendar_panel._on_language_changed()

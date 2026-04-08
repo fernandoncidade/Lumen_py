@@ -47,6 +47,7 @@ class GerenciadorTarefas(QWidget):
             self.setup_ui()
 
             app = QCoreApplication.instance()
+
             if app:
                 app.installEventFilter(self)
 
@@ -93,11 +94,11 @@ class GerenciadorTarefas(QWidget):
     def adicionar_tarefa(self):
         return adicionar_tarefa(self)
 
-    def _adicionar_tarefa_interna(self, titulo: str, prioridade: str, status: str = "Todo", emitir_sinal: bool = True, description: str = None, file_path: str = None, date: str = None, time: str = None):
-        return _adicionar_tarefa_interna(self, titulo, prioridade, status, emitir_sinal, description, file_path, date, time)
+    def _adicionar_tarefa_interna(self, titulo: str, prioridade: str, status: str = "Todo", emitir_sinal: bool = True, description: str = None, file_path: str = None, date: str = None, time: str = None, task_id: str = None):
+        return _adicionar_tarefa_interna(self, titulo, prioridade, status, emitir_sinal, description, file_path, date, time, task_id)
 
-    def adicionar_tarefa_externa(self, titulo: str, prioridade: str = "Importante e Urgente", description: str = None, file_path: str = None, date: str = None, time: str = None) -> None:
-        return adicionar_tarefa_externa(self, titulo, prioridade, description, file_path, date, time)
+    def adicionar_tarefa_externa(self, titulo: str, prioridade: str = "Importante e Urgente", description: str = None, file_path: str = None, date: str = None, time: str = None, task_id: str = None) -> None:
+        return adicionar_tarefa_externa(self, titulo, prioridade, description, file_path, date, time, task_id)
 
     def mover_tarefa(self, item, status_atual):
         return mover_tarefa(self, item, status_atual)

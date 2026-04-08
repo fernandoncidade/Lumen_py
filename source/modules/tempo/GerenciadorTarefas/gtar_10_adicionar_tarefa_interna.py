@@ -2,9 +2,9 @@ from source.utils.LogManager import LogManager
 from source.modules.tempo.tmp_01_Tarefa import Tarefa
 logger = LogManager.get_logger()
 
-def _adicionar_tarefa_interna(self, titulo: str, prioridade: str, status: str = "Todo", emitir_sinal: bool = True, description: str = None, file_path: str = None, date: str = None, time: str = None):
+def _adicionar_tarefa_interna(self, titulo: str, prioridade: str, status: str = "Todo", emitir_sinal: bool = True, description: str = None, file_path: str = None, date: str = None, time: str = None, task_id: str = None):
     try:
-        tarefa = Tarefa(titulo, descricao=(description or ""), prioridade=prioridade, status=status, file_path=(file_path or None), date=(date or None), time=(time or None))
+        tarefa = Tarefa(titulo, descricao=(description or ""), prioridade=prioridade, status=status, id=(task_id or None), file_path=(file_path or None), date=(date or None), time=(time or None))
         self.tarefas.append(tarefa)
         self.salvar_tarefas()
         self.atualizar_listas()
