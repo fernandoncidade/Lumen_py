@@ -1,3 +1,39 @@
+RELEASE NOTES — Lúmen  
+Version: 2026.2.23.0  
+Date: February 23, 2026  
+Author: Fernando Nillsson Cidade
+
+General summary  
+This update improved the experience in the Eisenhower Matrix calendar. Day selection became more predictable, and visual controls now behave better when the panel is resized.
+
+Main improvements
+
+1. More intuitive date selection  
+- When selecting a new day, the previous selection is automatically replaced.  
+- To select multiple days at the same time, just keep the `CTRL` key pressed.  
+- Clicking again on a day that is already selected now correctly updates the task list, including when multiple monthly calendars are visible.
+
+2. More useful day filter  
+- The “Day” filter now works with multiple selected dates (when used with `CTRL`).  
+- When only one day is selected, the behavior remains simple and straightforward.
+
+3. More stable layout in the calendar panel  
+- The “Show priority” checkbox now follows panel resizing.  
+- When dragging the vertical bar, controls adjust together with the calendar area, keeping the layout aligned.
+
+Applied fixes
+
+1. Fixed task update when clicking again on a day that was already selected.  
+2. Fixed the selection rule to stay consistent across monthly calendars.  
+3. Fixed visual positioning of controls during panel resizing.
+
+Impact for the user  
+- Less confusion when selecting days in the calendar.  
+- More flexibility to filter tasks by multiple days of interest.  
+- A more organized and consistent interface when adjusting panel size.
+
+_________________________________________________
+
 RELEASE NOTES — Lúmen
 Version: 2026.2.21.0
 Date: February 21, 2026

@@ -1,4 +1,64 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.23.0
+Data: 23 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em duas frentes no painel de calendário da Matriz Eisenhower: correção do fluxo de seleção de dias entre calendários mensais paralelos e ajuste de layout dos controles para manter consistência visual durante o redimensionamento via splitter.
+
+Melhorias principais
+
+1. Seleção de datas entre múltiplos calendários mensais com regra explícita
+- Arquivo: `source/modules/eisenhower/interface/ui_12_CalendarPanel.py`
+- A seleção passou a ser orientada por clique explícito (`clicked`) no calendário principal e nos calendários mensais extras, reduzindo dependência exclusiva de `selectionChanged`.
+- Foi introduzido um estado persistente de datas selecionadas (`_selected_reference_dates_iso`) e controle de contexto de clique (`_month_click_selection_context`) para evitar sobrescritas indevidas por eventos internos de sincronização.
+- Regra funcional implementada:
+- Sem `CTRL`: nova seleção substitui integralmente a seleção anterior.
+- Com `CTRL`: seleção passa a ser cumulativa, com suporte a toggle (adiciona/remove dia da seleção).
+
+2. Filtro “Dia” com suporte real a múltiplas datas selecionadas
+- Arquivo: `source/modules/eisenhower/interface/CalendarDialog/caldial_04_update_task_list.py`
+- O método de atualização da lista agora monta `selected_day_keys` com base em `get_filter_reference_dates()`, quando disponível.
+- No modo `day`, a filtragem passa a validar pertencimento no conjunto de datas selecionadas, em vez de comparar apenas com uma data única.
+- Fallback preservado: quando não há seleção múltipla válida, o sistema continua usando `selected_date` único.
+
+3. Ajuste de layout do bloco de controle do calendário
+- Arquivo: `source/modules/eisenhower/interface/ui_12_CalendarPanel.py`
+- O container de controles (`controls_container`) deixou de operar com largura fixa e passou para política expansiva.
+- O checkbox “Mostrar prioridade” agora acompanha o comportamento da barra vertical do splitter porque o bloco de controles cresce/encolhe junto ao painel.
+- Em `set_calendar_content_width`, o container passou a usar largura mínima dinâmica e largura máxima aberta, removendo o travamento visual anterior.
+
+Correções de bugs
+
+1. Re-seleção do mesmo dia em calendário mensal paralelo não atualizava tarefas
+- Causa: clique em uma data já selecionada podia não disparar `selectionChanged`.
+- Correção: tratamento por `clicked` com registro explícito da seleção e atualização imediata da lista.
+
+2. Seleção anterior não era descartada de forma determinística
+- Causa: ausência de política unificada de substituição/acúmulo entre calendários sincronizados.
+- Correção: política de seleção centralizada:
+- clique simples redefine a seleção;
+- clique com `CTRL` acumula/remove itens da seleção.
+
+3. Inconsistência visual do checkbox “Mostrar prioridade” ao arrastar splitter
+- Causa: container com sizing fixo.
+- Correção: container migrado para sizing expansivo, mantendo o checkbox alinhado ao redimensionamento horizontal do painel.
+
+Detalhes técnicos relevantes
+- Novos pontos de integração em `CalendarPanel`:
+- `_register_reference_date_selection(...)`
+- `_on_month_calendar_clicked(...)`
+- `get_filter_reference_dates(...)`
+- Ajustes defensivos foram mantidos em blocos `try/except` para preservar estabilidade em cenários de sinais concorrentes e atualizações de página dos calendários extras.
+- O comportamento de filtros `week`, `month` e `year` foi preservado; o ajuste funcional foi aplicado especificamente ao fluxo de seleção e filtragem em `day`.
+
+Arquivos principais impactados nesta entrega
+- `source/modules/eisenhower/interface/ui_12_CalendarPanel.py`
+- `source/modules/eisenhower/interface/CalendarDialog/caldial_04_update_task_list.py`
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.21.0
 Data: 21 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

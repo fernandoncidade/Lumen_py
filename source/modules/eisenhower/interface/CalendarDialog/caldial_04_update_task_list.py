@@ -27,6 +27,20 @@ def update_task_list(self):
         except Exception:
             selected_date = self.calendar.selectedDate()
 
+        selected_day_keys = set()
+
+        try:
+            if hasattr(self, "get_filter_reference_dates"):
+                for qd in list(self.get_filter_reference_dates() or []):
+                    if isinstance(qd, QDate) and qd.isValid():
+                        selected_day_keys.add(qd.toString(Qt.ISODate))
+
+        except Exception:
+            selected_day_keys = set()
+
+        if not selected_day_keys and isinstance(selected_date, QDate) and selected_date.isValid():
+            selected_day_keys.add(selected_date.toString(Qt.ISODate))
+
         filter_mode = self.filter_combo.currentData()
         filtered = []
         tasks_all = _collect_tasks(self)
@@ -154,8 +168,9 @@ def update_task_list(self):
             if not qdate.isValid():
                 continue
 
-            if filter_mode == "day" and qdate != selected_date:
-                continue
+            if filter_mode == "day":
+                if selected_day_keys and qdate.toString(Qt.ISODate) not in selected_day_keys:
+                    continue
 
             if filter_mode == "week":
                 selected_start_of_week = selected_date.addDays(-(selected_date.dayOfWeek() % 7))

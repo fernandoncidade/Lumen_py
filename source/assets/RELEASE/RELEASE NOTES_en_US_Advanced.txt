@@ -1,4 +1,64 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.23.0
+Date: February 23, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Delivery focused on two fronts in the Eisenhower Matrix calendar panel: correcting the day selection flow across parallel monthly calendars and adjusting the controls layout to maintain visual consistency during splitter-based resizing.
+
+Main improvements
+
+1. Date selection across multiple monthly calendars with an explicit rule
+- File: `source/modules/eisenhower/interface/ui_12_CalendarPanel.py`
+- Selection is now driven by explicit click (`clicked`) on the main calendar and extra monthly calendars, reducing exclusive dependence on `selectionChanged`.
+- A persistent state of selected dates (`_selected_reference_dates_iso`) and click-context control (`_month_click_selection_context`) were introduced to prevent improper overwrites from internal synchronization events.
+- Implemented functional rule:
+- Without `CTRL`: the new selection fully replaces the previous one.
+- With `CTRL`: selection becomes cumulative, with toggle support (adds/removes day from selection).
+
+2. “Day” filter with real support for multiple selected dates
+- File: `source/modules/eisenhower/interface/CalendarDialog/caldial_04_update_task_list.py`
+- The list update method now builds `selected_day_keys` based on `get_filter_reference_dates()`, when available.
+- In `day` mode, filtering now validates membership in the selected-dates set, instead of comparing against only a single date.
+- Preserved fallback: when there is no valid multi-selection, the system continues using a single `selected_date`.
+
+3. Layout adjustment of the calendar controls block
+- File: `source/modules/eisenhower/interface/ui_12_CalendarPanel.py`
+- The controls container (`controls_container`) stopped using fixed width and now uses an expanding policy.
+- The “Show priority” checkbox now follows the splitter’s vertical bar behavior because the controls block grows/shrinks together with the panel.
+- In `set_calendar_content_width`, the container now uses dynamic minimum width and open maximum width, removing the previous visual locking.
+
+Bug fixes
+
+1. Re-selecting the same day in a parallel monthly calendar did not update tasks
+- Cause: clicking a date that was already selected might not trigger `selectionChanged`.
+- Fix: handled through `clicked` with explicit selection registration and immediate list update.
+
+2. Previous selection was not discarded deterministically
+- Cause: lack of a unified replace/accumulate policy across synchronized calendars.
+- Fix: centralized selection policy:
+- single click resets the selection;
+- click with `CTRL` accumulates/removes items from selection.
+
+3. Visual inconsistency of the “Show priority” checkbox when dragging the splitter
+- Cause: container with fixed sizing.
+- Fix: container migrated to expanding sizing, keeping the checkbox aligned with the panel’s horizontal resizing.
+
+Relevant technical details
+- New integration points in `CalendarPanel`:
+- `_register_reference_date_selection(...)`
+- `_on_month_calendar_clicked(...)`
+- `get_filter_reference_dates(...)`
+- Defensive adjustments were kept in `try/except` blocks to preserve stability in scenarios with concurrent signals and page updates from extra calendars.
+- The behavior of `week`, `month`, and `year` filters was preserved; the functional adjustment was specifically applied to the selection and filtering flow in `day`.
+
+Main files impacted in this delivery
+- `source/modules/eisenhower/interface/ui_12_CalendarPanel.py`
+- `source/modules/eisenhower/interface/CalendarDialog/caldial_04_update_task_list.py`
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.21.0
 Date: February 21, 2026
 Author: Fernando Nillsson Cidade

@@ -1,4 +1,40 @@
 NOTAS DE LANÇAMENTO — Lúmen  
+Versão: 2026.2.23.0  
+Data: 23 de fevereiro de 2026  
+Autor: Fernando Nillsson Cidade
+
+Resumo geral  
+Esta atualização melhorou a experiência no calendário da Matriz Eisenhower. A seleção de dias ficou mais previsível, e os controles visuais passaram a se comportar melhor quando o painel é redimensionado.
+
+Principais melhorias
+
+1. Seleção de datas mais intuitiva  
+- Ao selecionar um novo dia, a seleção anterior é substituída automaticamente.  
+- Para selecionar vários dias ao mesmo tempo, basta manter a tecla `CTRL` pressionada.  
+- Clicar novamente em um dia já selecionado agora atualiza corretamente a lista de tarefas, inclusive quando há vários calendários mensais visíveis.
+
+2. Filtro por dia mais útil  
+- O filtro “Dia” agora funciona com múltiplas datas selecionadas (quando usado com `CTRL`).  
+- Quando apenas um dia está selecionado, o comportamento continua simples e direto.
+
+3. Layout mais estável no painel do calendário  
+- O checkbox “Mostrar prioridade” agora acompanha o redimensionamento do painel.  
+- Ao arrastar a barra vertical, os controles se ajustam junto com a área do calendário, mantendo o layout alinhado.
+
+Correções aplicadas
+
+1. Correção da atualização de tarefas ao clicar novamente em um dia já selecionado.  
+2. Correção da regra de seleção para ficar consistente entre os calendários mensais.  
+3. Correção visual do posicionamento dos controles durante o redimensionamento do painel.
+
+Impacto para o usuário  
+- Menos confusão ao selecionar dias no calendário.  
+- Mais flexibilidade para filtrar tarefas por vários dias de interesse.  
+- Interface mais organizada e consistente ao ajustar o tamanho do painel.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen  
 Versão: 2026.2.21.0  
 Data: 21 de fevereiro de 2026  
 Autor: Fernando Nillsson Cidade

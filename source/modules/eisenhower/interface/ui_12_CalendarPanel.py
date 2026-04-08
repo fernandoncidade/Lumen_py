@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QComboBox, QListWidget, QLabel, QAbstractItemView, QWidget, QSizePolicy, QCheckBox, QStackedWidget
+from PySide6.QtWidgets import QHBoxLayout, QVBoxLayout, QComboBox, QListWidget, QLabel, QAbstractItemView, QWidget, QSizePolicy, QCheckBox, QStackedWidget, QApplication
 from PySide6.QtCore import Qt, QDate, QCoreApplication, QSize, Signal, QTimer
 from PySide6.QtGui import QTextCharFormat, QBrush, QColor, QFont
 from .ui_08_LineEditFrame import LineEditFrame
@@ -47,6 +47,8 @@ class CalendarPanel(QWidget):
             self.calendar.owner = self
             initial_date = app.date_input.date() if hasattr(app, "date_input") else QDate.currentDate()
             self._selected_reference_date = initial_date
+            self._selected_reference_dates_iso = [initial_date.toString(Qt.ISODate)] if isinstance(initial_date, QDate) and initial_date.isValid() else []
+            self._month_click_selection_context = False
             self.calendar.setSelectedDate(initial_date)
             hint = self.calendar.minimumSizeHint()
             fallback = QSize(300, 260)
@@ -104,8 +106,8 @@ class CalendarPanel(QWidget):
             self.show_priority_checkbox.setChecked(True)
             self.show_priority_checkbox.stateChanged.connect(self.update_task_list)
             controls_layout.addWidget(self.show_priority_checkbox)
-            self.controls_container.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
-            main_layout.addWidget(self.controls_container, 0, Qt.AlignLeft)
+            self.controls_container.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+            main_layout.addWidget(self.controls_container)
 
             self.tasks_label = QLabel(get_text("Lista Global de Tarefas:"), self)
             main_layout.addWidget(self.tasks_label)
@@ -134,6 +136,7 @@ class CalendarPanel(QWidget):
             main_layout.addWidget(self.tasks_list, 1)
 
             self.calendar.selectionChanged.connect(self._on_primary_calendar_selection_changed)
+            self.calendar.clicked.connect(lambda qd, cal=self.calendar: self._on_month_calendar_clicked(cal, qd))
             self.calendar.currentPageChanged.connect(self._on_primary_calendar_page_changed)
             self.filter_combo.currentIndexChanged.connect(self._on_filter_mode_changed)
 
@@ -170,7 +173,8 @@ class CalendarPanel(QWidget):
                     extra_year_calendar.setFixedWidth(self._calendar_content_width)
 
             if hasattr(self, "controls_container"):
-                self.controls_container.setFixedWidth(self._calendar_content_width)
+                self.controls_container.setMinimumWidth(self._calendar_content_width)
+                self.controls_container.setMaximumWidth(16777215)
 
             if hasattr(self, "calendar_stack"):
                 self.calendar_stack.setMinimumWidth(self._calendar_content_width)
@@ -391,6 +395,7 @@ class CalendarPanel(QWidget):
                 pass
 
             extra_calendar.selectionChanged.connect(lambda cal=extra_calendar: self._on_extra_calendar_selection_changed(cal))
+            extra_calendar.clicked.connect(lambda qd, cal=extra_calendar: self._on_month_calendar_clicked(cal, qd))
             extra_calendar.currentPageChanged.connect(lambda year, month, cal=extra_calendar: self._on_extra_calendar_page_changed(cal, year, month))
             self.months_layout.addWidget(extra_calendar, 0, Qt.AlignLeft | Qt.AlignTop)
             self._extra_month_calendars.append(extra_calendar)
@@ -640,7 +645,11 @@ class CalendarPanel(QWidget):
             selected = self.calendar.selectedDate()
 
             if isinstance(selected, QDate) and selected.isValid():
-                self._selected_reference_date = selected
+                if self._month_click_selection_context:
+                    self._selected_reference_date = selected
+
+                else:
+                    self._register_reference_date_selection(selected, append=False)
 
             self._sync_month_calendar_pages_from_primary()
             self.update_task_list()
@@ -662,6 +671,9 @@ class CalendarPanel(QWidget):
                 self.calendar.setSelectedDate(target_date)
                 return
 
+            if target_date.isValid() and not self._month_click_selection_context:
+                self._register_reference_date_selection(target_date, append=False)
+
             self._sync_month_calendar_pages_from_primary()
             self.update_task_list()
 
@@ -681,7 +693,11 @@ class CalendarPanel(QWidget):
             if not isinstance(selected, QDate) or not selected.isValid():
                 return
 
-            self._selected_reference_date = selected
+            if self._month_click_selection_context:
+                self._selected_reference_date = selected
+
+            else:
+                self._register_reference_date_selection(selected, append=False)
 
             try:
                 self.year_calendar.setSelectedDate(selected)
@@ -705,7 +721,11 @@ class CalendarPanel(QWidget):
             selected = calendar_widget.selectedDate()
 
             if isinstance(selected, QDate) and selected.isValid():
-                self._selected_reference_date = selected
+                if not self._month_click_selection_context:
+                    self._register_reference_date_selection(selected, append=False)
+
+                else:
+                    self._selected_reference_date = selected
 
                 try:
                     self.year_calendar.setSelectedDate(selected)
@@ -717,6 +737,74 @@ class CalendarPanel(QWidget):
 
         except Exception as e:
             logger.error(f"Erro ao processar navegação em calendário mensal extra: {e}", exc_info=True)
+
+    def _register_reference_date_selection(self, qdate, append: bool = False):
+        try:
+            if not isinstance(qdate, QDate) or not qdate.isValid():
+                return
+
+            date_iso = qdate.toString(Qt.ISODate)
+            selected_dates = list(getattr(self, "_selected_reference_dates_iso", []) or [])
+
+            if append:
+                if date_iso in selected_dates:
+                    if len(selected_dates) > 1:
+                        selected_dates = [ds for ds in selected_dates if ds != date_iso]
+
+                    else:
+                        selected_dates = [date_iso]
+
+                else:
+                    selected_dates.append(date_iso)
+
+            else:
+                selected_dates = [date_iso]
+
+            self._selected_reference_dates_iso = selected_dates
+            target_iso = selected_dates[-1] if selected_dates else date_iso
+            target_date = QDate.fromString(str(target_iso), Qt.ISODate)
+
+            if target_date.isValid():
+                self._selected_reference_date = target_date
+
+            else:
+                self._selected_reference_date = qdate
+
+        except Exception as e:
+            logger.error(f"Erro ao registrar seleção de datas do calendário: {e}", exc_info=True)
+
+    def _on_month_calendar_clicked(self, calendar_widget, qdate):
+        try:
+            if calendar_widget is None:
+                return
+
+            if not isinstance(qdate, QDate) or not qdate.isValid():
+                return
+
+            try:
+                ctrl_pressed = bool(QApplication.keyboardModifiers() & Qt.ControlModifier)
+
+            except Exception:
+                ctrl_pressed = False
+
+            self._month_click_selection_context = True
+            QTimer.singleShot(0, lambda: setattr(self, "_month_click_selection_context", False))
+            self._register_reference_date_selection(qdate, append=ctrl_pressed)
+
+            if calendar_widget is self.calendar:
+                self._sync_month_calendar_pages_from_primary()
+
+            else:
+                try:
+                    self.year_calendar.setSelectedDate(qdate)
+
+                except Exception:
+                    pass
+
+            self.update_task_list()
+
+        except Exception as e:
+            logger.error(f"Erro ao processar clique em calendário mensal: {e}", exc_info=True)
 
     def _sync_month_calendar_pages_from_primary(self):
         try:
@@ -949,7 +1037,7 @@ class CalendarPanel(QWidget):
                 current_day = self.calendar.selectedDate().day()
                 max_day = qdate.daysInMonth()
                 selected = QDate(qdate.year(), qdate.month(), min(current_day, max_day))
-                self._selected_reference_date = selected
+                self._register_reference_date_selection(selected, append=False)
 
                 if sender_widget is self.year_calendar:
                     self.calendar.setSelectedDate(selected)
@@ -965,7 +1053,7 @@ class CalendarPanel(QWidget):
     def _on_year_month_double_clicked(self, qdate):
         try:
             if isinstance(qdate, QDate) and qdate.isValid():
-                self._selected_reference_date = qdate
+                self._register_reference_date_selection(qdate, append=False)
 
             if self.filter_combo.currentData() == "month":
                 self.set_calendar_view_mode("month")
@@ -1099,6 +1187,38 @@ class CalendarPanel(QWidget):
 
         return self.calendar.selectedDate()
 
+    def get_filter_reference_dates(self):
+        try:
+            selected_dates = []
+            seen = set()
+
+            for date_iso in list(getattr(self, "_selected_reference_dates_iso", []) or []):
+                qd = QDate.fromString(str(date_iso), Qt.ISODate)
+
+                if qd.isValid():
+                    normalized = qd.toString(Qt.ISODate)
+
+                    if normalized not in seen:
+                        seen.add(normalized)
+                        selected_dates.append(qd)
+
+            if selected_dates:
+                return selected_dates
+
+        except Exception:
+            pass
+
+        try:
+            fallback = self.get_filter_reference_date()
+
+            if isinstance(fallback, QDate) and fallback.isValid():
+                return [fallback]
+
+        except Exception:
+            pass
+
+        return []
+
     def set_calendar_view_mode(self, mode):
         try:
             target_mode = "year" if mode == "year" else "month"
@@ -1125,6 +1245,7 @@ class CalendarPanel(QWidget):
                 except Exception:
                     pass
 
+                self._register_reference_date_selection(target_date, append=False)
                 self.calendar.setSelectedDate(target_date)
                 self.calendar_stack.setCurrentWidget(self.months_container)
                 self._update_month_calendars_for_width()
