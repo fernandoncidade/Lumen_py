@@ -2291,6 +2291,11 @@ Defina 0 para repetir imediatamente após o áudio terminar.</translation>
     </message>
 
     <message>
+      <source>{n} tarefas enviadas com sucesso para 🗂️ Matriz Eisenhower! 🗂️</source>
+      <translation>{n} tarefas enviadas com sucesso para 🗂️ Matriz Eisenhower! 🗂️</translation>
+    </message>
+
+    <message>
       <source>Pomodoros concluídos:</source>
       <translation>Pomodoros concluídos:</translation>
     </message>
@@ -2337,6 +2342,50 @@ Deseja continuar?</translation>
     <message>
       <source>{n} tarefas enviadas com sucesso para ⏱️ Gestão de Tempo - Pomodoro!⏱️</source>
       <translation>{n} tarefas enviadas com sucesso para ⏱️ Gestão de Tempo - Pomodoro!⏱️</translation>
+    </message>
+
+    <message>
+      <source>Deseja remover {n} tarefa(s) selecionada(s)?</source>
+      <translation>Deseja remover {n} tarefa(s) selecionada(s)?</translation>
+    </message>
+
+    <message>
+      <source>{n} tarefa(s) removida(s) com sucesso!</source>
+      <translation>{n} tarefa(s) removida(s) com sucesso!</translation>
+    </message>
+
+    <message>
+      <source>Falha</source>
+      <translation>Falha</translation>
+    </message>
+
+    <message>
+      <source>Não foi possível remover as tarefas selecionadas.</source>
+      <translation>Não foi possível remover as tarefas selecionadas.</translation>
+    </message>
+
+    <message>
+      <source>Ocorreu um erro ao remover as tarefas.</source>
+      <translation>Ocorreu um erro ao remover as tarefas.</translation>
+    </message>
+
+    <message>
+      <source>Deseja remover a tarefa selecionada?
+
+{titulo}</source>
+      <translation>Deseja remover a tarefa selecionada?
+
+{titulo}</translation>
+    </message>
+
+    <message>
+      <source>Não foi possível remover a tarefa selecionada.</source>
+      <translation>Não foi possível remover a tarefa selecionada.</translation>
+    </message>
+
+    <message>
+      <source>Ocorreu um erro ao remover a tarefa.</source>
+      <translation>Ocorreu um erro ao remover a tarefa.</translation>
     </message>
 
   </context>

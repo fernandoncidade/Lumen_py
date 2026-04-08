@@ -331,7 +331,15 @@ class CalendarDialog(QDialog):
             main_layout.addWidget(self.tasks_label)
 
             self.tasks_list = QListWidget(self)
-            self.tasks_list.setSelectionMode(QAbstractItemView.SingleSelection)
+            self.tasks_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+            try:
+                self.tasks_list.setSelectionBehavior(QAbstractItemView.SelectItems)
+                self.tasks_list.setSelectionRectVisible(True)
+
+            except Exception:
+                pass
+
             self.tasks_list.setMouseTracking(True)
             self.tasks_list.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
             self.tasks_list.setContextMenuPolicy(Qt.CustomContextMenu)
@@ -948,7 +956,15 @@ class CalendarPanel(QWidget):
             main_layout.addWidget(self.tasks_label)
 
             self.tasks_list = QListWidget(self)
-            self.tasks_list.setSelectionMode(QAbstractItemView.SingleSelection)
+            self.tasks_list.setSelectionMode(QAbstractItemView.ExtendedSelection)
+
+            try:
+                self.tasks_list.setSelectionBehavior(QAbstractItemView.SelectItems)
+                self.tasks_list.setSelectionRectVisible(True)
+
+            except Exception:
+                pass
+
             self.tasks_list.setMouseTracking(True)
             self.tasks_list.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Expanding)
             self.tasks_list.setContextMenuPolicy(Qt.CustomContextMenu)

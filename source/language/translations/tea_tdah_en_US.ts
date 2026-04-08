@@ -2291,6 +2291,11 @@ Set 0 to repeat immediately after the audio finishes.</translation>
     </message>
 
     <message>
+      <source>{n} tarefas enviadas com sucesso para 🗂️ Matriz Eisenhower! 🗂️</source>
+      <translation>{n} tasks successfully sent to 🗂️ Eisenhower Matrix! 🗂️</translation>
+    </message>
+
+    <message>
       <source>Pomodoros concluídos:</source>
       <translation>Pomodoros completed:</translation>
     </message>
@@ -2337,6 +2342,50 @@ Do you want to continue?</translation>
     <message>
       <source>{n} tarefas enviadas com sucesso para ⏱️ Gestão de Tempo - Pomodoro!⏱️</source>
       <translation>{n} tasks successfully sent to ⏱️ Time Management - Pomodoro!⏱️</translation>
+    </message>
+
+    <message>
+      <source>Deseja remover {n} tarefa(s) selecionada(s)?</source>
+      <translation>Do you want to remove {n} selected task(s)?</translation>
+    </message>
+
+    <message>
+      <source>{n} tarefa(s) removida(s) com sucesso!</source>
+      <translation>{n} task(s) successfully removed!</translation>
+    </message>
+
+    <message>
+      <source>Falha</source>
+      <translation>Failure</translation>
+    </message>
+
+    <message>
+      <source>Não foi possível remover as tarefas selecionadas.</source>
+      <translation>Could not remove the selected tasks.</translation>
+    </message>
+
+    <message>
+      <source>Ocorreu um erro ao remover as tarefas.</source>
+      <translation>An error occurred while removing the tasks.</translation>
+    </message>
+
+    <message>
+      <source>Deseja remover a tarefa selecionada?
+
+{titulo}</source>
+      <translation>Do you want to remove the selected task?
+
+{titulo}</translation>
+    </message>
+
+    <message>
+      <source>Não foi possível remover a tarefa selecionada.</source>
+      <translation>Could not remove the selected task.</translation>
+    </message>
+
+    <message>
+      <source>Ocorreu um erro ao remover a tarefa.</source>
+      <translation>An error occurred while removing the task.</translation>
     </message>
 
   </context>

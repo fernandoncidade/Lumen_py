@@ -1,4 +1,64 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.6.0
+Date: February 6, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Improvements focused on making the Time Management subsystem and its integration with the Eisenhower Matrix more reliable and easier to use. Includes multiple task selection (Ctrl+click and drag), batch actions (move, delete, share), editable task priority, consistent list ordering by priority→date→time, and fixes that prevent unintended deletions.
+
+Main highlights
+- Intuitive multiple selection
+  - Select multiple tasks using Ctrl+click or by clicking and dragging over a list.
+  - Selection enables applying actions to all chosen tasks at once.
+
+- Batch actions
+  - Move multiple tasks at once.
+  - Delete multiple tasks with confirmation before removal.
+  - Share several tasks together with the Eisenhower Matrix in a single operation.
+
+- Priority editing
+  - When editing a task, you can now change its priority between:
+    - 🔴 Important and Urgent
+    - 🟠 Important but Not Urgent
+    - 🟡 Not Important but Urgent
+    - 🟢 Not Important and Not Urgent
+  - Priority changes are applied immediately and reflected in the UI.
+
+- Clear confirmation and feedback
+  - A confirmation is always shown before deleting (single or multiple).
+  - After the operation, a message informs how many tasks were removed or if an error occurred.
+
+- Protection against incorrect deletions
+  - When tasks share the same name but have different priorities, deletions now distinguish them correctly to avoid removing the wrong items.
+
+- Consistent list ordering
+  - Within each column (To Do / In Progress / Done), tasks are displayed in the order:
+    1) priority (🔴→🟢),
+    2) date,
+    3) time,
+    4) title.
+  - Tasks without a date/time appear at the end by default.
+
+Bug fixes
+- Sharing: now sends all selected tasks, not just the clicked one.
+- Duplicate deletion: deleting an identical task no longer removes other tasks with different priorities.
+- Ordering: lists now consistently follow the priority→date→time hierarchy.
+- Stability: various adjustments were made to avoid visible interface errors.
+
+What this means for you
+- Managing multiple tasks is faster and safer.
+- Editing priorities helps you better organize your day.
+- Less risk of losing tasks due to accidental deletions.
+- Lists display more clearly by importance and deadlines.
+
+Quick tips
+- Use Ctrl+click or drag to select multiple tasks before moving/deleting/sharing.
+- Review the confirmation dialog before removing multiple tasks.
+- Check priorities when editing to ensure the intended ordering is applied.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.5.0
 Date: February 5, 2026
 Author: Fernando Nillsson Cidade

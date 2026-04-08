@@ -1,4 +1,64 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.6.0
+Data: 6 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Melhoria voltada para tornar a Gestão de Tempo e a Matriz de Eisenhower mais confiáveis e fáceis de usar. Inclui seleção múltipla de tarefas (Ctrl+clique e arrasto), ações em lote (mover, remover, compartilhar), edição de prioridade nas tarefas, ordenação consistente das listas por prioridade→data→horário e correções que evitam exclusões indevidas.
+
+Principais novidades
+- Seleção múltipla intuitiva
+  - Selecione várias tarefas com Ctrl+clique ou clicando e arrastando sobre a lista.
+  - A seleção possibilita aplicar ações a todas as tarefas escolhidas de uma só vez.
+
+- Ações em lote
+  - Mover várias tarefas ao mesmo tempo.
+  - Remover várias tarefas com confirmação antes da exclusão.
+  - Compartilhar várias tarefas juntas com a Matriz de Eisenhower em um único envio.
+
+- Edição de prioridade
+  - Ao editar uma tarefa, agora é possível alterar a prioridade entre:
+    - 🔴 Importante e Urgente
+    - 🟠 Importante, mas Não Urgente
+    - 🟡 Não Importante, mas Urgente
+    - 🟢 Não Importante e Não Urgente
+  - Mudanças de prioridade são aplicadas imediatamente e refletem no visual.
+
+- Confirmação e feedback claros
+  - Sempre há uma confirmação antes de excluir (uma ou várias).
+  - Após a operação, você recebe uma mensagem informando quantas tarefas foram removidas ou se houve falha.
+
+- Proteção contra exclusões erradas
+  - Quando existem tarefas com o mesmo nome mas prioridades diferentes, a remoção agora diferencia corretamente para não apagar itens indevidos.
+
+- Ordenação consistente das listas
+  - Dentro de cada coluna (A Fazer / Em Progresso / Concluído), as tarefas são exibidas por:
+    1) prioridade (🔴→🟢),
+    2) data,
+    3) horário,
+    4) título.
+  - Tarefas sem data/hora aparecem ao final por padrão.
+
+Correções de bugs
+- Compartilhamento: agora envia todas as tarefas selecionadas, não apenas a clicada.
+- Remoção duplicada: excluir uma tarefa idêntica não apaga outras com prioridade diferente.
+- Ordenação: listas agora seguem a hierarquia prioridade→data→horário de forma consistente.
+- Estabilidade: diversos ajustes foram feitos para evitar erros visíveis na interface.
+
+O que muda para você
+- Gerenciar várias tarefas ficou mais rápido e seguro.
+- Edição de prioridade facilita priorizar seu dia.
+- Menos risco de perder tarefas por exclusão acidental.
+- Visualização das listas mais organizada por importância e prazos.
+
+Recomendações rápidas
+- Use Ctrl+clique ou arraste para selecionar várias tarefas antes de aplicar mover/remover/compartilhar.
+- Revise a confirmação antes de remover várias tarefas.
+- Confira prioridades ao editar para impactar corretamente a ordenação.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.5.0
 Data: 5 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

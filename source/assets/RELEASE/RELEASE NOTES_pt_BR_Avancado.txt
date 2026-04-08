@@ -1,4 +1,114 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.6.0
+Data: 6 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em confiabilidade e usabilidade do subsistema "Gestão de Tempo" e integração com a "Matriz de Eisenhower". Inclui: seleção múltipla robusta (Ctrl+clique e seleção por arrasto), integração completa da seleção com operações de mover/remoção/compartilhamento, refinamentos no diálogo de edição (prioridade editável), ordenação consistente das listas por prioridade→data→horário e correções que evitam remoções em lote indevidas de tarefas idênticas com prioridades diferentes.
+
+Melhorias principais
+1. Seleção múltipla e interação com menu de contexto
+   - Implementada seleção múltipla por Ctrl+Clique e seleção retangular por clicar/arrastar nas listas dos três quadrantes.
+   - Seleção compatível com ExtendedSelection e SelectItems, com visibilidade de seleção por retângulo onde suportado.
+   - A seleção múltipla alimenta corretamente os itens do menu de contexto para ações em lote:
+     - "🔀 Mover Tarefa(s) Marcadas" passa a operar sobre todas as tarefas selecionadas.
+     - "🗑️ Remover Tarefa(s) Marcadas" solicita confirmação e remove apenas as tarefas selecionadas.
+
+2. Compartilhamento em lote para Eisenhower
+   - Ação "🗂️ Compartilhar com Eisenhower" agora envia todas as tarefas selecionadas (Ctrl/arrasto) de uma vez, evitando envio apenas da tarefa clicada quando múltiplas estiverem selecionadas.
+   - Payloads padronizados enviados via EventBus incluem integration_id, origin, titulo, prioridade normalizada, date, time, description, file_path.
+
+3. Diálogo "Editar Tarefa" com edição de Prioridade
+   - EditTaskDialog passou a expor o campo Prioridade com as quatro opções:
+     - 🔴 Importante e Urgente
+     - 🟠 Importante, mas Não Urgente
+     - 🟡 Não Importante, mas Urgente
+     - 🟢 Não Importante e Não Urgente
+   - Alterações de prioridade atualizam a tarefa persistida, tooltip e exibição (emoji) após salvar.
+
+4. Confirmação e feedback na remoção (única e múltipla)
+   - Antes de excluir (individual ou múltipla) é exibida janela de confirmação (QMessageBox) com contagem adequada.
+   - Após operação, exibe diálogo informando sucesso (n removidas) ou falha, com tratamento de exceções e logs.
+
+5. Evitar exclusão indevida de tarefas idênticas com prioridades diferentes
+   - Remoção individual e em lote agora distinguem tarefas que possuem mesmo texto mas prioridades diferentes:
+     - Para itens sem id persistente, a comparação inclui prioridade normalizada para evitar remover duplicatas com prioridades distintas.
+   - Correções aplicadas no fluxo tanto da Gestão de Tempo quanto da Matriz de Eisenhower (ui e services).
+
+6. Ordenação hierárquica nas listas de Gestão de Tempo
+   - Dentro de cada coluna (📋 A Fazer / ⚙️ Em Progresso / ✅ Concluído) as tarefas passam a ser ordenadas por:
+     1) prioridade (🔴→🟢) usando normalização consistente,
+     2) data (ISO / heurísticas de parsing),
+     3) horário (HH:mm / HH:mm:ss),
+     4) título (alfabético, case-insensitive).
+   - Dates/Times ausentes são tratados como "maior" para posicionar tarefas sem prazo ao fim por padrão (configurável na lógica).
+
+7. Robustez e hardening
+   - Proteções try/except ampliadas em pontos sensíveis (context menu, edição, drag&drop, abertura de arquivo).
+   - Correções de indentação/parênteses e mensagens de log em funções críticas (evitam avisos do analisador estático).
+   - Manutenção de metadados (file_path, priority, description, pomodoros) ao editar tarefa.
+
+Correções de bugs
+1. Seleção/Comparta — compartilhamento com Eisenhower considerava apenas o item clicado; corrigido para usar seleção múltipla consolidada.
+2. Remoção dupla — excluir tarefa sem id removia todas as tarefas com mesmo título; agora prioridade é usada como critério adicional para diferenciação.
+3. Ordenação inconsistente — listas não eram sempre ordenadas por prioridade/data/hora; agora sort está implementado com parsing defensivo.
+4. Erros de análise estática e runtime — blocos try sem except, parênteses não fechados e recuos incorretos foram reparados.
+5. Calendar / CalendarPanel — integração com _find_source_item_for_calendar reforçada para mapear item do calendário ao QListWidgetItem real (edição/remover por dados).
+
+Detalhes de implementação (pontos técnicos)
+- Seleção múltipla:
+  - Coleta de itens selecionados implementada por iteração nas três listas do kanban; combina selectedItems() + itens com checkState == Qt.Checked; chave única por id ou título para evitar duplicatas.
+  - KanbanListWidget configurado com DragDropMode e ExtendedSelection; selectionRect visível onde disponível.
+
+- Menu de contexto:
+  - Mostrar menu (mostrar_menu_contexto) detecta seleção atual e escolhe entre ações no singular ou em lote (labels dinâmicos).
+  - Movimentação em lote (mover_tarefas_marcadas) compõe conjuntos de ids e títulos e atualiza status das tarefas persistidas; depois chama salvar/atualizar listas.
+  - Remoção em lote (remover_tarefas_marcadas) calcula ids, títulos e pares (titulo, prioridade) para remoção precisa; solicita confirmação e exibe resultado.
+
+- Normalização de prioridade:
+  - Função Tarefa.normalizar_prioridade utilizada para mapear rótulos/ícones → chaves internas; comparações e exibição (emoji) funcionam a partir desse valor normalizado.
+
+- Ordenação (gtar_13_atualizar_listas.py):
+  - prioridade_rank mapeia prioridade normalizada para ordem.
+  - Parsers defensivos _parse_date e _parse_time aceitam ISO e formatos comuns; valores ausentes retornam dt_date.max / dt_time.max para empurrá-los para o final.
+  - Chave de ordenação: (prio_k, date_k, time_k, titulo_k).
+
+- Integração com Eisenhower:
+  - _compartilhar_eisenhower coleta todos os itens resolvidos (selecionados), resolve o objeto tarefa (por id ou texto) e envia payloads via EventBus; previne envios duplicados por chave (id ou título).
+  - Remoção de tarefas na Matriz de Eisenhower também passou a comparar prioridade ao resolver correspondências sem id.
+
+- Feedback e UX:
+  - Mensagens de confirmação e resultado traduzidas via QCoreApplication.translate.
+  - Tooltips e texto de exibição atualizados para refletir prioridade, data e horário; campos bold/azul quando há arquivo vinculado.
+
+Arquivos principais alterados / adicionados nesta entrega
+- source/modules/tempo/GerenciadorTarefas/gtar_13_atualizar_listas.py (implementação de ordenação prioridade→data→horário)
+- source/modules/tempo/GerenciadorTarefas/gtar_14_mostrar_menu_contexto.py (seleção múltipla, menu dinâmico, compartilhamento em lote)
+- source/modules/tempo/GerenciadorTarefas/gtar_15_ha_tarefas_marcadas.py (detecção de tarefas marcadas)
+- source/modules/tempo/GerenciadorTarefas/gtar_16_remover_tarefa_por_item.py (remoção diferenciando prioridade)
+- source/modules/tempo/GerenciadorTarefas/gtar_17_remover_tarefas_marcadas.py (remoção em lote com confirmação e feedback)
+- source/modules/tempo/GerenciadorTarefas/gtar_19_mover_tarefas_marcadas.py (mover em lote — correções de robustez)
+- source/modules/tempo/GerenciadorTarefas/gtar_05_criar_coluna.py (Kanban list setup: suporte ExtendedSelection e double-click open)
+- source/modules/eisenhower/ui/ui_04_remove_task.py (remoção na Matriz: comparação por prioridade)
+- source/modules/eisenhower/services/svc_06_show_context_menu.py (edição, edição de prioridade, compartilhar em lote, map → src_item)
+- source/modules/eisenhower/ui/ui_07_Calendar.py (calendar context menu / mapping tasks_by_date_data / tooltip map refinado)
+- source/modules/eisenhower/services/svc_01_initUI.py (DragDropTaskList / FileDropLineEdit melhorias — integração com dialogs)
+- Outros: ajustes de logging e proteção em vários módulos (ver commits detalhados).
+
+Testes e verificação recomendados
+- Seleção: Ctrl+Clique e arrasto para selecionar múltiplas tarefas; verificar ações em lote (mover, remover, compartilhar).
+- Remoção: excluir tarefa quando existirem duplicatas com prioridades diferentes — somente a escolhida é removida.
+- Compartilhamento: selecionar múltiplas tarefas e enviar para Eisenhower — validar quantidade e integridade dos payloads.
+- Edição: alterar prioridade via diálogo, salvar e confirmar ordem/emoji/tooltip atualizados.
+- Ordenação: confirmar dentro de cada coluna a ordem por prioridade→data→horário→título.
+- Calendar: abrir contexto por dia, editar/remover tarefa listada no submenu e validar sincronização com listas de quadrantes.
+
+Observações finais
+- A atualização prioriza correções que evitam perda de dados por remoções indevidas e melhora fluxo de trabalho com seleção múltipla. Recomenda-se rodar os casos de integração em plataforma Windows (pelo fallback de abertura de arquivos), validar em macOS/Linux se houver suporte e revisar logs (LogManager) em caso de comportamento inesperado.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.5.0
 Data: 5 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

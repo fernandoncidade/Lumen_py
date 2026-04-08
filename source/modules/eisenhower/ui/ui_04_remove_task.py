@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QMessageBox
 from PySide6.QtCore import QCoreApplication, Qt
+from source.modules.tempo.tmp_01_Tarefa import Tarefa
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -53,6 +54,30 @@ def _garantir_placeholders_em_todas_as_listas(app):
     except Exception as e:
         logger.debug(f"Falha ao garantir placeholders globais: {e}", exc_info=True)
 
+def _priority_key(data: dict | None):
+    try:
+        if not isinstance(data, dict):
+            return None
+
+        val = data.get("priority")
+        if val is None or val == "":
+            val = data.get("prioridade")
+
+        if val is None or val == "":
+            return None
+
+        if isinstance(val, (int,)):
+            return int(val)
+
+        try:
+            return int(str(val))
+
+        except Exception:
+            return Tarefa.normalizar_prioridade(val)
+
+    except Exception:
+        return None
+
 def remove_task(app, item, list_widget, confirm: bool = True) -> bool:
     try:
         if not item or not (item.flags() & Qt.ItemIsSelectable):
@@ -98,6 +123,11 @@ def remove_task(app, item, list_widget, confirm: bool = True) -> bool:
                     d = it.data(Qt.UserRole) or {}
                     try:
                         if str(d.get("text") or "").strip() == str(data.get("text") or "").strip() and (d.get("date") or "") == (data.get("date") or "") and (d.get("time") or "") == (data.get("time") or ""):
+                            pk_item = _priority_key(data)
+                            pk_other = _priority_key(d)
+                            if pk_item is not None and pk_other is not None and pk_item != pk_other:
+                                continue
+
                             if qlst is list_widget and it is item:
                                 removed_from_same_list = True
                                 qlst.takeItem(i)

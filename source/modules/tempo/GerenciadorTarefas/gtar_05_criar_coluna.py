@@ -1,4 +1,4 @@
-from PySide6.QtWidgets import QVBoxLayout, QListWidget, QGroupBox
+from PySide6.QtWidgets import QVBoxLayout, QListWidget, QGroupBox, QAbstractItemView
 from PySide6.QtCore import Qt
 from source.modules.tempo.tmp_04_KanbanListWidget import _KanbanListWidget
 from source.utils.LogManager import LogManager
@@ -15,6 +15,15 @@ def criar_coluna(self, status):
         lista.setDropIndicatorShown(True)
         lista.setDefaultDropAction(Qt.MoveAction)
         lista.setDragDropMode(QListWidget.DragDrop)
+        lista.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        lista.setSelectionBehavior(QAbstractItemView.SelectItems)
+
+        try:
+            lista.setSelectionRectVisible(True)
+
+        except Exception:
+            pass
+
         lista.tarefas_soltadas.connect(self._on_drop_sincronizar)
 
         def _open_linked_file(item):

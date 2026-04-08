@@ -13,9 +13,46 @@ def mostrar_menu_contexto(self, pos, lista):
 
         menu = QMenu(lista)
 
-        ac_mover_unico = QAction(QCoreApplication.translate("App", "🔀 Mover Tarefa"), self)
-        ac_mover_unico.triggered.connect(lambda: self.mover_tarefa_por_item(item))
-        menu.addAction(ac_mover_unico)
+        def _strip_emoji(s: str) -> str:
+            return (s or '').replace('🔴 ', '').replace('🟠 ', '').replace('🟡 ', '').replace('🟢 ', '').strip()
+
+        def _collect_selected_items():
+            selecionados = []
+            vistos = set()
+            for lst in (self.col_todo.lista, self.col_doing.lista, self.col_done.lista):
+                try:
+                    for it in lst.selectedItems() or []:
+                        tid = it.data(Qt.UserRole)
+                        titulo = _strip_emoji(it.text().split('\n')[0])
+                        chave = tid or titulo
+                        if chave in vistos:
+                            continue
+
+                        vistos.add(chave)
+                        selecionados.append(it)
+
+                except Exception:
+                    pass
+
+                for i in range(lst.count()):
+                    it = lst.item(i)
+                    if it and it.checkState() == Qt.Checked:
+                        tid = it.data(Qt.UserRole)
+                        titulo = _strip_emoji(it.text().split('\n')[0])
+                        chave = tid or titulo
+                        if chave in vistos:
+                            continue
+
+                        vistos.add(chave)
+                        selecionados.append(it)
+
+            return selecionados
+
+        selecionados = _collect_selected_items()
+        if not selecionados:
+            selecionados = [item]
+
+        selecionados_count = len(selecionados)
 
         def _editar_tarefa():
             try:
@@ -42,11 +79,8 @@ def mostrar_menu_contexto(self, pos, lista):
                 if not alvo:
                     return
 
-                def _strip_emoji(s: str) -> str:
-                    return (s or '').replace('🔴 ', '').replace('🟠 ', '').replace('🟡 ', '').replace('🟢 ', '').strip()
-
                 class EditTaskDialog(QDialog):
-                    def __init__(self, parent=None, initial_text="", initial_file="", initial_description="", initial_date=None, initial_time=None, initial_pomodoros=0):
+                    def __init__(self, parent=None, initial_text="", initial_file="", initial_description="", initial_date=None, initial_time=None, initial_pomodoros=0, initial_priority=None):
                         super().__init__(parent or self)
                         self.setModal(True)
                         self.setWindowTitle(QCoreApplication.translate("App", "Editar Tarefa") or "Editar Tarefa")
@@ -56,6 +90,31 @@ def mostrar_menu_contexto(self, pos, lista):
                         self.title = QLineEdit(self)
                         self.title.setText(initial_text or "")
                         layout.addWidget(self.title)
+
+                        layout.addWidget(QLabel(QCoreApplication.translate("App", "Prioridade:")))
+                        self.combo_prioridade = QComboBox(self)
+                        self.combo_prioridade.addItems([
+                            QCoreApplication.translate("App", "🔴 Importante e Urgente"),
+                            QCoreApplication.translate("App", "🟠 Importante, mas Não Urgente"),
+                            QCoreApplication.translate("App", "🟡 Não Importante, mas Urgente"),
+                            QCoreApplication.translate("App", "🟢 Não Importante e Não Urgente"),
+                        ])
+
+                        try:
+                            from source.modules.tempo.tmp_01_Tarefa import Tarefa
+                            prioridade_norm = Tarefa.normalizar_prioridade(initial_priority or "")
+
+                        except Exception:
+                            prioridade_norm = (initial_priority or "")
+
+                        idx_map = {
+                            "Importante e Urgente": 0,
+                            "Importante, mas Não Urgente": 1,
+                            "Não Importante, mas Urgente": 2,
+                            "Não Importante e Não Urgente": 3,
+                        }
+                        self.combo_prioridade.setCurrentIndex(idx_map.get(prioridade_norm, 0))
+                        layout.addWidget(self.combo_prioridade)
 
                         layout.addWidget(QLabel(QCoreApplication.translate("App", "Arquivo vinculado (arraste ou escolha):")))
                         hl = QHBoxLayout()
@@ -233,23 +292,31 @@ def mostrar_menu_contexto(self, pos, lista):
                         except Exception:
                             pomodoros_val = None
 
-                        return self.title.text().strip(), fp, self.desc.toPlainText().strip(), new_date_iso, new_time_str, pomodoros_val
+                        return self.title.text().strip(), fp, self.desc.toPlainText().strip(), new_date_iso, new_time_str, pomodoros_val, self.combo_prioridade.currentText()
 
                 initial_text = getattr(alvo, 'titulo', '') or ''
                 initial_file = getattr(alvo, 'file_path', '') or ''
                 initial_desc = getattr(alvo, 'descricao', '') or ''
                 initial_date = getattr(alvo, 'date', None)
                 initial_time = getattr(alvo, 'time', None)
+                initial_priority = getattr(alvo, 'prioridade', None)
 
-                dlg = EditTaskDialog(parent=self, initial_text=initial_text, initial_file=initial_file, initial_description=initial_desc, initial_date=initial_date, initial_time=initial_time, initial_pomodoros=getattr(alvo, 'pomodoros_completados', 0))
+                dlg = EditTaskDialog(parent=self, initial_text=initial_text, initial_file=initial_file, initial_description=initial_desc, initial_date=initial_date, initial_time=initial_time, initial_pomodoros=getattr(alvo, 'pomodoros_completados', 0), initial_priority=initial_priority)
                 if dlg.exec() != QDialog.Accepted:
                     return
 
-                new_text, new_file_path, new_desc, new_date_iso, new_time_str, new_pomodoros = dlg.get_values()
+                new_text, new_file_path, new_desc, new_date_iso, new_time_str, new_pomodoros, new_prioridade = dlg.get_values()
                 if not new_text:
                     return
 
                 try:
+                    try:
+                        from source.modules.tempo.tmp_01_Tarefa import Tarefa
+                        alvo.prioridade = Tarefa.normalizar_prioridade(new_prioridade)
+
+                    except Exception:
+                        alvo.prioridade = new_prioridade
+
                     alvo.titulo = new_text
                     alvo.descricao = new_desc
 
@@ -310,16 +377,15 @@ def mostrar_menu_contexto(self, pos, lista):
                     from source.modules.tempo.tmp_01_Tarefa import Tarefa
                     from PySide6.QtWidgets import QMessageBox
 
-                    tarefa_id = item.data(Qt.UserRole)
-                    alvo = None
-                    for t in getattr(self, 'tarefas', []):
-                        if getattr(t, 'id', None) == tarefa_id:
-                            alvo = t
-                            break
+                    def _resolve_tarefa(it):
+                        tarefa_id = it.data(Qt.UserRole)
+                        if tarefa_id:
+                            for t in getattr(self, 'tarefas', []):
+                                if getattr(t, 'id', None) == tarefa_id:
+                                    return t
 
-                    if not alvo:
                         titulo_item = (
-                            item.text().split('\n')[0]
+                            it.text().split('\n')[0]
                             .replace('🔴 ', '')
                             .replace('🟠 ', '')
                             .replace('🟡 ', '')
@@ -327,42 +393,66 @@ def mostrar_menu_contexto(self, pos, lista):
                         )
                         for t in getattr(self, 'tarefas', []):
                             if getattr(t, 'titulo', None) == titulo_item:
-                                alvo = t
-                                break
+                                return t
 
-                    if not alvo:
-                        return
+                        return None
 
-                    titulo = getattr(alvo, 'titulo', '') or ''
-                    prioridade_raw = getattr(alvo, 'prioridade', None) or 'Importante e Urgente'
-                    prioridade_norm = Tarefa.normalizar_prioridade(prioridade_raw)
-                    date_iso = getattr(alvo, 'date', None)
-                    time_str = getattr(alvo, 'time', None)
-                    description = getattr(alvo, 'descricao', None)
-                    file_path = getattr(alvo, 'file_path', None)
+                    itens = list(selecionados or [])
+                    if not itens:
+                        itens = [item]
 
-                    payload = {
-                        'integration_id': str(uuid4()),
-                        'origin': 'tempo',
-                        'titulo': titulo,
-                        'prioridade': prioridade_norm,
-                        'date': date_iso,
-                        'time': time_str,
-                        'description': description,
-                        'file_path': file_path,
-                    }
+                    enviados = 0
+                    vistos = set()
 
-                    try:
-                        get_event_bus().send_tarefa(payload)
+                    for it in itens:
+                        alvo = _resolve_tarefa(it)
+                        if not alvo:
+                            continue
+
+                        alvo_id = getattr(alvo, 'id', None)
+                        chave = alvo_id or getattr(alvo, 'titulo', None)
+                        if chave in vistos:
+                            continue
+
+                        vistos.add(chave)
+
+                        titulo = getattr(alvo, 'titulo', '') or ''
+                        prioridade_raw = getattr(alvo, 'prioridade', None) or 'Importante e Urgente'
+                        prioridade_norm = Tarefa.normalizar_prioridade(prioridade_raw)
+                        date_iso = getattr(alvo, 'date', None)
+                        time_str = getattr(alvo, 'time', None)
+                        description = getattr(alvo, 'descricao', None)
+                        file_path = getattr(alvo, 'file_path', None)
+
+                        payload = {
+                            'integration_id': str(uuid4()),
+                            'origin': 'tempo',
+                            'titulo': titulo,
+                            'prioridade': prioridade_norm,
+                            'date': date_iso,
+                            'time': time_str,
+                            'description': description,
+                            'file_path': file_path,
+                        }
 
                         try:
-                            QMessageBox.information(self, QCoreApplication.translate('App', 'Sucesso') or 'Sucesso', QCoreApplication.translate('App', 'Tarefa enviada com sucesso para 🗂️ Matriz Eisenhower! 🗂️'))
+                            get_event_bus().send_tarefa(payload)
+                            enviados += 1
+
+                        except Exception as e:
+                            logger.debug(f"Falha ao enviar tarefa ao Eisenhower: {e}", exc_info=True)
+
+                    if enviados > 0:
+                        try:
+                            msg = QCoreApplication.translate('App', 'Tarefa enviada com sucesso para 🗂️ Matriz Eisenhower! 🗂️')
+
+                            if enviados > 1:
+                                msg = QCoreApplication.translate('App', '{n} tarefas enviadas com sucesso para 🗂️ Matriz Eisenhower! 🗂️').format(n=enviados)
+
+                            QMessageBox.information(self, QCoreApplication.translate('App', 'Sucesso') or 'Sucesso', msg)
 
                         except Exception:
                             pass
-
-                    except Exception as e:
-                        logger.debug(f"Falha ao enviar tarefa ao Eisenhower: {e}", exc_info=True)
 
                 except Exception as e:
                     logger.error(f"Erro ao compartilhar tarefa com Eisenhower: {str(e)}", exc_info=True)
@@ -373,19 +463,23 @@ def mostrar_menu_contexto(self, pos, lista):
         except Exception:
             pass
 
-        if self._ha_tarefas_marcadas():
+        if selecionados_count > 1:
             ac_mover_marcadas = QAction(QCoreApplication.translate("App", "🔀 Mover Tarefa(s) Marcadas"), self)
             ac_mover_marcadas.triggered.connect(self.mover_tarefas_marcadas)
             menu.addAction(ac_mover_marcadas)
 
-        ac_remover = QAction(QCoreApplication.translate("App", "🗑️ Remover Tarefa"), self)
-        ac_remover.triggered.connect(lambda: self.remover_tarefa_por_item(item))
-        menu.addAction(ac_remover)
-
-        if self._ha_tarefas_marcadas():
             ac_remover_marcadas = QAction(QCoreApplication.translate("App", "🗑️ Remover Tarefa(s) Marcadas"), self)
             ac_remover_marcadas.triggered.connect(self.remover_tarefas_marcadas)
             menu.addAction(ac_remover_marcadas)
+
+        else:
+            ac_mover_unico = QAction(QCoreApplication.translate("App", "🔀 Mover Tarefa"), self)
+            ac_mover_unico.triggered.connect(lambda: self.mover_tarefa_por_item(item))
+            menu.addAction(ac_mover_unico)
+
+            ac_remover = QAction(QCoreApplication.translate("App", "🗑️ Remover Tarefa"), self)
+            ac_remover.triggered.connect(lambda: self.remover_tarefa_por_item(item))
+            menu.addAction(ac_remover)
 
         menu.exec(lista.mapToGlobal(pos))
 

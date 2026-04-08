@@ -1210,47 +1210,25 @@ def mostrar_menu_contexto(app, point, list_widget):
                 except Exception:
                     pass
 
-                rows = []
-                for it in items:
+                resolved = _resolved_selection()
+                if not resolved:
+                    return
+
+                seen = set()
+                for src_list, src_item in resolved:
                     try:
-                        rows.append(list_widget.row(it))
+                        if src_list is None or src_item is None:
+                            continue
+
+                        key = (id(src_list), id(src_item))
+                        if key in seen:
+                            continue
+
+                        seen.add(key)
+                        app.remove_task(src_item, src_list, confirm=False)
 
                     except Exception:
-                        pass
-
-                for row in sorted(set(rows), reverse=True):
-                    try:
-                        list_widget.takeItem(row)
-
-                    except Exception:
-                        pass
-
-                try:
-                    if hasattr(app, "cleanup_time_groups"):
-                        app.cleanup_time_groups(list_widget)
-
-                except Exception:
-                    pass
-
-                try:
-                    if hasattr(app, "atualizar_placeholders"):
-                        app.atualizar_placeholders()
-
-                except Exception:
-                    pass
-
-                try:
-                    app.save_tasks()
-
-                except Exception:
-                    pass
-
-                try:
-                    if hasattr(app, "calendar_pane") and app.calendar_pane:
-                        app.calendar_pane.calendar_panel.update_task_list()
-
-                except Exception:
-                    pass
+                        continue
 
             except Exception as e:
                 logger.error(f"Erro ao remover tarefas selecionadas: {e}", exc_info=True)

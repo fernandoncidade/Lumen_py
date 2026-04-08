@@ -1,4 +1,114 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.6.0
+Date: February 6, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Delivery focused on reliability and usability of the "Time Management" subsystem and integration with the "Eisenhower Matrix". Includes: robust multiple selection (Ctrl+click and drag selection), full integration of selection with move/delete/share operations, refinements in the edit dialog (editable priority), consistent list ordering by priority→date→time and fixes that prevent unintended batch deletions of identical tasks with different priorities.
+
+Main improvements
+1. Multiple selection and context menu interaction
+   - Implemented multiple selection via Ctrl+Click and rectangular selection by click-and-drag in the three quadrant lists.
+   - Selection supports ExtendedSelection and SelectItems, with visible selection rectangle where supported.
+   - Multiple selection correctly feeds context menu items for batch actions:
+     - "🔀 Move Selected Task(s)" now operates on all selected tasks.
+     - "🗑️ Remove Selected Task(s)" requests confirmation and removes only the selected tasks.
+
+2. Batch sharing to Eisenhower
+   - The "🗂️ Share with Eisenhower" action now sends all selected tasks (Ctrl/drag) at once, avoiding sending only the clicked task when multiple are selected.
+   - Standardized payloads sent via EventBus include integration_id, origin, title, normalized_priority, date, time, description, file_path.
+
+3. "Edit Task" dialog with Priority editing
+   - The Edit Task dialog now exposes the Priority field with four options:
+     - 🔴 Important and Urgent
+     - 🟠 Important but Not Urgent
+     - 🟡 Not Important but Urgent
+     - 🟢 Not Important and Not Urgent
+   - Priority changes update the persisted task, tooltip and display (emoji) after saving.
+
+4. Confirmation and feedback on deletion (single and multiple)
+   - Before deleting (single or multiple) a confirmation dialog is shown with the correct count.
+   - After the operation, a dialog reports success (n removed) or failure, with exception handling and logging.
+
+5. Prevent unintended deletion of identical tasks with different priorities
+   - Single and batch removals now distinguish tasks that have the same text but different priorities:
+     - For items without a persistent id, comparison includes normalized priority to avoid removing duplicates with different priorities.
+   - Fixes applied across both Time Management and the Eisenhower Matrix flows (UI and services).
+
+6. Hierarchical ordering in Time Management lists
+   - Within each column (📋 To Do / ⚙️ In Progress / ✅ Done) tasks are now ordered by:
+     1) priority (🔴→🟢) using consistent normalization,
+     2) date (ISO / parsing heuristics),
+     3) time (HH:mm / HH:mm:ss),
+     4) title (alphabetical, case-insensitive).
+   - Missing dates/times are treated as "greater" to place tasks without deadlines at the end by default (configurable in logic).
+
+7. Robustness and hardening
+   - Expanded try/except protections at sensitive points (context menu, editing, drag & drop, opening files).
+   - Fixed indentation/parentheses issues and improved log messages in critical functions (prevents static analyzer warnings).
+   - Preservation of metadata (file_path, priority, description, pomodoros) when editing a task.
+
+Bug fixes
+1. Selection/Share — sharing with Eisenhower considered only the clicked item; fixed to use consolidated multiple selection.
+2. Double removal — deleting a task without id removed all tasks with the same title; now priority is used as an additional differentiator.
+3. Inconsistent ordering — lists were not always ordered by priority/date/time; sorting is now implemented with defensive parsing.
+4. Static analysis and runtime errors — try blocks without except, unclosed parentheses and incorrect indents were repaired.
+5. Calendar / CalendarPanel — integration with _find_source_item_for_calendar reinforced to map a calendar item to the real QListWidgetItem (edit/remove by data).
+
+Implementation details (technical notes)
+- Multiple selection:
+  - Collection of selected items implemented by iterating the three kanban lists; combines selectedItems() + items with checkState == Qt.Checked; unique key by id or title to avoid duplicates.
+  - KanbanListWidget configured with DragDropMode and ExtendedSelection; selectionRect visible where available.
+
+- Context menu:
+  - Showing the menu detects current selection and chooses singular or batch actions (dynamic labels).
+  - Batch move composes sets of ids and titles and updates persisted task statuses; then calls save/update lists.
+  - Batch remove computes ids, titles and (title, priority) pairs for precise removal; requests confirmation and shows results.
+
+- Priority normalization:
+  - Tarefa.normalizar_prioridade() used to map labels/emojis → internal keys; comparisons and display (emoji) operate from that normalized value.
+
+- Sorting (gtar_13_atualizar_listas.py):
+  - prioridade_rank maps normalized priority to order.
+  - Defensive parsers _parse_date and _parse_time accept ISO and common formats; missing values return dt_date.max / dt_time.max to push them to the end.
+  - Sort key: (prio_k, date_k, time_k, title_k).
+
+- Integration with Eisenhower:
+  - _compartilhar_eisenhower collects all resolved items (selected), resolves the task object (by id or text) and sends payloads via EventBus; prevents duplicate sends by key (id or title).
+  - Task removal in the Eisenhower Matrix also now compares priority when resolving matches without an id.
+
+- Feedback and UX:
+  - Confirmation and result messages translated via QCoreApplication.translate.
+  - Tooltips and display text updated to reflect priority, date and time; bold/blue styling applied when a file is attached.
+
+Main files changed / added in this delivery
+- source/modules/tempo/GerenciadorTarefas/gtar_13_atualizar_listas.py (implemented priority→date→time ordering)
+- source/modules/tempo/GerenciadorTarefas/gtar_14_mostrar_menu_contexto.py (multiple selection, dynamic menu, batch sharing)
+- source/modules/tempo/GerenciadorTarefas/gtar_15_ha_tarefas_marcadas.py (detection of checked tasks)
+- source/modules/tempo/GerenciadorTarefas/gtar_16_remover_tarefa_por_item.py (removal distinguishing by priority)
+- source/modules/tempo/GerenciadorTarefas/gtar_17_remover_tarefas_marcadas.py (batch removal with confirmation and feedback)
+- source/modules/tempo/GerenciadorTarefas/gtar_19_mover_tarefas_marcadas.py (batch move — robustness fixes)
+- source/modules/tempo/GerenciadorTarefas/gtar_05_criar_coluna.py (Kanban column setup: ExtendedSelection support and double-click open)
+- source/modules/eisenhower/ui/ui_04_remove_task.py (removal in Matrix: comparison by priority)
+- source/modules/eisenhower/services/svc_06_show_context_menu.py (edit, priority edit, batch share, map → src_item)
+- source/modules/eisenhower/ui/ui_07_Calendar.py (calendar context menu / mapping tasks_by_date_data / refined tooltip map)
+- source/modules/eisenhower/services/svc_01_initUI.py (DragDropTaskList / FileDropLineEdit improvements — integration with dialogs)
+- Others: logging and protection adjustments across multiple modules (see detailed commits).
+
+Recommended tests and verification
+- Selection: Ctrl+Click and drag to select multiple tasks; verify batch actions (move, remove, share).
+- Removal: delete a task when duplicates with different priorities exist — only the chosen one is removed.
+- Sharing: select multiple tasks and send to Eisenhower — validate payload count and integrity.
+- Edit: change priority via dialog, save and confirm order/emoji/tooltip updated.
+- Ordering: confirm within each column the order by priority→date→time→title.
+- Calendar: open day context, edit/remove task listed in submenu and validate synchronization with quadrant lists.
+
+Final notes
+- Update prioritizes fixes that prevent data loss from unintended deletions and improves multi-selection workflows. It is recommended to run integration cases on Windows (for file open fallback), validate on macOS/Linux if supported, and review logs (LogManager) if unexpected behavior occurs.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.5.0
 Date: February 5, 2026
 Author: Fernando Nillsson Cidade

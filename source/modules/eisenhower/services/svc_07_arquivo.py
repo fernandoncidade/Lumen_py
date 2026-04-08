@@ -10,8 +10,14 @@ def get_text(text):
 
 def _clear_all_lists(app):
     for lst in (
-        app.quadrant1_list, app.quadrant2_list, app.quadrant3_list, app.quadrant4_list,
-        app.quadrant1_completed_list, app.quadrant2_completed_list, app.quadrant3_completed_list, app.quadrant4_completed_list
+        app.quadrant1_list, 
+        app.quadrant2_list, 
+        app.quadrant3_list, 
+        app.quadrant4_list,
+        app.quadrant1_completed_list, 
+        app.quadrant2_completed_list, 
+        app.quadrant3_completed_list, 
+        app.quadrant4_completed_list
     ):
         lst.clear()
 

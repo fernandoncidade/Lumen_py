@@ -5,6 +5,13 @@ logger = LogManager.get_logger()
 def _ha_tarefas_marcadas(self):
     try:
         for lst in (self.col_todo.lista, self.col_doing.lista, self.col_done.lista):
+            try:
+                if lst.selectedItems():
+                    return True
+
+            except Exception:
+                pass
+
             for i in range(lst.count()):
                 if lst.item(i).checkState() == Qt.Checked:
                     return True

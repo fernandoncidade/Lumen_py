@@ -7,6 +7,21 @@ def mover_tarefas_marcadas(self):
     try:
         selecionados = []
         for lista in (self.col_todo.lista, self.col_doing.lista, self.col_done.lista):
+            try:
+                for it in lista.selectedItems() or []:
+                    tid = it.data(Qt.UserRole)
+                    titulo = (
+                        it.text().split('\n')[0]
+                        .replace('🔴 ', '')
+                        .replace('🟠 ', '')
+                        .replace('🟡 ', '')
+                        .replace('🟢 ', '')
+                    )
+                    selecionados.append((tid, titulo))
+
+            except Exception:
+                pass
+
             for i in range(lista.count()):
                 it = lista.item(i)
                 if it.checkState() == Qt.Checked:
@@ -55,6 +70,6 @@ def mover_tarefas_marcadas(self):
 
         self.salvar_tarefas()
         self.atualizar_listas()
-
+    
     except Exception as e:
-        logger.error(f"Erro ao remover tarefas marcadas: {str(e)}", exc_info=True)
+        logger.error(f"Erro ao mover tarefas marcadas: {str(e)}", exc_info=True)
