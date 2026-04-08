@@ -22,6 +22,14 @@ def _clicar_no_para_expandir_hierarquia(self, no):
         except Exception:
             old_pos = None
 
+        try:
+            if int(getattr(self, "_lumen_reorg_layout_state", 0) or 0) == 1:
+                self._lumen_reorg_layout_state = 0
+                self._lumen_layout_original_snapshot = None
+
+        except Exception:
+            pass
+
         self._aplicar_visibilidade_por_foco(no, abrir_foco=True)
 
         try:

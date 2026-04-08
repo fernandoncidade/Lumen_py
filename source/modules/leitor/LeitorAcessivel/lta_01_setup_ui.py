@@ -1,11 +1,11 @@
-from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QTextEdit, QSlider, QLabel, QComboBox, QTabWidget, QWidget, QSpinBox
+from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QSlider, QLabel, QComboBox, QTabWidget, QWidget, QSpinBox
 from PySide6.QtCore import Qt, QCoreApplication, QObject, QEvent
-from PySide6.QtGui import QIcon, QPalette, QKeySequence, QShortcut
+from PySide6.QtGui import QPalette, QKeySequence, QShortcut
 from source.utils.FontManager import FontManager
 from source.utils.LogManager import LogManager
-from source.utils.IconUtils import get_icon_path
 from .lta_22_pdf_toolbar import setup_pdf_toolbar
-from .lta_26_pdf_view import PDFView
+from .lta_38_FileDropPDFView import FileDropPDFView
+from .lta_37_FileDropEdit import FileDropEdit
 from .lta_27_pdf_findbar import PDFFindBar
 from .lta_29_text_findbar import TextFindBar
 logger = LogManager.get_logger()
@@ -246,7 +246,7 @@ def setup_ui(self):
         self._text_find_bar = TextFindBar(self, text_tab)
         text_layout.addWidget(self._text_find_bar)
 
-        self.texto_area = QTextEdit()
+        self.texto_area = FileDropEdit(self, text_tab)
         self.texto_area.setReadOnly(False)
 
         from PySide6.QtWidgets import QApplication
@@ -345,7 +345,6 @@ def setup_ui(self):
                 except Exception:
                     pass
 
-
         class _PaletteThemeSyncFilter(QObject):
             def eventFilter(self, obj, event):
                 et = event.type()
@@ -382,7 +381,7 @@ def setup_ui(self):
         self._pdf_find_bar = PDFFindBar(self, pdf_tab)
         pdf_layout.addWidget(self._pdf_find_bar)
 
-        self.pdf_view = PDFView(pdf_tab)
+        self.pdf_view = FileDropPDFView(self, pdf_tab)
         self.pdf_doc = None
         pdf_layout.addWidget(self.pdf_view)
 
@@ -408,7 +407,6 @@ def setup_ui(self):
         regua_layout = QHBoxLayout()
 
         self.btn_regua = self.gerenciador_botoes.create_button()
-        # self.btn_regua.setIcon(QIcon(get_icon_path("ruler")))
         self.btn_regua.clicked.connect(self.toggle_regua_foco)
         self.btn_regua.setCheckable(True)
         regua_layout.addWidget(self.btn_regua)
@@ -423,7 +421,6 @@ def setup_ui(self):
         leitura_assistida_layout = QHBoxLayout()
 
         self.btn_leitura_assistida = self.gerenciador_botoes.create_button()
-        # self.btn_leitura_assistida.setIcon(QIcon(get_icon_path("highlight")))
         self.btn_leitura_assistida.clicked.connect(self._on_toggle_leitura_assistida)
         self.btn_leitura_assistida.setCheckable(True)
         self.btn_leitura_assistida.setChecked(True)
@@ -444,6 +441,7 @@ def setup_ui(self):
         self.combo_modo_leitura.setMinimumWidth(100)
         self.combo_modo_leitura.setEditable(True)
         le3 = self.combo_modo_leitura.lineEdit()
+
         if le3 is None:
             from PySide6.QtWidgets import QLineEdit
             le3 = QLineEdit()

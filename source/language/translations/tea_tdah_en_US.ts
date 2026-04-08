@@ -2452,5 +2452,65 @@ Do you want to continue?</translation>
       <translation>File not found.</translation>
     </message>
 
+    <message>
+      <source>Arraste um arquivo aqui para vincular (opcional)</source>
+      <translation>Drag a file here to link (optional)</translation>
+    </message>
+
+    <message>
+      <source>Solte um arquivo no campo acima para vincular (opcional)</source>
+      <translation>Drop a file in the field above to link (optional)</translation>
+    </message>
+
+    <message>
+      <source>Deseja vincular este arquivo ao nó que será criado?</source>
+      <translation>Do you want to link this file to the node that will be created?</translation>
+    </message>
+
+    <message>
+      <source>Arquivo vinculado:</source>
+      <translation>Linked file:</translation>
+    </message>
+
+    <message>
+      <source>Arquivo não vinculado.</source>
+      <translation>File not linked.</translation>
+    </message>
+
+    <message>
+      <source>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</source>
+      <translation>To open the linked file, press CTRL+double click with the left mouse button on the node.</translation>
+    </message>
+
+    <message>
+      <source>🗑️ Remover Arquivo:</source>
+      <translation>🗑️ Remove File:</translation>
+    </message>
+
+    <message>
+      <source>📂 Abrir Arquivo:</source>
+      <translation>📂 Open File:</translation>
+    </message>
+
+    <message>
+      <source>🔗 Vincular Arquivo</source>
+      <translation>🔗 Link File</translation>
+    </message>
+
+    <message>
+      <source>Vincular arquivo</source>
+      <translation>Link file</translation>
+    </message>
+
+    <message>
+      <source>Todos os arquivos (*.*)</source>
+      <translation>All files (*.*)</translation>
+    </message>
+
+    <message>
+      <source>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</source>
+      <translation>To open the linked file, press CTRL+double click with the left mouse button on the node.</translation>
+    </message>
+
   </context>
 </TS>

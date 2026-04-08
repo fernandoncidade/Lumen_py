@@ -1,5 +1,6 @@
 from PySide6.QtWidgets import QFileDialog
 from PySide6.QtCore import QCoreApplication
+import os
 from source.utils.LogManager import LogManager
 from source.utils.FontManager import FontManager
 import re
@@ -207,13 +208,18 @@ def _reflow_pdf_text(text: str) -> str:
     result = _MULTI_NL_RE.sub("\n\n", result)
     return result
 
-def carregar_pdf(self):
-    arquivo, _ = QFileDialog.getOpenFileName(
-        self,
-        QCoreApplication.translate("App", "Selecionar PDF"),
-        "",
-        QCoreApplication.translate("App", "PDF Files (*.pdf)")
-    )
+def carregar_pdf(self, arquivo: str | None = None, keep_pdf_tab: bool = False):
+    if not arquivo:
+        arquivo, _ = QFileDialog.getOpenFileName(
+            self,
+            QCoreApplication.translate("App", "Selecionar PDF"),
+            "",
+            QCoreApplication.translate("App", "PDF Files (*.pdf)")
+        )
+
+    if arquivo and (not os.path.isfile(arquivo) or not arquivo.lower().endswith(".pdf")):
+        logger.debug(f"Arquivo ignorado (nao e PDF): {arquivo}")
+        return
 
     if not arquivo:
         try:
@@ -285,12 +291,13 @@ def carregar_pdf(self):
         except Exception as e:
             logger.error(f"Erro ao aplicar fonte do FontManager: {e}", exc_info=True)
 
-        try:
-            if hasattr(self, "_content_stack"):
-                self._content_stack.setCurrentIndex(0)
+        if not keep_pdf_tab:
+            try:
+                if hasattr(self, "_content_stack"):
+                    self._content_stack.setCurrentIndex(0)
 
-        except Exception as e:
-            logger.debug(f"Erro ao mostrar aba Texto: {e}", exc_info=True)
+            except Exception as e:
+                logger.debug(f"Erro ao mostrar aba Texto: {e}", exc_info=True)
 
     else:
         logger.warning(f"Não foi possível extrair texto do PDF: {arquivo}")

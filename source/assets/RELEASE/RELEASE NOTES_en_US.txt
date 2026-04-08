@@ -1,4 +1,51 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.11.0
+Date: February 11, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Update focused on making drag & drop more reliable, improving the experience with linked files and increasing the stability of Mind Map backup and restoration. Includes usability adjustments in the find bars and visual refinements to keep readability in light/dark themes.
+
+Main changes
+- More robust drag & drop
+  - Fields and viewers accept dragged files more safely; invalid drops are handled without crashing the application.
+  - When dragging a file to create a task or into the reader, the file can be quickly linked or loaded subject to user confirmation.
+
+- Simplified opening and linking of files
+  - Files linked to concepts and tasks open in a system‑compatible way, with clear messages to the user.
+  - The file‑linking UI when creating/editing items shows confirmation and information about the attached file.
+
+- Mind Map: safer persistence and restoration
+  - Automatic backups avoid redundant writes, reducing unnecessary I/O risk.
+  - Map loading tolerates partially corrupted data and attempts to restore as much as possible without aborting.
+
+- Search (Text/PDF) and readability across themes
+  - Find bars maintain adequate contrast in light and dark themes to preserve readability.
+  - Highlighting behavior and navigation through results are more consistent.
+
+- Palette synchronization and appearance
+  - Input components and lists follow the system palette better, avoiding visual artifacts and preserving a native look.
+
+Bug fixes
+- Prevents exceptions on drops with unexpected data.
+- Automatic backup no longer rewrites the file when there are no changes.
+- Restoring a map no longer fails due to invalid indices; out‑of‑range entries are ignored.
+- Prevents accumulation of handlers when linking/removing files repeatedly.
+- Find bar preserves contrast in dark themes.
+
+Quick checks
+- Drag a PDF into the reader and confirm it loads and displays its path.
+- Drag a file onto the new task field and confirm the link when prompted.
+- Save the map, make semantically no‑op edits and verify that the backup is not frequently rewritten.
+- Open the find bars in light and dark themes and confirm readability.
+
+Notes
+- This update prioritizes robustness and usability; it does not change primary usage flows.
+- If you encounter unexpected behavior, reproduce the step and check logs to help diagnosis.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.10.0
 Date: February 10, 2026
 Author: Fernando Nillsson Cidade

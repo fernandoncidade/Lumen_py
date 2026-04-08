@@ -1,4 +1,51 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.11.0
+Data: 11 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Atualização focada em tornar o arrastar&soltar mais confiável, melhorar a experiência com arquivos vinculados e aumentar a estabilidade do backup e restauração do Mapa Mental. Inclui ajustes de usabilidade nas barras de busca e refinamentos visuais para manter legibilidade em temas claro/escuro.
+
+Principais mudanças
+- Drag & drop mais robusto
+  - Campos e visualizadores aceitam arquivos arrastados de forma mais segura; quedas inválidas são tratadas sem travar a aplicação.
+  - Ao arrastar um arquivo para criar tarefa ou para o leitor, o arquivo pode ser rapidamente vinculado ou carregado conforme confirmação do usuário.
+
+- Abertura e vínculo de arquivos simplificados
+  - Arquivos vinculados a conceitos e tarefas abrem de forma compatível com o sistema, com mensagens claras ao usuário.
+  - Interface de vinculação de arquivos ao criar/editar itens apresenta confirmação e informação sobre o arquivo anexado.
+
+- Mapa Mental: persistência e restauração mais seguras
+  - Backups automáticos evitam escritas redundantes, reduzindo risco de I/O desnecessário.
+  - Carregamento de mapas tolera dados parcialmente corrompidos e tenta restaurar o máximo possível sem abortar.
+
+- Busca (Texto/PDF) e legibilidade em temas
+  - Barras de busca mantêm contraste adequado em temas claros e escuros para preservar legibilidade.
+  - Comportamento de realce e navegação por resultados mais consistente.
+
+- Sincronização de paleta e aparência
+  - Componentes de entrada e listas seguem melhor a paleta do sistema, evitando artefatos visuais e mantendo aparência nativa.
+
+Correções de bugs
+- Evita exceções em drops com dados inesperados.
+- Backup automático não reescreve arquivo quando não há mudanças.
+- Restaurar mapa não falha por índices inválidos; ignora entradas fora do esperado.
+- Evita acúmulo de handlers ao vincular/remover arquivos repetidamente.
+- Barra de busca preserva contraste em temas escuros.
+
+O que verificar rapidamente
+- Arraste um PDF para o leitor e confira se carrega e exibe caminho.
+- Arraste um arquivo para o campo de nova tarefa e confirme o vínculo quando solicitado.
+- Salve o mapa, faça alterações sem mudança semântica e verifique que o backup não é regravado frequentemente.
+- Abra as barras de busca em tema claro e escuro e confirme legibilidade.
+
+Observações
+- Atualização prioriza robustez e usabilidade; não altera fluxos principais de uso.
+- Caso encontre comportamento inesperado, reproduza o passo e consulte os logs para facilitar diagnóstico.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.10.0
 Data: 10 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

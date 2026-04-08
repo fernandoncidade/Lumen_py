@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QGraphicsEllipseItem, QGraphicsTextItem, QGraphicsDropShadowEffect
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QCoreApplication
 from PySide6.QtGui import QColor, QPen, QBrush, QFont
 from source.utils.LogManager import LogManager
 from source.utils.EventBus import get_event_bus
@@ -41,6 +41,7 @@ class NoConceito(QGraphicsEllipseItem):
             self.cor = cor
             self.notas = ""
             self.info_associada: list[str] = []
+            self.arquivo_vinculado = None
 
             self.event_bus = get_event_bus()
 
@@ -58,3 +59,11 @@ class NoConceito(QGraphicsEllipseItem):
 
     def mouseDoubleClickEvent(self, event):
         return mouseDoubleClickEvent(self, event)
+
+    def set_arquivo_vinculado(self, caminho: str | None):
+        self.arquivo_vinculado = caminho
+        if caminho:
+            self.setToolTip(QCoreApplication.translate("App", "Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó."))
+
+        else:
+            self.setToolTip("")

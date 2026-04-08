@@ -1,4 +1,125 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.11.0
+Data: 11 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em robustez do fluxo de arraste&solte entre views e elementos gráficos, refinamentos no suporte a arquivos vinculados por drag&drop e estabilidade do persistente automático do Mapa Mental. Inclui harmonizações de comportamento de abertura de arquivos vinculados, melhorias defensivas nas operações de backup/restore e pequenos ajustes de usabilidade nas barras de busca (texto/PDF) e nos componentes de leitura.
+
+Melhorias principais
+1. FileDrop & integração com fluxo de documentos
+   - FileDropLineEdit (GerenciadorTarefas):
+     - Campo de tarefa captura URL(s) do evento de drop e armazena o caminho no atributo _dragged_file_path do owner, além de exibir basename no campo e tooltip com caminho absoluto.
+     - Tratamento defensivo de mimeData/urls para evitar exceções em ambientes PySide6 variados.
+     - Arquivo: source/modules/tempo/GerenciadorTarefas/gtar_26_FileDropLineEdit.py
+   - FileDropPDFView / FileDropEdit (Leitor Acessível):
+     - Views e editor aceitam drops sobre viewport quando aplicável; ao soltar PDF válido, carregam o documento (carregar_pdf) e atualizam tooltip com caminho.
+     - Tratamento seguro de caminhos e verificação de extensão/arquivo físico antes de acionar carregamento.
+     - Arquivos: source/modules/leitor/LeitorAcessivel/lta_38_FileDropPDFView.py, lta_37_FileDropEdit.py
+
+2. Abertura e vinculação de arquivos a entidades visuais
+   - NoConceito / Edição de nó:
+     - Duplo clique CTRL+esquerdo abre arquivo vinculado via QDesktopServices.openUrl (fallbacks nativos tratados).
+     - Diálogo de edição de conceito centraliza UI para vincular/remover arquivo com mensagens traduzidas e handlers desconectáveis para evitar leaks de sinais.
+     - Arquivo: source/modules/mapa/NoConceito/nocon_04_mouseDoubleClickEvent.py e mp_01_NoConceito.py (set_arquivo_vinculado)
+
+3. Diálogo de adicionar nó com suporte a drop
+   - _AdicionarNoDialog:
+     - Campo de texto aceita drops; ao soltar arquivo pergunta ao usuário (QMessageBox.question) se deseja vincular o arquivo ao nó sendo criado.
+     - Se confirmado, armazena caminho e atualiza UI (drop_info) com nome do arquivo vinculado.
+     - Arquivo: source/modules/mapa/MapaMental/mm_13_adicionar_no.py
+
+4. Backup automático e serialização do Mapa Mental aprimorados
+   - Serialização defensiva:
+     - _serializar_mapa transforma atributos complexos de nós em payloads seguros (primitivos, listas, dicts) para evitar erros de dump JSON.
+     - Inclui metadados de layout, estado de hierarquia, transform de view e grid/config, preservando compatibilidade por versão.
+     - Arquivo: source/modules/mapa/MapaMental/mm_36_backup_runtime.py
+   - Backup automático:
+     - Hash SHA256 do JSON serializado evita escritas redundantes; intervalo configurável com _configurar_backup_automatico.
+     - Flags _lumen_backup_paused e _lumen_backup_last_hash previnem concorrência e I/O desnecessário.
+     - Arquivos: mm_36_backup_runtime.py e integração em mp_03_MapaMental.py
+
+5. Carregamento robusto do mapa e restauração defensiva
+   - _carregar_mapa_de_arquivo:
+     - Verificações estruturais do JSON carregado, conversão segura de índices para objetos NoConceito, restauração de conexões e hierarquia sem assumir integridade total do arquivo.
+     - Reaplica transform de view e sceneRect quando presentes; inicializa flags de backup de forma segura.
+     - Arquivo: source/modules/mapa/MapaMental/mm_18_carregar_mapa.py
+
+6. Barras de busca (Texto/PDF) com sincronização de tema mais segura
+   - PDFFindBar / TextFindBar:
+     - Aplicação de palette no QLineEdit de busca via função interna _apply_edt_palette; calcula darken_factor com base no window_color do app.
+     - Instala eventFilter para reagir a ApplicationPaletteChange/PaletteChange/StyleChange, reaplicando paleta sem usar stylesheets.
+     - Mantém cores de Highlight/Texto/Placeholder alinhadas à paleta da aplicação.
+     - Arquivos: source/modules/leitor/LeitorAcessivel/lta_27_pdf_findbar.py, lta_29_text_findbar.py
+
+7. Sincronização de paleta em widgets de texto/combos (Leitor Acessível)
+   - Texto e comboboxes recebem paleta derivada de QPalette.Window/Base com pequenas variações (darker) para manter legibilidade sem forçar AutoFillBackground em widgets nativos.
+   - Tratamento robusto de view()/viewport() antes de setAutoFillBackground/Palette para evitar vazamentos visuais em widgets compostos.
+   - Arquivo: source/modules/leitor/LeitorAcessivel/lta_01_setup_ui.py
+
+Correções de bugs
+1. Drops indiscriminados que causavam exceções
+   - Tratamento geral dos eventos dragEnterEvent/dragMoveEvent/dropEvent em componentes FileDrop* para capturar exceções e delegar ao super() quando apropriado, evitando crashes em situações inesperadas.
+
+2. Backup escrevendo em disco sem mudanças
+   - Corrigido: comparação por hash SHA256 impede reescrita do mesmo JSON; reduz I/O e risco de corrupção por múltiplas escritas concorrentes.
+
+3. Restaurar mapa falhando com índices inválidos
+   - Correções defensivas ao converter índices de hierarquia/children/expandidos em referências de objeto; ignora entradas fora do intervalo sem abortar o carregamento.
+
+4. Handlers de UI ficando ligados ou múltiplos conectores
+   - Ao atualizar botões de abrir/vincular arquivo nos diálogos, desconecta handlers anteriores antes de conectar novos para evitar múltiplas invocações.
+
+5. Busca no PDF/Text perdendo contraste em temas escuros
+   - Ajuste de fatores de escurecimento e cópia das cores de Highlight/Text para os QLineEdit das findbars, preservando legibilidade em tema escuro/claro.
+
+Arquivos principais alterados / adicionados nesta entrega
+- source/modules/tempo/GerenciadorTarefas/gtar_26_FileDropLineEdit.py
+- source/modules/tempo/GerenciadorTarefas/gtar_03_setup_ui.py
+- source/modules/leitor/LeitorAcessivel/lta_38_FileDropPDFView.py
+- source/modules/leitor/LeitorAcessivel/lta_37_FileDropEdit.py
+- source/modules/leitor/LeitorAcessivel/lta_29_text_findbar.py
+- source/modules/leitor/LeitorAcessivel/lta_27_pdf_findbar.py
+- source/modules/leitor/LeitorAcessivel/lta_01_setup_ui.py
+- source/modules/mapa/NoConceito/nocon_04_mouseDoubleClickEvent.py
+- source/modules/mapa/mp_01_NoConceito.py
+- source/modules/mapa/MapaMental/mm_13_adicionar_no.py
+- source/modules/mapa/MapaMental/mm_36_backup_runtime.py
+- source/modules/mapa/MapaMental/mm_18_carregar_mapa.py
+- source/modules/mapa/mp_03_MapaMental.py (integração de backup/worker)
+
+Recomendações de validação (tests & verificação)
+- Drag & Drop (arquivo → campo / editor / viewer):
+  1. Arrastar PDF para FileDropPDFView: validar que pdf é carregado (carregar_pdf) e tooltip mostra caminho.
+  2. Arrastar arquivo para input_tarefa: confirmar texto do campo, tooltip, e que _dragged_file_path foi definido no owner.
+
+- NoConceito / mapas:
+  1. Criar nó via diálogo com arquivo arrastado e confirmar diálogo de vinculação; checar que set_arquivo_vinculado aplica tooltip e que CTRL+duplo-clique abre o arquivo.
+  2. Salvar mapa (backup automático) e editar mapa: verificar que backup não é reescrito se sem alteração (hash estável).
+  3. Carregar backup automático e arquivos JSON gerados manualmente contendo índices corrompidos — a função deve falhar graciosamente e restaurar o máximo possível.
+
+- Barras de busca:
+  1. Alternar tema claro/escuro do SO; abrir findbars em Texto e PDF e verificar contraste/legibilidade do QLineEdit e dos botões.
+
+- Robustez:
+  1. Forçar drops com mimeData inesperado (sem urls) para garantir que o comportamento delegue ao super() sem exceções.
+  2. Executar operações de vincular/remover arquivo repetidas vezes para garantir que handlers não acumulam conexões.
+
+Notas técnicas
+- Todas as manipulações de cor/paleta foram feitas via QPalette (sem uso de setStyleSheet) e aplicadas apenas quando apropriado, com verificações de view()/viewport() para widgets compostos.
+- Uso de eventFilter para reagir a mudanças de paleta/tema e reaplicar paletas específicas de componentes de forma não intrusiva.
+- Serialização do mapa é projetada para ser tolerante a payloads desconhecidos, priorizando compatibilidade futura e evitando exceções na escrita JSON.
+- Operações sensíveis (I/O, parsing, carregamento de PDF) têm tratamento try/except com logging detalhado (logger.error/debug) para facilitar diagnóstico sem quebrar a UI.
+
+Próximos passos sugeridos
+1. Adicionar testes automatizados de integração para fluxo drag&drop (incluindo mocks de mimeData) e testes de regressão de backup.
+2. Expor preferências de comportamento de vinculação de arquivos (confirmar por padrão / nunca perguntar).
+3. Avaliar adição de testes visuais (pixel diff) para validar mudanças sutis de paleta entre temas.
+4. Considerar usar API nativa de plataformas (Windows/Mac/Linux) para unzip/preview rápido de arquivos arrastados quando aplicável.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.10.0
 Data: 10 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

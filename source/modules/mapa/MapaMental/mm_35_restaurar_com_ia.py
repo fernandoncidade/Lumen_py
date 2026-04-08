@@ -64,19 +64,8 @@ def restaurar_com_ia(self):
             logger.info("Mapa restaurado para estado inicial: apenas nó pai visível")
 
             try:
-                nos = (getattr(self, "nos", []) or [])
-
-                self._lumen_layout_original_snapshot = {
-                    "positions": {no: no.pos() for no in nos},
-                    "visible": {no: getattr(no, "isVisible", lambda: True)() for no in nos},
-                    "modo_hierarquia": bool(getattr(self, "_modo_navegacao_hierarquia", False)),
-                    "hierarquia_root": getattr(self, "_hierarquia_root", None),
-                    "hierarquia_parent": dict(getattr(self, "_hierarquia_parent", {}) or {}),
-                    "hierarquia_children": dict(getattr(self, "_hierarquia_children", {}) or {}),
-                    "nos_expandidos": set(getattr(self, "_nos_expandidos", set()) or set()),
-                    "freeze_on_click": bool(getattr(self, "_lumen_layout_freeze_on_click", False)),
-                    "orientation": str(getattr(self, "_lumen_layout_orientation", "free") or "free"),
-                }
+                if hasattr(self, "_lumen_layout_original_snapshot"):
+                    self._lumen_layout_original_snapshot = None
 
                 try:
                     self._lumen_layout_original_positions = {}
@@ -85,7 +74,7 @@ def restaurar_com_ia(self):
                     pass
 
                 try:
-                    self._lumen_reorg_layout_state = 1
+                    self._lumen_reorg_layout_state = 0
 
                 except Exception:
                     pass

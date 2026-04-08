@@ -2452,5 +2452,65 @@ Deseja continuar?</translation>
       <translation>Arquivo não encontrado.</translation>
     </message>
 
+    <message>
+      <source>Arraste um arquivo aqui para vincular (opcional)</source>
+      <translation>Arraste um arquivo aqui para vincular (opcional)</translation>
+    </message>
+
+    <message>
+      <source>Solte um arquivo no campo acima para vincular (opcional)</source>
+      <translation>Solte um arquivo no campo acima para vincular (opcional)</translation>
+    </message>
+
+    <message>
+      <source>Deseja vincular este arquivo ao nó que será criado?</source>
+      <translation>Deseja vincular este arquivo ao nó que será criado?</translation>
+    </message>
+
+    <message>
+      <source>Arquivo vinculado:</source>
+      <translation>Arquivo vinculado:</translation>
+    </message>
+
+    <message>
+      <source>Arquivo não vinculado.</source>
+      <translation>Arquivo não vinculado.</translation>
+    </message>
+
+    <message>
+      <source>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</source>
+      <translation>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</translation>
+    </message>
+
+    <message>
+      <source>🗑️ Remover Arquivo:</source>
+      <translation>🗑️ Remover Arquivo:</translation>
+    </message>
+
+    <message>
+      <source>📂 Abrir Arquivo:</source>
+      <translation>📂 Abrir Arquivo:</translation>
+    </message>
+
+    <message>
+      <source>🔗 Vincular Arquivo</source>
+      <translation>🔗 Vincular Arquivo</translation>
+    </message>
+
+    <message>
+      <source>Vincular arquivo</source>
+      <translation>Vincular arquivo</translation>
+    </message>
+
+    <message>
+      <source>Todos os arquivos (*.*)</source>
+      <translation>Todos os arquivos (*.*)</translation>
+    </message>
+
+    <message>
+      <source>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</source>
+      <translation>Para abrir o arquivo vinculado, clique CTRL+duplo clique com o botão esquerdo do mouse sobre o nó.</translation>
+    </message>
+
   </context>
 </TS>

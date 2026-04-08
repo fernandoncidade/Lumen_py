@@ -52,6 +52,17 @@ class MapaMental(QWidget):
                 app.installEventFilter(self)
 
             self.atualizar_tema()
+            try:
+                self._carregar_backup_automatico()
+
+            except Exception:
+                pass
+
+            try:
+                self._configurar_backup_automatico()
+
+            except Exception:
+                pass
 
         except Exception as e:
             self.logger.error(f"Erro ao inicializar MapaMental: {str(e)}", exc_info=True)
@@ -86,6 +97,10 @@ class MapaMental(QWidget):
 
     def carregar_mapa(self):
         from source.modules.mapa.MapaMental.mm_18_carregar_mapa import carregar_mapa as _impl
+        return _impl(self)
+
+    def _carregar_backup_automatico(self):
+        from source.modules.mapa.MapaMental.mm_18_carregar_mapa import _carregar_backup_automatico as _impl
         return _impl(self)
 
     def exportar_imagem(self):
@@ -178,6 +193,22 @@ class MapaMental(QWidget):
     def _atualizar_visibilidade_linhas(self):
         from source.modules.mapa.MapaMental.mm_05_atualizar_visibilidade_linhas import _atualizar_visibilidade_linhas as _impl
         return _impl(self)
+
+    def _serializar_mapa(self):
+        from source.modules.mapa.MapaMental.mm_36_backup_runtime import _serializar_mapa as _impl
+        return _impl(self)
+
+    def _salvar_mapa_em_arquivo(self, caminho: str):
+        from source.modules.mapa.MapaMental.mm_36_backup_runtime import _salvar_mapa_em_arquivo as _impl
+        return _impl(self, caminho)
+
+    def _salvar_backup_automatico(self):
+        from source.modules.mapa.MapaMental.mm_36_backup_runtime import _salvar_backup_automatico as _impl
+        return _impl(self)
+
+    def _configurar_backup_automatico(self, intervalo_ms: int = 8000):
+        from source.modules.mapa.MapaMental.mm_36_backup_runtime import _configurar_backup_automatico as _impl
+        return _impl(self, intervalo_ms=intervalo_ms)
 
     def _instalar_handlers_nos(self):
         from source.modules.mapa.MapaMental.mm_06_instalar_handlers_nos import _instalar_handlers_nos as _impl

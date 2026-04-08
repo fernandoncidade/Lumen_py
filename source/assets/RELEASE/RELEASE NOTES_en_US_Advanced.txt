@@ -1,3 +1,124 @@
+NOTES RELEASE — Lúmen
+Version: 2026.2.11.0
+Date: February 11, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Delivery focused on hardening the drag & drop flow between views and graphical elements, refinements in support for files linked via drag & drop and stability of the Mind Map automatic persistence. Includes harmonization of behavior when opening linked files, defensive improvements in backup/restore operations and small usability tweaks in the find bars (text/PDF) and reader components.
+
+Main improvements
+1. FileDrop & integration with document flow
+   - FileDropLineEdit (Task Manager):
+     - The task input captures URL(s) from the drop event and stores the path in the owner's _dragged_file_path attribute, also showing the basename in the field and a tooltip with the absolute path.
+     - Defensive handling of mimeData/urls to avoid exceptions in varied PySide6 environments.
+     - File: source/modules/tempo/GerenciadorTarefas/gtar_26_FileDropLineEdit.py
+   - FileDropPDFView / FileDropEdit (Accessible Reader):
+     - Views and the editor accept drops on their viewport when applicable; when a valid PDF is dropped they load the document (load_pdf) and update the tooltip with the path.
+     - Safe path handling and verification of extension / physical file before triggering load.
+     - Files: source/modules/leitor/LeitorAcessivel/lta_38_FileDropPDFView.py, lta_37_FileDropEdit.py
+
+2. Opening and linking files to visual entities
+   - NoConceito / Node editing:
+     - Ctrl+left-double-click opens the linked file via QDesktopServices.openUrl (native fallbacks handled).
+     - The concept edit dialog centralizes UI for linking/removing a file with translated messages and disconnectable handlers to avoid signal leaks.
+     - File: source/modules/mapa/NoConceito/nocon_04_mouseDoubleClickEvent.py and mp_01_NoConceito.py (set_arquivo_vinculado)
+
+3. Add-node dialog with drop support
+   - _AdicionarNoDialog:
+     - The text field accepts drops; on file drop it asks the user (QMessageBox.question) whether to link the file to the node being created.
+     - If confirmed, it stores the path and updates the UI (drop_info) with the linked file name.
+     - File: source/modules/mapa/MapaMental/mm_13_adicionar_no.py
+
+4. Improved automatic backup and Mind Map serialization
+   - Defensive serialization:
+     - _serializar_mapa converts complex node attributes into safe payloads (primitives, lists, dicts) to avoid JSON dump errors.
+     - Includes layout metadata, hierarchy state, view transform and grid/config, preserving version compatibility.
+     - File: source/modules/mapa/MapaMental/mm_36_backup_runtime.py
+   - Automatic backup:
+     - SHA256 hash of the serialized JSON prevents redundant writes; configurable interval via _configurar_backup_automatico.
+     - Flags _lumen_backup_paused and _lumen_backup_last_hash prevent concurrency and unnecessary I/O.
+     - Files: mm_36_backup_runtime.py and integration in mp_03_MapaMental.py
+
+5. Robust map loading and defensive restoration
+   - _carregar_mapa_de_arquivo:
+     - Structural checks on the loaded JSON, safe conversion of indices to NoConceito objects, restoration of connections and hierarchy without assuming full file integrity.
+     - Reapplies view transform and sceneRect when present; initializes backup flags safely.
+     - File: source/modules/mapa/MapaMental/mm_18_carregar_mapa.py
+
+6. Find bars (Text/PDF) with safer theme synchronization
+   - PDFFindBar / TextFindBar:
+     - Apply palette to the search QLineEdit via an internal _apply_edt_palette function; calculates darken_factor based on the app's window_color.
+     - Installs an eventFilter to react to ApplicationPaletteChange/PaletteChange/StyleChange, reapplying palette without using stylesheets.
+     - Keeps Highlight/Text/Placeholder colors aligned with the application's palette.
+     - Files: source/modules/leitor/LeitorAcessivel/lta_27_pdf_findbar.py, lta_29_text_findbar.py
+
+7. Palette synchronization in text/combobox widgets (Accessible Reader)
+   - Text inputs and comboboxes receive a palette derived from QPalette.Window/Base with slight variations (darker) to maintain legibility without forcing AutoFillBackground on native widgets.
+   - Robust handling of view()/viewport() before setAutoFillBackground/Palette to avoid visual leaks in composite widgets.
+   - File: source/modules/leitor/LeitorAcessivel/lta_01_setup_ui.py
+
+Bug fixes
+1. Indiscriminate drops causing exceptions
+   - General handling of dragEnterEvent/dragMoveEvent/dropEvent in FileDrop* components to catch exceptions and delegate to super() when appropriate, avoiding crashes in unexpected situations.
+
+2. Backup writing to disk without changes
+   - Fixed: comparison by SHA256 hash prevents rewriting identical JSON; reduces I/O and risk of corruption from concurrent writes.
+
+3. Restoring map failing with invalid indices
+   - Defensive fixes when converting hierarchy/children/expanded indices into object references; entries out of range are ignored without aborting the load.
+
+4. UI handlers remaining connected or multiple connectors
+   - When updating open/link file buttons in dialogs, previous handlers are disconnected before connecting new ones to avoid multiple invocations.
+
+5. PDF/Text find losing contrast in dark themes
+   - Adjusted darkening factors and copied Highlight/Text colors to the findbar QLineEdits, preserving legibility in dark/light themes.
+
+Main files changed / added in this delivery
+- source/modules/tempo/GerenciadorTarefas/gtar_26_FileDropLineEdit.py
+- source/modules/tempo/GerenciadorTarefas/gtar_03_setup_ui.py
+- source/modules/leitor/LeitorAcessivel/lta_38_FileDropPDFView.py
+- source/modules/leitor/LeitorAcessivel/lta_37_FileDropEdit.py
+- source/modules/leitor/LeitorAcessivel/lta_29_text_findbar.py
+- source/modules/leitor/LeitorAcessivel/lta_27_pdf_findbar.py
+- source/modules/leitor/LeitorAcessivel/lta_01_setup_ui.py
+- source/modules/mapa/NoConceito/nocon_04_mouseDoubleClickEvent.py
+- source/modules/mapa/mp_01_NoConceito.py
+- source/modules/mapa/MapaMental/mm_13_adicionar_no.py
+- source/modules/mapa/MapaMental/mm_36_backup_runtime.py
+- source/modules/mapa/MapaMental/mm_18_carregar_mapa.py
+- source/modules/mapa/mp_03_MapaMental.py (backup/worker integration)
+
+Validation recommendations (tests & verification)
+- Drag & Drop (file → field / editor / viewer):
+  1. Drag a PDF into FileDropPDFView: validate that the PDF is loaded (load_pdf) and the tooltip shows the path.
+  2. Drag a file to the task input: confirm the field text, tooltip, and that _dragged_file_path was set on the owner.
+
+- NoConceito / maps:
+  1. Create a node via the dialog with a dragged file and confirm the linking dialog; check that set_arquivo_vinculado applies the tooltip and that CTRL+double-click opens the file.
+  2. Save the map (automatic backup) and edit the map: verify that the backup is not rewritten if unchanged (stable hash).
+  3. Load the automatic backup and manually generated JSON files containing corrupted indices — the function should fail gracefully and restore as much as possible.
+
+- Find bars:
+  1. Toggle OS light/dark theme; open findbars in Text and PDF and verify contrast/legibility of the QLineEdit and the buttons.
+
+- Robustness:
+  1. Force drops with unexpected mimeData (without urls) to ensure behavior delegates to super() without exceptions.
+  2. Perform link/remove file operations repeatedly to ensure handlers do not accumulate connections.
+
+Technical notes
+- All color/palette manipulations were done via QPalette (no use of setStyleSheet) and applied only when appropriate, with view()/viewport() checks for composite widgets.
+- Use of eventFilter to react to palette/theme changes and reapply component-specific palettes in a non-intrusive way.
+- Map serialization is designed to be tolerant of unknown payloads, prioritizing forward compatibility and avoiding exceptions when writing JSON.
+- Sensitive operations (I/O, parsing, PDF loading) have try/except handling with detailed logging (logger.error/debug) to aid diagnosis without breaking the UI.
+
+Next suggested steps
+1. Add automated integration tests for drag&drop flow (including mimeData mocks) and backup regression tests.
+2. Expose preferences for file-linking behavior (confirm by default / never ask).
+3. Evaluate adding visual tests (pixel diff) to validate subtle palette changes between themes.
+4. Consider using native platform APIs (Windows/Mac/Linux) for quick unzip/preview of dragged files where applicable.
+
+_________________________________________________
+
 RELEASE NOTES — Lúmen
 Version: 2026.2.10.0
 Date: February 10, 2026

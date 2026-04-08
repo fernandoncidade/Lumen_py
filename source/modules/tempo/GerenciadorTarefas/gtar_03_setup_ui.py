@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QTabWidget
-from source.modules.eisenhower.services.svc_01_initUI import FileDropLineEdit
+from .gtar_26_FileDropLineEdit import FileDropLineEdit
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
