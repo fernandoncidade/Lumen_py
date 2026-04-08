@@ -2428,5 +2428,29 @@ Do you want to continue?</translation>
       <translation>📅 Hide Calendar</translation>
     </message>
 
+    <message>
+      <source>Vincular arquivo</source>
+      <translation>Link file</translation>
+    </message>
+
+    <message>
+      <source>Deseja vincular o arquivo a esta tarefa?
+
+{nome}</source>
+      <translation>Do you want to link the file to this task?
+
+{nome}</translation>
+    </message>
+
+    <message>
+      <source>Erro</source>
+      <translation>Error</translation>
+    </message>
+
+    <message>
+      <source>Arquivo não encontrado.</source>
+      <translation>File not found.</translation>
+    </message>
+
   </context>
 </TS>

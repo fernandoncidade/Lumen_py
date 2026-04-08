@@ -6,12 +6,6 @@ def atualizar_traducoes(self):
     try:
         self.label_tarefas.setText(QCoreApplication.translate("App", "📊 Quadro de Tarefas"))
 
-        if hasattr(self, 'btn_eisenhower_integrado') and self.btn_eisenhower_integrado:
-            self._atualizar_rotulo_botao_eisenhower()
-            self.btn_eisenhower_integrado.setToolTip(
-                QCoreApplication.translate("App", "Quando ativado, tarefas adicionadas aqui também são enviadas para a Matriz de Eisenhower.")
-            )
-
         if hasattr(self, 'pomodoro') and self.pomodoro:
             self.pomodoro.atualizar_traducoes()
 

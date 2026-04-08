@@ -2428,5 +2428,29 @@ Deseja continuar?</translation>
       <translation>📅 Ocultar Calendário</translation>
     </message>
 
+    <message>
+      <source>Vincular arquivo</source>
+      <translation>Vincular arquivo</translation>
+    </message>
+
+    <message>
+      <source>Deseja vincular o arquivo a esta tarefa?
+
+{nome}</source>
+      <translation>Deseja vincular o arquivo a esta tarefa?
+
+{nome}</translation>
+    </message>
+
+    <message>
+      <source>Erro</source>
+      <translation>Erro</translation>
+    </message>
+
+    <message>
+      <source>Arquivo não encontrado.</source>
+      <translation>Arquivo não encontrado.</translation>
+    </message>
+
   </context>
 </TS>

@@ -2,7 +2,7 @@ import os
 import subprocess
 from PySide6.QtGui import QIcon
 from PySide6.QtCore import Qt, QCoreApplication, QDate, QLocale
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QComboBox, QDateEdit, QCheckBox, QFrame
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QComboBox, QDateEdit, QCheckBox, QFrame, QTabWidget
 from .svc_11_CustomTimeEdit import CustomTimeEdit
 from .svc_12_DragDropTaskList import DragDropTaskList
 from .svc_13_FileDropLineEdit import FileDropLineEdit
@@ -198,34 +198,6 @@ def init_ui(app):
     app.calendar_button.clicked.connect(app.open_calendar)
     input_layout_row1.addWidget(app.calendar_button)
 
-    # def _update_integrate_time_button_text() -> None:
-    #     try:
-    #         if not hasattr(app, "integrate_time_button") or not app.integrate_time_button:
-    #             return
-
-    #         if app.integrate_time_button.isChecked():
-    #             app.integrate_time_button.setText(get_text("⏱️ Gestão de Tempo Conectado"))
-
-    #         else:
-    #             app.integrate_time_button.setText(get_text("⏱️ Gestão de Tempo Desconectado"))
-
-    #     except Exception:
-    #         pass
-
-    # app._update_integrate_time_button_text = _update_integrate_time_button_text
-
-    # app.integrate_time_button = QPushButton(get_text("⏱️ Gestão de Tempo Desconectado"))
-    # app.integrate_time_button.setCheckable(True)
-    # app.integrate_time_button.setChecked(False)
-
-    # try:
-    #     app.integrate_time_button.toggled.connect(lambda _: _update_integrate_time_button_text())
-
-    # except Exception:
-    #     pass
-
-    # input_layout_row1.addWidget(app.integrate_time_button)
-
     app.main_layout.addLayout(input_layout_row1)
     app.main_layout.addLayout(input_layout_row2)
 
@@ -234,62 +206,174 @@ def init_ui(app):
     separator.setFrameShadow(QFrame.Sunken)
     app.main_layout.addWidget(separator)
 
-    quadrant_layout = QHBoxLayout()
-
-    app.quadrant1_layout = QVBoxLayout()
     app.quadrant1_label = QLabel(get_text("🔴 Importante e Urgente"))
     app.quadrant1_list = DragDropTaskList(app, is_completed_list=False)
     app.add_placeholder(app.quadrant1_list, get_text("1º Quadrante"))
     app.quadrant1_completed_label = QLabel(get_text("Concluídas"))
     app.quadrant1_completed_list = DragDropTaskList(app, is_completed_list=True)
     app.add_placeholder(app.quadrant1_completed_list, get_text("Nenhuma Tarefa Concluída"))
-    app.quadrant1_layout.addWidget(app.quadrant1_label)
-    app.quadrant1_layout.addWidget(app.quadrant1_list)
-    app.quadrant1_layout.addWidget(app.quadrant1_completed_label)
-    app.quadrant1_layout.addWidget(app.quadrant1_completed_list)
 
-    app.quadrant2_layout = QVBoxLayout()
     app.quadrant2_label = QLabel(get_text("🟠 Importante, mas Não Urgente"))
     app.quadrant2_list = DragDropTaskList(app, is_completed_list=False)
     app.add_placeholder(app.quadrant2_list, get_text("2º Quadrante"))
     app.quadrant2_completed_label = QLabel(get_text("Concluídas"))
     app.quadrant2_completed_list = DragDropTaskList(app, is_completed_list=True)
     app.add_placeholder(app.quadrant2_completed_list, get_text("Nenhuma Tarefa Concluída"))
-    app.quadrant2_layout.addWidget(app.quadrant2_label)
-    app.quadrant2_layout.addWidget(app.quadrant2_list)
-    app.quadrant2_layout.addWidget(app.quadrant2_completed_label)
-    app.quadrant2_layout.addWidget(app.quadrant2_completed_list)
 
-    app.quadrant3_layout = QVBoxLayout()
     app.quadrant3_label = QLabel(get_text("🟡 Não Importante, mas Urgente"))
     app.quadrant3_list = DragDropTaskList(app, is_completed_list=False)
     app.add_placeholder(app.quadrant3_list, get_text("3º Quadrante"))
     app.quadrant3_completed_label = QLabel(get_text("Concluídas"))
     app.quadrant3_completed_list = DragDropTaskList(app, is_completed_list=True)
     app.add_placeholder(app.quadrant3_completed_list, get_text("Nenhuma Tarefa Concluída"))
-    app.quadrant3_layout.addWidget(app.quadrant3_label)
-    app.quadrant3_layout.addWidget(app.quadrant3_list)
-    app.quadrant3_layout.addWidget(app.quadrant3_completed_label)
-    app.quadrant3_layout.addWidget(app.quadrant3_completed_list)
 
-    app.quadrant4_layout = QVBoxLayout()
     app.quadrant4_label = QLabel(get_text("🟢 Não Importante e Não Urgente"))
     app.quadrant4_list = DragDropTaskList(app, is_completed_list=False)
     app.add_placeholder(app.quadrant4_list, get_text("4º Quadrante"))
     app.quadrant4_completed_label = QLabel(get_text("Concluídas"))
     app.quadrant4_completed_list = DragDropTaskList(app, is_completed_list=True)
     app.add_placeholder(app.quadrant4_completed_list, get_text("Nenhuma Tarefa Concluída"))
-    app.quadrant4_layout.addWidget(app.quadrant4_label)
-    app.quadrant4_layout.addWidget(app.quadrant4_list)
-    app.quadrant4_layout.addWidget(app.quadrant4_completed_label)
-    app.quadrant4_layout.addWidget(app.quadrant4_completed_list)
 
-    quadrant_layout.addLayout(app.quadrant1_layout)
-    quadrant_layout.addLayout(app.quadrant2_layout)
-    quadrant_layout.addLayout(app.quadrant3_layout)
-    quadrant_layout.addLayout(app.quadrant4_layout)
+    class _AutoOpenTabWidget(QTabWidget):
+        def __init__(self, owner, parent=None):
+            super().__init__(parent)
+            self._owner = owner
+            self.setAcceptDrops(True)
 
-    app.main_layout.addLayout(quadrant_layout)
+        def dragEnterEvent(self, event):
+            try:
+                event.acceptProposedAction()
+
+            except Exception:
+                pass
+
+        def dragMoveEvent(self, event):
+            try:
+                tb = self.tabBar()
+                pos = tb.mapFrom(self, event.pos())
+                idx = tb.tabAt(pos)
+
+                if idx is not None and idx >= 0 and idx != self.currentIndex():
+                    self.setCurrentIndex(idx)
+
+                event.acceptProposedAction()
+
+            except Exception:
+                try:
+                    super().dragMoveEvent(event)
+
+                except Exception:
+                    pass
+
+        def dropEvent(self, event):
+            try:
+                tb = self.tabBar()
+                pos = tb.mapFrom(self, event.pos())
+                idx = tb.tabAt(pos)
+
+                if idx is not None and idx >= 0:
+                    self.setCurrentIndex(idx)
+
+                    try:
+                        from source.modules.eisenhower.services.svc_12_DragDropTaskList import DragDropTaskList
+
+                        source_list = event.source()
+                        source_is_completed = False
+
+                        if isinstance(source_list, DragDropTaskList):
+                            source_is_completed = bool(getattr(source_list, "_is_completed_list", False))
+
+                        targets = (
+                            (self._owner.quadrant1_list, self._owner.quadrant1_completed_list),
+                            (self._owner.quadrant2_list, self._owner.quadrant2_completed_list),
+                            (self._owner.quadrant3_list, self._owner.quadrant3_completed_list),
+                            (self._owner.quadrant4_list, self._owner.quadrant4_completed_list),
+                        )
+                        if 0 <= idx < len(targets):
+                            target_list = targets[idx][1 if source_is_completed else 0]
+
+                        else:
+                            target_list = None
+
+                        if isinstance(source_list, DragDropTaskList) and target_list is not None:
+                            if source_list is target_list:
+                                event.acceptProposedAction()
+                                return
+
+                            items = list(source_list.selectedItems() or [])
+
+                            if not items and source_list.currentItem() is not None:
+                                items = [source_list.currentItem()]
+
+                            if not items:
+                                event.ignore()
+                                return
+
+                            target_is_completed = bool(getattr(target_list, "_is_completed_list", False))
+                            new_state = Qt.Checked if target_is_completed else Qt.Unchecked
+
+                            source_list.blockSignals(True)
+                            target_list.blockSignals(True)
+
+                            try:
+                                for it in items:
+                                    if it and (it.flags() & Qt.ItemIsSelectable):
+                                        self._owner.move_item_between_lists(it, source_list, target_list, new_state)
+
+                            finally:
+                                source_list.blockSignals(False)
+                                target_list.blockSignals(False)
+
+                            try:
+                                source_list.clearSelection()
+
+                            except Exception:
+                                pass
+
+                            try:
+                                if hasattr(self._owner, "save_tasks"):
+                                    self._owner.save_tasks()
+
+                                if hasattr(self._owner, "calendar_pane") and self._owner.calendar_pane:
+                                    self._owner.calendar_pane.calendar_panel.update_task_list()
+
+                            except Exception:
+                                pass
+
+                            event.acceptProposedAction()
+                            return
+
+                    except Exception:
+                        pass
+
+                event.ignore()
+
+            except Exception:
+                try:
+                    super().dropEvent(event)
+
+                except Exception:
+                    pass
+
+    tabs = _AutoOpenTabWidget(app)
+    app.quadrant_tabs = tabs
+
+    def _make_tab(label_widget, list_widget, completed_label_widget, completed_list_widget):
+        tab = QWidget()
+        l = QVBoxLayout()
+        l.addWidget(label_widget)
+        l.addWidget(list_widget)
+        l.addWidget(completed_label_widget)
+        l.addWidget(completed_list_widget)
+        tab.setLayout(l)
+        return tab
+
+    tabs.addTab(_make_tab(app.quadrant1_label, app.quadrant1_list, app.quadrant1_completed_label, app.quadrant1_completed_list), get_text("🔴 Importante e Urgente"))
+    tabs.addTab(_make_tab(app.quadrant2_label, app.quadrant2_list, app.quadrant2_completed_label, app.quadrant2_completed_list), get_text("🟠 Importante, mas Não Urgente"))
+    tabs.addTab(_make_tab(app.quadrant3_label, app.quadrant3_list, app.quadrant3_completed_label, app.quadrant3_completed_list), get_text("🟡 Não Importante, mas Urgente"))
+    tabs.addTab(_make_tab(app.quadrant4_label, app.quadrant4_list, app.quadrant4_completed_label, app.quadrant4_completed_list), get_text("🟢 Não Importante e Não Urgente"))
+
+    app.main_layout.addWidget(tabs)
 
     container = QWidget()
     container.setLayout(app.main_layout)

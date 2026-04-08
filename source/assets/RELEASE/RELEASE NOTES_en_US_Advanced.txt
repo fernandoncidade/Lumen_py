@@ -1,4 +1,127 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.9.0
+Date: February 9, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Release focused on hardening the drag & drop flow between tabs and columns, consistency of ordering and tooltips, and UX improvements for adding files via drag in the Task Manager. Fixes loss of items when dropping over tab headers (both in "⏱️ Time Management" and in "🗂️ Eisenhower Matrix"), ensures dynamic reordering by priority→date→time after drops, and enables confirmation when linking files when creating tasks via drag.
+
+Main improvements
+1. Forwarding drops onto tabs
+   - Implemented safe handling in the dropEvent of the custom QTabWidget (_AutoOpenTabWidget) to forward the event to the target QListWidget when the user drops over the tab header.
+   - Prevents item loss: tasks are now removed from the source and inserted into the destination immediately when dropped on the tab.
+
+2. Automatic ordering after drop
+   - After any drop operation (onto the list or onto the tab), lists are re-sorted by a hierarchical key: priority (🔴→🟢), date (asc), time (asc), title (alphabetical).
+   - Defensive parsers for date/time ensure predictable behavior with ISO formats and common variations; items without deadlines default to the end.
+
+3. Drag-to-open tabs and correct forwarding
+   - Automatic tab switching during dragMoveEvent (when the cursor passes over another tab).
+   - dropEvent ensures that when dropping on the tab title, the selected items are moved to the correct QListWidget (pending or completed list according to origin/target).
+
+4. Accepting files by drag into the task input (Task Manager)
+   - FileDropLineEdit integrated into the task input captures the path(s) of dragged file(s).
+   - When adding a task with a dragged file, a confirmation dialog is shown: "Do you want to link the file to this task?" (text translated).
+   - If confirmed, the task is created with the file_path saved; the input is cleared and the tooltip reset.
+
+5. Tooltips and metadata in the timer panel
+   - The "⚙️ In Progress" column (col_doing_timer_group) now shows full per-item tooltips: File (if any), Date, Time, Description and Priority — same formatting applied as in the main columns.
+   - Items in this column are dynamically ordered using the same hierarchical key.
+
+6. Dynamic translation of labels (runtime)
+   - Tab and column titles updated dynamically via QCoreApplication.translate when the language changes; exposes references to tab widgets (status_tabs / quadrant_tabs) for safe updates.
+
+7. File linking UX and cross-platform opening
+   - Opening linked files uses QDesktopServices.openUrl with fallbacks (Windows: os.startfile; macOS: open; Linux: xdg-open).
+   - Error messages translated at runtime (QCoreApplication.translate).
+
+Bug fixes
+1. Item lost when dropping over a tab header
+   - Fixed: dropEvent now correctly detects the target list and moves items; signals are blocked during batch operations to avoid inconsistent intermediate states.
+
+2. Ordering not applied in timer columns
+   - Fixed: doing_timer_list update applies the ordering key and rebuilds the item tooltip.
+
+3. Missing tooltip in specific columns
+   - Fixed: unified tooltip construction preserves file, date, time, description and priority.
+
+4. Static translations in dialogs
+   - Fixed: QMessageBox and other dialogs use QCoreApplication.translate for title and text, allowing language switching at runtime.
+
+Implementation details (technical notes)
+- Custom QTabWidget (_AutoOpenTabWidget)
+  - Subclass with dragEnterEvent/dragMoveEvent/dropEvent.
+  - dragMoveEvent: maps the event position to tabBar().tabAt and calls setCurrentIndex to open the tab under the cursor.
+  - dropEvent: when the drop occurs over tabBar(), resolves the target list (looks for .lista attribute on the tab widget or a child QListWidget), collects source = event.source() and transfers selected items using takeItem/addItem or owner-defined movement helpers (e.g., move_item_between_lists). Signals are blocked during the operation.
+
+- Forwarding and synchronization
+  - When moving between lists, the central synchronization function (_sincronizar_status_pos_movimento / _on_drop_sincronizar) is called to update derived states (save tasks, update calendar panel).
+  - For drops over a tab, after moving items a reordering is triggered (atualizar_listas / atualizar_coluna_doing_timer) and persistence via save_tasks when available.
+
+- Consistent ordering
+  - Ordering key: priority_rank (map), date_k (QDate → toJulianDay or "max" when absent), time_k (tuple (hh, mm) or (99, 99)), title lower-case.
+  - Implemented in gtar_13_atualizar_listas.py and gtemp_12_atualizar_coluna_doing_timer.py; used after drops, insertion and load.
+
+- FileDropLineEdit and creation flow
+  - FileDropLineEdit exposes attribute _dragged_file_path on the owner; on add (add task), code checks _dragged_file_path and shows a translated QMessageBox.question.
+  - If confirmed, file_path is passed to _adicionar_tarefa_interna which preserves metadata (file_path) and emits appropriate signals.
+
+- Unified tooltips
+  - Reusable tooltip builder function: includes file (path), date (formatted according to locale), time, description (preview) and priority (via prioridade_para_texto).
+  - Applied across all list renderings, including col_doing_timer_list.
+
+- Safety and robustness
+  - blockSignals used on lists during batch moves to avoid repaints and selection loss.
+  - Exception handling with logger.error(..., exc_info=True) at sensitive points: drag/drop, opening files, parsing date/time, persistence.
+
+Main files changed / added in this release
+- source/modules/tempo/GerenciadorTarefas/gtar_03_setup_ui.py
+  - _AutoOpenTabWidget: drag/drop over tabs, exposes self.status_tabs.
+- source/modules/tempo/GerenciadorTarefas/gtar_05_criar_coluna.py
+  - Kanban list: ExtendedSelection, double-click open, QMenu integration.
+- source/modules/tempo/GerenciadorTarefas/gtar_06_on_drop_sincronizar.py
+  - Centralized post-drop synchronization.
+- source/modules/tempo/GerenciadorTarefas/gtar_09_adicionar_tarefa.py
+  - Logic for confirmation of file linking when creating a task.
+- source/modules/tempo/GerenciadorTempo/gtemp_01_setup_ui.py
+  - Layout adjusted (col_doing_timer_group expands vertically); integration with dynamic updates.
+- source/modules/tempo/GerenciadorTempo/gtemp_12_atualizar_coluna_doing_timer.py
+  - Full ordering and tooltip for col_doing_timer_list.
+- source/modules/eisenhower/services/svc_01_initUI.py
+  - _AutoOpenTabWidget for Eisenhower: drop forwarding, dynamic label translation, exposes app.quadrant_tabs.
+- source/modules/eisenhower/services/svc_04_atualizar_textos.py
+  - Runtime updating of tab labels and labels via get_text.
+- source/modules/eisenhower/services/svc_12_DragDropTaskList.py
+  - Adjustments to identify completed lists and origin/target during drops.
+- source/modules/eisenhower/services/svc_13_FileDropLineEdit.py
+  - Support for dragging files into the Matrix input (parallel to Task Manager).
+- Others: small fixes in tooltip modules, file opening and logging.
+
+Recommended tests and verification
+- Drag & Drop onto tabs:
+  1. Drag an item from "To Do" and drop onto the "In Progress" tab (drop onto the title). Verify the item leaves the source and appears in the destination, and that save_tasks / atualizar_listas were triggered.
+  2. Repeat between quadrants in the Eisenhower Matrix (quadrant1 → quadrant2) for pending and completed items.
+
+- Ordering:
+  1. Create tasks with varied priorities and due dates; move between columns and validate ordering by priority→date→time.
+  2. Items without date are positioned at the end.
+
+- FileDrop & linking:
+  1. Drag a file into the task input; confirm the file name appears and the tooltip shows the path.
+  2. When adding, confirm the linking dialog appears; test Yes/No and validate file_path on the task object (when Yes).
+
+- Tooltips:
+  1. Hover over items in the timer column and main columns; verify display of File, Date, Time, Description and Priority.
+
+- Internationalization:
+  1. Change language at runtime (when available) and verify that tab labels, titles and dialogs (e.g., link confirmation) update correctly.
+
+Final notes
+- This release prioritizes integrity of the drag & drop flow and consistent visual/informational presentation of items across views. The adopted strategy (forwarding header drops to the internal list, blocking signals during moves and reordering after each operation) eliminates conditions causing item loss and maintains deterministic ordering.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.8.0
 Date: February 8, 2026
 Author: Fernando Nillsson Cidade

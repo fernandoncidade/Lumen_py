@@ -1,4 +1,48 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.9.0
+Data: 9 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Melhoria focada em tornar o arrastar&soltar mais confiável, manter a ordem das tarefas consistente e apresentar informações completas nas dicas (tooltips). Também melhora a experiência ao arrastar arquivos para criar tarefas.
+
+Principais mudanças
+- Arrastar e soltar sobre abas
+  - Soltar uma tarefa sobre o título da aba agora move a tarefa corretamente para a coluna de destino.
+  - Evita que tarefas desapareçam da tela após o movimento.
+
+- Ordenação automática
+  - Após mover tarefas, as listas são reordenadas automaticamente por prioridade, depois por data, horário e título.
+  - Itens sem prazo ficam no final.
+
+- Troca de aba enquanto arrasta
+  - Ao passar o cursor por outra aba durante o arraste, a aba é aberta automaticamente para facilitar o drop.
+
+- Arrastar arquivos ao criar tarefa
+  - Ao arrastar um arquivo para o campo de adicionar tarefa, é oferecida confirmação para vincular o arquivo à nova tarefa.
+  - Se confirmado, o anexo é guardado na tarefa.
+
+- Tooltips completos no painel do timer
+  - Itens em "Em Progresso" mostram tooltip com: arquivo (se houver), data, horário, descrição e prioridade.
+
+- Abertura de arquivos multiplataforma e mensagens traduzidas
+  - Abertura de anexos usa método compatível com cada sistema operacional.
+  - Mensagens e diálogos aparecem no idioma atual.
+
+Correções de bugs
+- Tarefas não se perdem ao soltar sobre o cabeçalho da aba.
+- Ordenação aplicada corretamente nas colunas do timer.
+- Tooltips agora aparecem com todas as informações relevantes.
+- Diálogos e avisos respeitam a tradução em tempo de execução.
+
+O que fazer para verificar
+- Arraste tarefas entre colunas e solte sobre o título da aba; confira que a tarefa saiu da origem e entrou no destino.
+- Mova tarefas com prioridades e prazos diferentes e verifique a nova ordem.
+- Arraste um arquivo ao criar tarefa e confirme o vínculo; passe o mouse sobre itens em "Em Progresso" para ver o tooltip.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.8.0
 Data: 8 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

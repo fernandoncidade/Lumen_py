@@ -1,4 +1,127 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.9.0
+Data: 9 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focada em robustez do fluxo drag&drop entre abas e colunas, consistência de ordenação e tooltips, além de melhorias de UX ao inserir arquivos por arraste no Gerenciador de Tarefas. Corrige perda de itens ao soltar sobre cabeçalhos de abas (tanto em "⏱️ Gestão de Tempo" quanto em "🗂️ Matriz Eisenhower"), garante reordenação dinâmica por prioridade→data→horário após drops e habilita confirmação de vínculo de arquivos ao criar tarefas via arraste.
+
+Melhorias principais
+1. Encaminhamento de drop sobre abas
+   - Implementado tratamento seguro no dropEvent das QTabWidget customizadas (_AutoOpenTabWidget) para encaminhar o evento ao QListWidget alvo quando o usuário solta sobre o cabeçalho da aba.
+   - Evita perda de itens: as tarefas agora são removidas da origem e inseridas no destino imediatamente ao soltar sobre a aba.
+
+2. Ordenação automática pós-drop
+   - Após qualquer operação de drop (sobre a lista ou sobre a aba), as listas são reordenadas por chave hierárquica: prioridade (🔴→🟢), data (asc), horário (asc), título (alfabético).
+   - Parsers defensivos para date/time garantem comportamento previsível com formatos ISO e variações comuns; itens sem prazo ficam por padrão ao fim.
+
+3. Drag-to-open de abas e encaminhamento correto
+   - Troca automática de aba durante dragMoveEvent (quando o cursor passa sobre outra aba).
+   - dropEvent assegura que, ao soltar sobre o título da aba, os itens selecionados sejam movidos para a QListWidget correta (lista pendente ou concluída conforme origem/target).
+
+4. Aceitação de arquivos por arraste no input de tarefas (Gerenciador de Tarefas)
+   - FileDropLineEdit integrado ao input_tarefa captura caminho do(s) arquivo(s).
+   - Ao adicionar tarefa com arquivo arrastado, exibe diálogo de confirmação translado: "Deseja vincular o arquivo a esta tarefa?" (texto traduzido).
+   - Se confirmado, a tarefa é criada com file_path salvo; input é limpo e tooltip resetado.
+
+5. Tooltips e metadados no painel do timer
+   - Coluna "⚙️ Em Progresso" (col_doing_timer_group) agora exibe tooltips completos por item: Arquivo (se houver), Data, Horário, Descrição e Prioridade — mesma formatação aplicada nas colunas principais.
+   - Itens desta coluna são ordenados dinamicamente segundo a mesma chave hierárquica.
+
+6. Tradução dinâmica dos rótulos (runtime)
+   - Títulos de abas e colunas atualizados dinamicamente via QCoreApplication.translate quando o idioma muda; expõe referências a widgets de tabs (status_tabs / quadrant_tabs) para atualização segura.
+
+7. UX de associação de arquivos e abertura multiplataforma
+   - Abertura de arquivos vinculados usa QDesktopServices.openUrl com fallbacks (Windows: os.startfile; macOS: open; Linux: xdg-open).
+   - Mensagens de erro traduzidas em runtime (QCoreApplication.translate).
+
+Correções de bugs
+1. Perda de item ao soltar sobre cabeçalho da aba
+   - Corrigido: dropEvent agora detecta corretamente a lista alvo e move itens; bloqueio de sinais durante operações em lote evita estados intermediários inconsistentes.
+
+2. Ordenação não aplicada em colunas do timer
+   - Corrigido: atualização do doing_timer_list aplica a chave de ordenação e refaz o tooltip por item.
+
+3. Tooltip ausente em colunas específicas
+   - Corrigido: construção de tooltip unificada, preservando arquivo, data, horário, descrição e prioridade.
+
+4. Traduções estáticas em diálogos
+   - Corrigido: QMessageBox e outros diálogos usam QCoreApplication.translate para título e texto, permitindo troca de idioma em runtime.
+
+Detalhes de implementação (pontos técnicos)
+- QTabWidget personalizado (_AutoOpenTabWidget)
+  - Subclasse com dragEnterEvent/dragMoveEvent/dropEvent.
+  - dragMoveEvent: mapeia posição do evento para tabBar().tabAt e chama setCurrentIndex para abrir aba sobre a qual o cursor passa.
+  - dropEvent: quando o drop ocorre sobre tabBar(), resolve a lista alvo (procura atributo .lista no widget da aba ou child QListWidget), coleta source = event.source() e transfere itens selecionados usando takeItem/addItem ou variáveis auxiliares de movimento definidas pelo owner (ex.: move_item_between_lists). Bloqueia sinais durante a operação.
+
+- Encaminhamento e sincronização
+  - Ao mover entre listas, a função central de sincronização (_sincronizar_status_pos_movimento / _on_drop_sincronizar) é chamada para atualizar estados derivados (salvar tarefas, atualizar calendar panel).
+  - Em operações de arraste sobre aba, após mover os itens é acionada a reordenação (atualizar_listas / atualizar_coluna_doing_timer) e persistência via save_tasks quando disponível.
+
+- Ordenação consistente
+  - Chave de ordenação: prioridade_rank (mapa), date_k (QDate → toJulianDay ou valor "max" quando ausente), time_k (tupla (hh,mm) ou (99,99)), título lower-case.
+  - Implementada em gtar_13_atualizar_listas.py e gtemp_12_atualizar_coluna_doing_timer.py; usada após drops, inserção e carregamento.
+
+- FileDropLineEdit e fluxo de criação
+  - FileDropLineEdit expõe atributo _dragged_file_path no owner; ao add (adicionar_tarefa), código verifica _dragged_file_path e exibe QMessageBox.question traduzida.
+  - Se confirmado, file_path é passado para _adicionar_tarefa_interna que preserva metadados (file_path) e emite sinais apropriados.
+
+- Tooltips unificadas
+  - Função de construção de tooltip reutilizada: inclui arquivo (path), data (formatada conforme locale), horário, descrição (preview) e prioridade (via prioridade_para_texto).
+  - Aplicada em todas as renderizações de listas, inclusive col_doing_timer_list.
+
+- Segurança e robustez
+  - Bloqueio de sinais (blockSignals) em listas durante movimento em lote para evitar repinturas e perda de seleção.
+  - Tratamento de exceções com logger.error(..., exc_info=True) nos pontos sensíveis: drag/drop, abertura de arquivos, parsing de date/time, persistência.
+
+Arquivos principais alterados / adicionados nesta entrega
+- source/modules/tempo/GerenciadorTarefas/gtar_03_setup_ui.py
+  - _AutoOpenTabWidget: drag/drop sobre abas, exposição self.status_tabs.
+- source/modules/tempo/GerenciadorTarefas/gtar_05_criar_coluna.py
+  - Kanban list: ExtendedSelection, double-click open, QMenu integração.
+- source/modules/tempo/GerenciadorTarefas/gtar_06_on_drop_sincronizar.py
+  - Centralização da sincronização pós-drop.
+- source/modules/tempo/GerenciadorTarefas/gtar_09_adicionar_tarefa.py
+  - Lógica de confirmação de vínculo de arquivo ao criar tarefa.
+- source/modules/tempo/GerenciadorTempo/gtemp_01_setup_ui.py
+  - Layout ajustado (col_doing_timer_group expande verticalmente); integração com atualização dinâmica.
+- source/modules/tempo/GerenciadorTempo/gtemp_12_atualizar_coluna_doing_timer.py
+  - Ordenação e tooltip completos para col_doing_timer_list.
+- source/modules/eisenhower/services/svc_01_initUI.py
+  - _AutoOpenTabWidget para Eisenhower: encaminhamento de drops, tradução dinâmica de rótulos, exposição app.quadrant_tabs.
+- source/modules/eisenhower/services/svc_04_atualizar_textos.py
+  - Atualização de rótulos de abas e labels em runtime via get_text.
+- source/modules/eisenhower/services/svc_12_DragDropTaskList.py
+  - Ajustes para identificar listas concluídas e origem/destino durante drops.
+- source/modules/eisenhower/services/svc_13_FileDropLineEdit.py
+  - Suporte a arraste de arquivos no input da Matriz (paralelo ao Gerenciador de Tarefas).
+- Outros: pequenas correções em módulos de tooltip, abertura de arquivos e logging.
+
+Testes e verificação recomendados
+- Drag & Drop sobre abas:
+  1. Arrastar item de "A Fazer" e soltar sobre aba "Em Progresso" (soltar no título). Verificar que item sai da origem e aparece no destino, e que save_tasks / atualizar_listas foram disparados.
+  2. Repetir entre quadrantes da Matriz Eisenhower (quadrant1 → quadrant2) para itens pendentes e concluídos.
+
+- Ordenação:
+  1. Criar tarefas com prioridades e prazos variados; mover entre colunas e validar ordenação por prioridade→data→horário.
+  2. Itens sem data ficam posicionados ao fim.
+
+- FileDrop & vinculação:
+  1. Arrastar um arquivo para input_tarefa; confirmar que nome aparece e tooltip mostra caminho.
+  2. Ao adicionar, confirmar diálogo de vínculo; testar opções Sim/Não e validar file_path no objeto tarefa (quando Sim).
+
+- Tooltips:
+  1. Hover em itens da coluna do timer e das colunas principais; verificar exibição de Arquivo, Data, Horário, Descrição e Prioridade.
+
+- Internacionalização:
+  1. Trocar idioma em runtime (quando disponível) e verificar que rótulos das abas, títulos e diálogos (ex.: confirmação de vínculo) atualizam corretamente.
+
+Observações finais
+- A entrega prioriza integridade do fluxo drag&drop e coerência visual/informacional dos itens em todas as views. A estratégia adotada (encaminhar drops do header para a lista interna, bloquear sinais durante movimentos e reordenar após cada operação) elimina condições de perda de itens e mantém a ordenação determinística.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.8.0
 Data: 8 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

@@ -27,6 +27,15 @@ def atualizar_traducoes(self):
         self.col_done.setTitle(QCoreApplication.translate("App", "✅ Concluído"))
 
         try:
+            if hasattr(self, "status_tabs") and self.status_tabs is not None:
+                self.status_tabs.setTabText(0, QCoreApplication.translate("App", "📋 A Fazer"))
+                self.status_tabs.setTabText(1, QCoreApplication.translate("App", "⚙️ Em Progresso"))
+                self.status_tabs.setTabText(2, QCoreApplication.translate("App", "✅ Concluído"))
+
+        except Exception:
+            pass
+
+        try:
             if hasattr(self, 'atualizar_listas') and callable(self.atualizar_listas):
                 self.atualizar_listas()
 

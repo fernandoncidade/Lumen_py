@@ -1,4 +1,48 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.9.0
+Date: February 9, 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Improvements focused on making drag & drop more reliable, keeping task order consistent and showing complete information in tooltips. Also enhances the experience of dragging files to create tasks.
+
+Key changes
+- Drag & drop onto tabs
+  - Dropping a task onto a tab title now correctly moves the task to the destination column.
+  - Prevents tasks from disappearing from the interface after the move.
+
+- Automatic ordering
+  - After moving tasks, lists are automatically re-sorted by priority, then by date, time and title.
+  - Items without a deadline are placed at the end.
+
+- Auto-open tab while dragging
+  - When the cursor passes over another tab during a drag, that tab opens automatically to facilitate dropping.
+
+- Dragging files when creating a task
+  - When you drag a file onto the add-task field, you are prompted to confirm linking the file to the new task.
+  - If confirmed, the attachment is saved with the task.
+
+- Full tooltips in the timer panel
+  - Items in "In Progress" show a tooltip with: file (if any), date, time, description and priority.
+
+- Cross-platform file opening and translated messages
+  - Opening attachments uses a method compatible with each operating system.
+  - Messages and dialogs appear in the current language.
+
+Bug fixes
+- Tasks no longer disappear when dropped onto a tab header.
+- Ordering is applied correctly in the timer columns.
+- Tooltips now show all relevant information.
+- Dialogs and warnings respect runtime translation.
+
+How to verify
+- Drag tasks between columns and drop onto a tab title; confirm the task leaves the source and appears in the destination.
+- Move tasks with different priorities and deadlines and verify the new order.
+- Drag a file when creating a task and confirm the link; hover over items in "In Progress" to view the tooltip.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.8.0
 Date: February 8, 2026
 Author: Fernando Nillsson Cidade

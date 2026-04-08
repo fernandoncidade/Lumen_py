@@ -1,5 +1,5 @@
 from PySide6.QtWidgets import QVBoxLayout, QListWidget, QGroupBox, QAbstractItemView
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QCoreApplication
 from source.modules.tempo.tmp_04_KanbanListWidget import _KanbanListWidget
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
@@ -33,6 +33,7 @@ def criar_coluna(self, status):
 
                 tarefa_id = item.data(Qt.UserRole)
                 alvo = None
+
                 for t in getattr(self, 'tarefas', []):
                     if getattr(t, 'id', None) == tarefa_id:
                         alvo = t
@@ -41,6 +42,7 @@ def criar_coluna(self, status):
                 if not alvo:
                     titulo_item = (item.text() or "").split('\n')[0]
                     titulo_item = titulo_item.replace('🔴 ', '').replace('🟠 ', '').replace('🟡 ', '').replace('🟢 ', '').strip()
+
                     for t in getattr(self, 'tarefas', []):
                         if getattr(t, 'titulo', '').strip() == titulo_item:
                             alvo = t
@@ -50,6 +52,7 @@ def criar_coluna(self, status):
                     return
 
                 path = getattr(alvo, 'file_path', None)
+
                 if not path:
                     return
 
@@ -66,6 +69,7 @@ def criar_coluna(self, status):
 
                     except Exception as e:
                         logger.error(f"Erro ao abrir arquivo vinculado (Gestão de Tempo): {str(e)}", exc_info=True)
+
                         try:
                             subprocess.Popen([path], shell=True)
 
@@ -73,7 +77,11 @@ def criar_coluna(self, status):
                             logger.error(f"Erro ao abrir arquivo vinculado (Gestão de Tempo): {str(e2)}", exc_info=True)
 
                 else:
-                    QMessageBox.warning(self, "Erro", "Arquivo não encontrado.")
+                    QMessageBox.warning(
+                        self,
+                        QCoreApplication.translate("App", "Erro"),
+                        QCoreApplication.translate("App", "Arquivo não encontrado."),
+                    )
 
             except Exception as e:
                 logger.error(f"Erro ao abrir arquivo vinculado (Gestão de Tempo): {str(e)}", exc_info=True)
@@ -91,7 +99,6 @@ def criar_coluna(self, status):
 
         layout.addWidget(lista)
         grupo.setLayout(layout)
-
         grupo.lista = lista
         grupo.status = status
 

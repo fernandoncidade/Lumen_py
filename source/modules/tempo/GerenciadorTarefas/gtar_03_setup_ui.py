@@ -1,4 +1,5 @@
-from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QLineEdit, QComboBox
+from PySide6.QtWidgets import QVBoxLayout, QHBoxLayout, QPushButton, QComboBox, QTabWidget
+from source.modules.eisenhower.services.svc_01_initUI import FileDropLineEdit
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
 
@@ -8,7 +9,7 @@ def setup_ui(self):
 
         adicionar = QHBoxLayout()
 
-        self.input_tarefa = QLineEdit()
+        self.input_tarefa = FileDropLineEdit(self, self)
         self.input_tarefa.returnPressed.connect(self.adicionar_tarefa)
 
         try:
@@ -42,17 +43,123 @@ def setup_ui(self):
 
         layout.addLayout(adicionar)
 
-        kanban = QHBoxLayout()
         self.col_todo = self.criar_coluna("Todo")
-        kanban.addWidget(self.col_todo)
-
         self.col_doing = self.criar_coluna("Doing")
-        kanban.addWidget(self.col_doing)
-
         self.col_done = self.criar_coluna("Done")
-        kanban.addWidget(self.col_done)
 
-        layout.addLayout(kanban)
+        class _AutoOpenTabWidget(QTabWidget):
+            def __init__(self, owner, parent=None):
+                super().__init__(parent)
+                self._owner = owner
+                self.setAcceptDrops(True)
+
+            def dragEnterEvent(self, event):
+                try:
+                    event.acceptProposedAction()
+
+                except Exception:
+                    pass
+
+            def dragMoveEvent(self, event):
+                try:
+                    tb = self.tabBar()
+                    pos = tb.mapFrom(self, event.pos())
+                    idx = tb.tabAt(pos)
+
+                    if idx is not None and idx >= 0 and idx != self.currentIndex():
+                        self.setCurrentIndex(idx)
+
+                    event.acceptProposedAction()
+
+                except Exception:
+                    try:
+                        super().dragMoveEvent(event)
+
+                    except Exception:
+                        pass
+
+            def dropEvent(self, event):
+                try:
+                    tb = self.tabBar()
+                    pos = tb.mapFrom(self, event.pos())
+                    idx = tb.tabAt(pos)
+
+                    if idx is not None and idx >= 0:
+                        self.setCurrentIndex(idx)
+                        target_list = None
+
+                        try:
+                            tab_widget = self.widget(idx)
+
+                            if hasattr(tab_widget, "lista"):
+                                target_list = tab_widget.lista
+
+                            else:
+                                from PySide6.QtWidgets import QListWidget
+                                target_list = tab_widget.findChild(QListWidget) if tab_widget is not None else None
+
+                        except Exception:
+                            target_list = None
+
+                        if target_list is not None:
+                            try:
+                                from PySide6.QtCore import Qt
+                                from PySide6.QtWidgets import QListWidget
+
+                                source_list = event.source()
+
+                                if isinstance(source_list, QListWidget) and source_list is not target_list:
+                                    items = source_list.selectedItems() or []
+
+                                    if not items and source_list.currentItem() is not None:
+                                        items = [source_list.currentItem()]
+
+                                    for item in items:
+                                        row = source_list.row(item)
+
+                                        if row >= 0:
+                                            moved = source_list.takeItem(row)
+
+                                            if moved is not None:
+                                                target_list.addItem(moved)
+
+                                    if hasattr(self._owner, "_sincronizar_status_pos_movimento"):
+                                        self._owner._sincronizar_status_pos_movimento(prioridade_lista=target_list)
+
+                                    if hasattr(self._owner, "atualizar_listas") and callable(self._owner.atualizar_listas):
+                                        self._owner.atualizar_listas()
+
+                                    elif hasattr(self._owner, "listas_atualizadas"):
+                                        try:
+                                            self._owner.listas_atualizadas.emit()
+
+                                        except Exception:
+                                            pass
+
+                                    event.setDropAction(Qt.MoveAction)
+                                    event.accept()
+                                    return
+
+                            except Exception:
+                                pass
+
+                    event.ignore()
+
+                except Exception:
+                    try:
+                        super().dropEvent(event)
+
+                    except Exception:
+                        pass
+
+        tabs = _AutoOpenTabWidget(self)
+        tabs.addTab(self.col_todo, "📋 A Fazer")
+        tabs.addTab(self.col_doing, "⚙️ Em Progresso")
+        tabs.addTab(self.col_done, "✅ Concluído")
+
+        self.status_tabs = tabs
+
+        layout.addWidget(tabs)
 
         self.setLayout(layout)
         self.atualizar_traducoes()
