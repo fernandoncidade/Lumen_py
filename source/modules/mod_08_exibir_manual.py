@@ -106,7 +106,10 @@ def exibir_manual(app):
 
         btn_close = QPushButton()
         btn_close.clicked.connect(dlg.close)
-        root.addWidget(btn_close)
+        footer = QHBoxLayout()
+        footer.addStretch(1)
+        footer.addWidget(btn_close)
+        root.addLayout(footer)
 
         dlg._manual_positions = {}
         dlg._manual_row_to_id = []

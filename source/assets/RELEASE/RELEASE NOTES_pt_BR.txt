@@ -1,4 +1,50 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.4.0
+Data: 4 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Melhorias focadas na usabilidade do Calendário: agora é possível clicar com o botão direito sobre qualquer dia para acessar um menu com opções de editar e remover tarefas (inclui "Remover Todas"). Também ajustamos a exibição das prioridades com emojis (🔴 🟠 🟡 🟢) para ficarem antes do horário. Várias proteções e registros foram adicionados para aumentar a robustez da aplicação.
+
+Principais novidades
+- Menu de contexto por dia
+  - Ao clicar com o botão direito em um dia, aparece um menu com submenus para editar e remover as tarefas daquele dia.
+  - Cada submenu lista as tarefas do dia; se houver, você escolhe diretamente a tarefa para editar ou remover.
+  - A ação "Remover Todas" permite apagar todas as tarefas do dia com confirmação.
+
+- Edição e remoção integradas
+  - Editar uma tarefa abre a mesma janela de edição conhecida, preservando os campos e validações.
+  - Remover tarefas respeita a lógica de limpeza e mantém a lista sempre consistente.
+  - Remoções em lote pedem confirmação e atualizam a visualização imediatamente.
+
+- Emojis de prioridade
+  - Prioridades visíveis com emojis: 🔴, 🟠, 🟡, 🟢.
+  - Emojis aparecem antes do horário nas listas e tooltips do calendário.
+  - É possível ocultar os emojis usando o checkbox "Mostrar prioridade" no painel do calendário.
+
+- Ordenação e apresentação
+  - Tarefas nos menus e tooltips são ordenadas por horário e depois por texto para facilitar a leitura.
+  - As tooltips mostram informações úteis (horário, título, status e prioridade) de forma organizada.
+
+Correções de bugs e robustez
+- Corrigido posicionamento dos emojis (agora aparecem antes do horário).
+- Ajustado comportamento do menu para garantir que ações de editar/remover atuem sobre a tarefa correta.
+- Remoção em lote limpa corretamente itens auxiliares e atualiza os contadores visuais.
+- Evitados tooltips vazios e melhor tratamento de casos sem tarefas.
+
+O que muda para você
+- Navegar e gerenciar tarefas pelo calendário ficou mais rápido: menos cliques para editar ou excluir.
+- Visualização de prioridades mais clara e configurável.
+- Mais segurança contra erros em operações de edição, remoção e abertura de itens.
+
+Recomendações rápidas
+- Experimente clicar com o botão direito sobre dias que tenham tarefas para ver as novas opções.
+- Use o checkbox "Mostrar prioridade" para alternar a exibição dos emojis.
+- Ao usar "Remover Todas", confirme atentamente pois a ação apaga todas as tarefas daquele dia.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.3.0
 Data: 3 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

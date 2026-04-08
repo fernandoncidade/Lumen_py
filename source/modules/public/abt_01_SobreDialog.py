@@ -192,11 +192,13 @@ class SobreDialog(QDialog):
             layout.addWidget(self.tabs)
 
             button_layout = QHBoxLayout()
+            button_layout.setContentsMargins(0, 9, 0, 0)
+            button_layout.setAlignment(Qt.AlignRight | Qt.AlignVCenter)
             self.ok_button = QPushButton(ok_text)
             self.ok_button.setSizePolicy(QSizePolicy.Preferred, QSizePolicy.Fixed)
             self.ok_button.clicked.connect(self.accept)
             button_layout.addStretch(1)
-            button_layout.addWidget(self.ok_button)
+            button_layout.addWidget(self.ok_button, 0, Qt.AlignRight | Qt.AlignVCenter)
             layout.addLayout(button_layout)
 
             self.setMinimumSize(400, 200)

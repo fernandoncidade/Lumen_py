@@ -1,4 +1,50 @@
 RELEASE NOTES — Lúmen
+Version: 2026.2.4.0
+Date: 4 February 2026
+Author: Fernando Nillsson Cidade
+
+Overview
+Improvements focused on Calendar usability: you can now right-click any day to access a menu with options to edit and remove tasks (includes "Remove All"). We also adjusted priority display with emojis (🔴 🟠 🟡 🟢) so they appear before the time. Several protections and logs were added to increase application robustness.
+
+Main changes
+- Day context menu
+  - Right‑click a day to open a menu with submenus to edit and remove that day's tasks.
+  - Each submenu lists the day's tasks; when present, you can choose a task directly to edit or remove.
+  - The "Remove All" action deletes all tasks for the day after confirmation.
+
+- Integrated edit and remove
+  - Editing a task opens the familiar edit dialog, preserving fields and validations.
+  - Removing tasks respects cleanup logic and keeps lists consistent.
+  - Batch removals request confirmation and immediately refresh the view.
+
+- Priority emojis
+  - Priorities are shown with emojis: 🔴, 🟠, 🟡, 🟢.
+  - Emojis now appear before the time in calendar lists and tooltips.
+  - You can hide emojis using the "Show priority" checkbox in the calendar panel.
+
+- Ordering and presentation
+  - Tasks in menus and tooltips are ordered by time and then by text for easier reading.
+  - Tooltips display useful information (time, title, status and priority) in an organized way.
+
+Bug fixes and robustness
+- Fixed emoji positioning (now appear before the time).
+- Adjusted menu behavior to ensure edit/remove actions target the correct task.
+- Batch removal correctly clears auxiliary items and updates visual counters.
+- Prevented empty tooltips and improved handling of days without tasks.
+
+What changes for you
+- Navigating and managing tasks via the calendar is faster: fewer clicks to edit or delete.
+- Priority visibility is clearer and configurable.
+- More protection against errors when editing, removing or opening items.
+
+Quick tips
+- Try right‑clicking days that have tasks to see the new options.
+- Use the "Show priority" checkbox to toggle emoji display.
+- When using "Remove All", confirm carefully as the action deletes all tasks for that day.
+
+_________________________________________________
+
+RELEASE NOTES — Lúmen
 Version: 2026.2.3.0
 Date: February 3, 2026
 Author: Fernando Nillsson Cidade

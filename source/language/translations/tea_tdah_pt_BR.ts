@@ -2314,5 +2314,20 @@ Deseja continuar?</translation>
       <translation>Mostrar prioridade</translation>
     </message>
 
+    <message>
+      <source>Remover Todas</source>
+      <translation>Remover Todas</translation>
+    </message>
+
+    <message>
+      <source>Remover Tarefas</source>
+      <translation>Remover Tarefas</translation>
+    </message>
+
+    <message>
+      <source>Deseja remover todas as tarefas do dia selecionado?</source>
+      <translation>Deseja remover todas as tarefas do dia selecionado?</translation>
+    </message>
+
   </context>
 </TS>

@@ -1,4 +1,101 @@
 NOTAS DE LANÇAMENTO — Lúmen
+Versão: 2026.2.4.0
+Data: 4 de fevereiro de 2026
+Autor: Fernando Nillsson Cidade
+
+Visão Geral
+Entrega focalizada na usabilidade do Calendário: adicionado menu de contexto por dia com submenus estruturados para edição e remoção de tarefas (incluindo "Remover Todas"), integração direta com a janela de edição já existente, e correções de exibição dos emojis de prioridade (posicionados antes do horário). Várias proteções e logs foram adicionados para manter robustez em cenários edge-case.
+
+Melhorias principais
+1. Menu de contexto por dia no calendário
+   - Implementado Context Menu ao clicar com botão direito sobre qualquer dia do calendário (BadgeCalendarWidget.event ContextMenu).
+   - O menu principal contém dois submenus com seta lateral: "✏️ Editar Tarefa..." e "🗑️ Remover Tarefa".
+   - Cada submenu lista, quando houver, as tarefas daquele dia como Actions (uma Action por tarefa). Ao posicionar o cursor sobre o título do submenu o Qt exibe a seta lateral e a lista das tarefas (comportamento padrão de QMenu/QAction).
+   - Abaixo das ações de remoção há uma separador e a ação "Remover Todas" que invoca a rotina que remove todas as tarefas daquela data.
+
+2. Edição e remoção integradas ao fluxo existente
+   - A ação de editar reusa a mesma janela de edição já implementada (editar_tarefa_item / EditTaskDialog em svc_06_show_context_menu.py), preservando comportamento e validações existentes (arquivo vinculado, descrição, date/time, prioridade).
+   - A ação de remoção chama os utilitários existentes (remover_tarefa_por_dados / remover_tarefa_item) para garantir coerência com placeholders, limpeza de group headers e persistência.
+   - A ação "Remover Todas" solicita confirmação (QMessageBox) e remove itens em todas as listas relevantes, atualizando badges e salvando.
+
+3. Exibição de emojis de prioridade
+   - Emojis suportados: 🔴, 🟠, 🟡, 🟢.
+   - Emojis agora são exibidos antes do horário nas linhas dos submenus do calendário e nas tooltips/listas do calendário. Ex.: "🔴 09:30 — Fazer relatório" (emoji posicionado no início).
+   - A visibilidade dos emojis respeita o checkbox "Mostrar prioridade" do CalendarDialog/CalendarPanel. Quando desativado, emojis não são mostrados nem nos tooltips nem nos submenus.
+   - Implementação usa prioridade_para_texto(...) para recuperar o rótulo de prioridade e extrair o primeiro caractere (emoji).
+
+4. Sincronização, ordenação e map de dados
+   - As tarefas mostradas nos submenus e tooltips são ordenadas por horário (time) e depois por texto para leitura consistente.
+   - O calendário mantém duas estruturas:
+       - mapa de linhas formatadas para tooltips (_tasks_by_date)
+       - mapa de dados originais por data (_tasks_by_date_data)
+     Essas estruturas são atualizadas em update_task_list() e expostas ao BadgeCalendarWidget via set_task_tooltip_map / set_tasks_by_date_data.
+   - As ações do menu utilizam diretamente os dicionários de tarefa (task dicts) e resolvem a origem real do item na lista principal via _find_source_item_for_calendar, garantindo que edição/remoção atuem sobre o QListWidgetItem correto.
+
+5. Robustez, accessibility e logs
+   - Blocos try/except abrangentes adicionados ao fluxo de construção de menus, execução de ações e abertura de arquivos (QDesktopServices + fallback por plataforma).
+   - Logs detalhados (LogManager) em pontos sensíveis (construção do menu, callbacks de edição/remoção, atualizações de tooltip) para facilitar diagnóstico.
+   - Fallbacks e validações para ausência de app.date_input, gerenciador_traducao e calendar.owner/show_priority_checkbox.
+
+Correções de bugs
+1. Posicionamento dos emojis
+   - Corrigido: emojis antes do horário (não depois), tanto em tooltips como nas entradas do menu de contexto e na tasks_list do CalendarDialog/Panel.
+
+2. Menu de contexto do calendário
+   - Corrigido comportamento de seleção/ação para itens originados do CalendarDialog (resolução da fonte correta antes de aplicar edição/remoção).
+   - Remoção em lote ("Remover Todas") limpa corretamente group headers e placeholders, atualiza badges e salva.
+
+3. Tooltips e ordenação
+   - Ordenação consistente das linhas do tooltip por horário/texto; prevenção de tooltips vazios e guarding de QToolTip.showText.
+
+Detalhes de implementação (pontos técnicos)
+- Arquitetura/fluxo:
+  - Ao detectar QEvent.ContextMenu no BadgeCalendarWidget.event:
+      1) obter QDate via _date_at_pos()
+      2) montar lista tasks = list(self._tasks_by_date_data.get(date_iso) or [])
+      3) ordenar tasks por (time, text)
+      4) consultar owner.show_priority_checkbox para decidir mostrar emoji
+      5) montar QMenu com submenus edit_menu e remove_menu
+      6) para cada task: construir label com formato:
+         - se time_str: label = f"{emoji} {time_str} — {label_text}"
+         - senão: label = f"{emoji} {label_text}"
+      7) criar QAction(label), bind com lambda que chama editar_tarefa_por_dados(...) ou remover_tarefa_por_dados(...)
+      8) adicionar ação "Remover Todas" no final do remove_menu
+  - As ações de edição/remover recebem o task dict e utilizam _find_source_item_for_calendar para localizar o QListWidgetItem real (quando aplicável).
+
+- Uso de prioridade_para_texto:
+  - Função é chamada com (priority, owner_or_app) e o resultado tem seu primeiro caractere testado se pertence ao conjunto de emojis; caso positivo, é usado como prefixo.
+
+- Persistência e sincronização visual:
+  - Após edição/removal/remover todas, invoca-se app.save_tasks() e atualização do painel de calendário (calendar_pane.calendar_panel.update_task_list()) quando disponível.
+  - Atualização de badges ocorre via _update_badge_counts -> calendar.set_task_counts.
+
+Testes e verificação
+- Verificar contexto:
+  - Clique com o botão direito sobre um dia com múltiplas tarefas: abrir menu -> submenus Editar/Remover listam tarefas; ao passar o mouse sobre o submenu a seta lateral e lista aparecem; selecionar tarefa abre diálogo de edição ou confirma remoção.
+  - "Remover Todas" solicita confirmação e elimina todas as tarefas daquele dia de todas as listas; badges e tasks_list atualizam.
+- Emojis:
+  - Com "Mostrar prioridade" ligado: emojis aparecem antes do horário nas linhas do menu, tooltips do dia e na lista do calendário.
+  - Com "Mostrar prioridade" desligado: emojis não aparecem.
+- Robustez:
+  - Edição de uma tarefa originada do CalendarDialog modifica o item correto na lista de quadrante correspondente; placeholders/group headers são atualizados corretamente.
+  - Testar abertura de arquivo vinculado a partir do diálogo de edição e do double-click com fallbacks por plataforma.
+
+Arquivos principais alterados
+- source/modules/eisenhower/ui/ui_07_Calendar.py
+  - BadgeCalendarWidget.event(ContextMenu) — construção dos submenus por dia, posicionamento do emoji antes do horário, consulta ao checkbox de prioridade, ligação de ações a editar/remover por dados.
+  - CalendarDialog.update_task_list() — composição de tooltip_map e tasks_by_date_data com emoji posicionado corretamente; exposição ao widget calendário.
+- source/modules/eisenhower/services/svc_06_show_context_menu.py
+  - Funções auxiliares: _find_source_item_for_calendar, editar_tarefa_por_dados, remover_tarefa_por_dados, remover_todas_por_data — integração direta com ações do menu do calendário e reuso do diálogo de edição já existente.
+- source/modules/eisenhower/services/svc_09_prioridade_display.py
+  - Utilitário prioridade_para_texto() usado para mapear prioridade internal → label com emoji; empregado para extrair emoji de prefixo.
+
+Observações finais
+- A entrega melhora significativamente a descoberta e edição de tarefas via calendário, reduz cliques e evita abrir diálogos extras para selecionar tarefa. Exibição de prioridade agora é consistente e configurável via checkbox. Logs e proteções aumentam a tolerância a falhas em produção.
+
+_________________________________________________
+
+NOTAS DE LANÇAMENTO — Lúmen
 Versão: 2026.2.3.0
 Data: 3 de fevereiro de 2026
 Autor: Fernando Nillsson Cidade

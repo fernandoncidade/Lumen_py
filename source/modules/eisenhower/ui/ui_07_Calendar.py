@@ -1,8 +1,9 @@
 from PySide6.QtWidgets import (QDialog, QHBoxLayout, QVBoxLayout, QCalendarWidget, QComboBox, QListWidget, 
-                               QListWidgetItem, QLabel, QAbstractItemView, QWidget, QSizePolicy, QToolTip, QCheckBox)
+                               QListWidgetItem, QLabel, QAbstractItemView, QWidget, QSizePolicy, QToolTip, QCheckBox, QMenu)
 from PySide6.QtCore import Qt, QDate, QCoreApplication, QLocale, QSize, QObject, QEvent, QRect, QUrl
-from PySide6.QtGui import QPainter, QFontMetrics, QTextCharFormat, QBrush, QColor, QFont, QPalette, QDesktopServices
+from PySide6.QtGui import QPainter, QFontMetrics, QTextCharFormat, QBrush, QColor, QFont, QPalette, QDesktopServices, QAction
 from source.modules.eisenhower.services import show_context_menu
+from source.modules.eisenhower.services.svc_06_show_context_menu import editar_tarefa_por_dados, remover_tarefa_por_dados, remover_todas_por_data
 from source.modules.eisenhower.services.svc_09_prioridade_display import prioridade_para_texto
 from source.utils.LogManager import LogManager
 logger = LogManager.get_logger()
@@ -52,6 +53,7 @@ class BadgeCalendarWidget(QCalendarWidget):
         self._week_counts = {}  # {(year, week_number): count}
         self._month_counts = {}  # {(year, month): count}
         self._tasks_by_date = {}  # {date_iso_str: [lines]}
+        self._tasks_by_date_data = {}  # {date_iso_str: [task dicts]}
 
         try:
             self.setMouseTracking(True)
@@ -65,6 +67,13 @@ class BadgeCalendarWidget(QCalendarWidget):
 
         except Exception as e:
             logger.error(f"Erro ao definir mapa de tooltip do calendário: {e}", exc_info=True)
+
+    def set_tasks_by_date_data(self, tasks_by_date_data: dict):
+        try:
+            self._tasks_by_date_data = tasks_by_date_data or {}
+
+        except Exception as e:
+            logger.error(f"Erro ao definir mapa de dados do calendário: {e}", exc_info=True)
 
     def set_task_counts(self, dates_list):
         try:
@@ -198,6 +207,75 @@ class BadgeCalendarWidget(QCalendarWidget):
                 event.ignore()
                 return True
 
+            if event.type() == QEvent.ContextMenu:
+                pos = event.position().toPoint() if hasattr(event, "position") else event.pos()
+                qd = self._date_at_pos(pos)
+                if qd and qd.isValid():
+                    date_iso = qd.toString(Qt.ISODate)
+                    tasks = list(self._tasks_by_date_data.get(date_iso) or [])
+                    tasks.sort(key=lambda t: (t.get("time") or "", (t.get("text") or "").lower()))
+
+                    show_priority = True
+                    try:
+                        owner = getattr(self, "owner", None)
+                        if owner is not None and hasattr(owner, "show_priority_checkbox"):
+                            show_priority = bool(owner.show_priority_checkbox.isChecked())
+
+                    except Exception:
+                        show_priority = True
+
+                    menu = QMenu(self)
+                    edit_menu = menu.addMenu(get_text("✏️ Editar Tarefa...") or "✏️ Editar Tarefa...")
+                    remove_menu = menu.addMenu(get_text("🗑️ Remover Tarefa") or "🗑️ Remover Tarefa")
+
+                    if tasks:
+                        for task in tasks:
+                            label = (task.get("text") or "").strip() or get_text("(Sem título)")
+                            time_str = task.get("time") or ""
+                            emoji = ""
+                            if show_priority:
+                                try:
+                                    prio_label = prioridade_para_texto(task.get("priority"), getattr(self, "owner", None))
+                                    if prio_label:
+                                        cand = str(prio_label).strip()[:1]
+                                        if cand in {"🔴", "🟠", "🟡", "🟢"}:
+                                            emoji = cand
+
+                                except Exception:
+                                    emoji = ""
+
+                            if time_str:
+                                label = f"{time_str} — {label}"
+
+                            if emoji:
+                                label = f"{emoji} {label}"
+
+                            act_edit = QAction(label, self)
+                            act_edit.triggered.connect(lambda _=False, t=task: editar_tarefa_por_dados(getattr(self, "app", None), t))
+                            edit_menu.addAction(act_edit)
+
+                            act_remove = QAction(label, self)
+                            act_remove.triggered.connect(lambda _=False, t=task: remover_tarefa_por_dados(getattr(self, "app", None), t, True))
+                            remove_menu.addAction(act_remove)
+
+                        remove_menu.addSeparator()
+                        act_remove_all = QAction(get_text("Remover Todas") or "Remover Todas", self)
+                        act_remove_all.triggered.connect(lambda _=False, ds=date_iso: remover_todas_por_data(getattr(self, "app", None), ds))
+                        remove_menu.addAction(act_remove_all)
+
+                    else:
+                        act_empty_edit = QAction(get_text("Nenhuma tarefa neste dia."), self)
+                        act_empty_edit.setEnabled(False)
+                        edit_menu.addAction(act_empty_edit)
+
+                        act_empty_remove = QAction(get_text("Nenhuma tarefa neste dia."), self)
+                        act_empty_remove.setEnabled(False)
+                        remove_menu.addAction(act_empty_remove)
+
+                    global_pos = event.globalPos() if hasattr(event, "globalPos") else self.mapToGlobal(pos)
+                    menu.exec(global_pos)
+                    return True
+
         except Exception as e:
             logger.error(f"Erro ao exibir tooltip no calendário: {e}", exc_info=True)
 
@@ -217,6 +295,8 @@ class CalendarDialog(QDialog):
             main_layout = QVBoxLayout(self)
 
             self.calendar = BadgeCalendarWidget(self)
+            self.calendar.app = app
+            self.calendar.owner = self
             initial_date = app.date_input.date() if hasattr(app, "date_input") else QDate.currentDate()
             self.calendar.setSelectedDate(initial_date)
 
@@ -489,6 +569,7 @@ class CalendarDialog(QDialog):
                     show_priority = True
 
                 tooltip_map = {}
+                tasks_by_date_data = {}
                 for task in tasks_all:
                     ds = task.get("date")
                     if not ds:
@@ -508,12 +589,15 @@ class CalendarDialog(QDialog):
                         line = f"{emoji} {text} ({status_text})".strip()
 
                     tooltip_map.setdefault(ds, []).append(line)
+                    tasks_by_date_data.setdefault(ds, []).append(task)
 
                 for ds, lines in tooltip_map.items():
                     lines.sort()
 
                 if hasattr(self, "calendar") and hasattr(self.calendar, "set_task_tooltip_map"):
                     self.calendar.set_task_tooltip_map(tooltip_map)
+                    if hasattr(self.calendar, "set_tasks_by_date_data"):
+                        self.calendar.set_tasks_by_date_data(tasks_by_date_data)
 
             except Exception as e:
                 logger.error(f"Erro ao atualizar tooltip do calendário: {e}", exc_info=True)
@@ -830,6 +914,8 @@ class CalendarPanel(QWidget):
             main_layout.setSpacing(6)
 
             self.calendar = BadgeCalendarWidget(self)
+            self.calendar.app = app
+            self.calendar.owner = self
             initial_date = app.date_input.date() if hasattr(app, "date_input") else QDate.currentDate()
             self.calendar.setSelectedDate(initial_date)
             hint = self.calendar.minimumSizeHint()
